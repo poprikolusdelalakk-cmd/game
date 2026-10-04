@@ -1,0 +1,18 @@
+{
+  "nav_ignore": false,
+  "name": "Fluent Messenger",
+  "short_name": "Fluent",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0e1621",
+  "theme_color": "#17212b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://flaticon.com",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
