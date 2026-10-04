@@ -49,7 +49,6 @@
             position: relative;
         }
 
-        /* ЭКРАН АВТОРИЗАЦИИ */
         .auth-screen {
             padding: 40px 30px;
             display: flex;
@@ -58,6 +57,7 @@
             justify-content: center;
             height: 100%;
             gap: 25px;
+            width: 100%;
         }
 
         .logo-area {
@@ -133,11 +133,11 @@
             user-select: none;
         }
 
-        /* ЭКРАН ПРИЛОЖЕНИЯ (МЕССЕНДЖЕР) */
         .app-screen {
             display: none;
             flex-direction: column;
             height: 100%;
+            width: 100%;
         }
 
         .app-header {
@@ -165,7 +165,6 @@
             text-transform: uppercase;
         }
 
-        /* Навигация по вкладкам (Таббар) */
         .tab-bar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -203,7 +202,6 @@
             display: flex;
         }
 
-        /* ВКЛАДКА 1: СТАТИСТИКА (ГЛАВНАЯ) */
         .stats-title {
             font-size: 1.1rem;
             color: var(--accent-cyan);
@@ -240,7 +238,6 @@
             box-shadow: 0 0 10px #00ff66;
         }
 
-        /* ВКЛАДКА 2: СПИСОК ЧАТОВ */
         .chats-list-container {
             display: flex;
             flex-direction: column;
@@ -292,7 +289,6 @@
             color: var(--text-muted);
         }
 
-        /* ОКНО ОТКРЫТОГО ДИАЛОГА ЧАТА */
         .active-dialog-view {
             display: none;
             flex-direction: column;
@@ -349,9 +345,10 @@
             border-top: 1px solid rgba(255,255,255,0.06);
             display: flex;
             gap: 10px;
-background: rgba(0,0,0,0.3);
-}
-.input-area input { flex: 1; padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #fff; outline: none;}
+            background: rgba(0,0,0,0.3);
+        }
+
+.input-area input { flex: 1; padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #fff; outline: none; }
 .input-area input:focus { border-color: var(--accent-cyan); }
 .btn-send { width: auto; padding: 0 20px; background: var(--accent-cyan); color: #000; border-radius: 14px; }
 
@@ -372,6 +369,7 @@ User
 
 Онлайн сейчас
 24
+
 
 Людей на сайте
 1,482
@@ -404,6 +402,8 @@ User
 
 Отправить
 
+
+
 const sndNode = new (window.AudioContext || window.webkitAudioContext)();
 function playBlip() {
 try {
@@ -422,7 +422,6 @@ osc.start(); osc.stop(sndNode.currentTime + 0.06);
 let signUpState = false;
 let activeUser = localStorage.getItem('fluent_session') || null;
 let activeTargetChat = null;
-// ЖИВАЯ СТАТИСТИКА
 let liveOnline = Math.floor(Math.random() * 10) + 25;
 let liveSite = Math.floor(Math.random() * 40) + 1520;
 let liveDownloads = 43112;
@@ -530,11 +529,13 @@ localStorage.setItem(fl_friends_${activeUser}, JSON.stringify(friends));
 status.innerHTML = <span style="color:#00ff66;">Чат с ${targetName} успешно создан!</span>;
 setTimeout(() => { openDialog(targetName); input.value = ""; status.innerText = "Введите ник и нажмите кнопку, чтобы создать чат."; }, 1000);
 }
+// ОТКРЫТИЕ ДИАЛОГА ЧАТА
 function openDialog(target) {
 playBlip();
 activeTargetChat = target;
 document.getElementById('dialog-title').innerText = target;
 document.getElementById('dialog-avatar').innerText = target.charAt(0).toUpperCase();
+document.getElementById('active-dialog').style.style.setProperty('display', 'flex', 'important');
 document.getElementById('active-dialog').style.display = 'flex';
 syncMessages();
 }
@@ -575,6 +576,5 @@ flow.innerHTML = html;
 flow.scrollTop = flow.scrollHeight;
 }
 }
-
 function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
 function cleanHtml(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
