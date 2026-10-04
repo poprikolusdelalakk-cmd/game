@@ -44,39 +44,41 @@
             <button class="nav-btn" id="btn-invites" onclick="switchView('invites')">Вызовы ⚔️</button>
         </div>
 
-        <!-- Клик по баджу копирует ID -->
+        <!-- Поле отображения личного ID профиля -->
         <div class="id-badge" onclick="copyMyID()">Мой Сигма-ID: <b id="my-id-box" style="color:#38bdf8">------</b> (Клик: Копировать)</div>
         <div class="status-net">🟢 Система Fluent Сообщества active</div>
         
-        <!-- ДИНАМИЧЕСКИЕ ОКНА ВКЛАДОК -->
+        <!-- Динамическое окно списков -->
         <div id="content-area"></div>
 
         <div style="margin-top: 15px;">
-            <input type="text" id="main-input" placeholder="Введите ID друга...">
-            <button class="btn btn-primary" id="action-btn" onclick="handleMainAction()">ДОБАВИТЬ В ДРУЗЬЯ</button>
+            <input type="text" id="main-input" placeholder="Введите ID друга для создания боя...">
+            <button class="btn btn-primary" id="action-btn" onclick="handleMainAction()">⚔️ СОЗДАТЬ СЕТЕВОЙ ВЫЗОВ</button>
             <button class="btn btn-bot" onclick="playWithBot()">🤖 ОДИНОЧНАЯ ИГРА С БОТОМ</button>
             <button class="btn btn-secondary" onclick="window.location.href='index.html'">В ГЛАВНОЕ МЕНЮ</button>
         </div>
     </div>
 
     <script>
-        // ЖЕСТКАЯ ГЕНЕРАЦИЯ ID НА САМОМ СТАРТЕ СКРИПТА
-        let myId = localStorage.getItem('sigma_id');
-        if(!myId || myId === "------") {
-            myId = Math.floor(100000 + Math.random() * 900000).toString();
-            localStorage.setItem('sigma_id', myId);
+        // СВЕРХНАДЕЖНЫЙ АВТО-СБРОС И ГЕНЕРАЦИЯ ID
+        let currentStoredId = localStorage.getItem('sigma_id');
+        if (!currentStoredId || currentStoredId === "------" || currentStoredId.trim() === "") {
+            // Генерируем новый честный шестизначный Сигма-ID
+            currentStoredId = Math.floor(100000 + Math.random() * 900000).toString();
+            localStorage.setItem('sigma_id', currentStoredId);
         }
-        document.getElementById('my-id-box').textContent = myId;
+        // Форсированно выводим ID в HTML-элемент
+        document.getElementById('my-id-box').textContent = currentStoredId;
 
         const myName = localStorage.getItem('nickname') || 'Flerenk';
 
-        // Базы данных в памяти браузера
+        // Инициализация баз данных
         let friends = JSON.parse(localStorage.getItem('fluent_friends')) || [];
         let requests = JSON.parse(localStorage.getItem('fluent_reqs')) || [];
 
         let currentTab = 'friends';
 
-        // Генератор звуков
+        // Генератор сочных звуков без аудиофайлов
         function playSound(type) {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -106,12 +108,12 @@
         }
 
         function copyMyID() {
-            navigator.clipboard.writeText(myId);
+            navigator.clipboard.writeText(currentStoredId);
             playSound('click');
             alert('Ваш Сигма-ID успешно скопирован в буфер обмена!');
         }
 
-        // Переключение между вкладками
+        // Логика динамического переключения вкладок
         function switchView(tab) {
             currentTab = tab;
             playSound('click');
@@ -137,13 +139,13 @@
             render();
         }
 
-        // Кнопка главного действия
+        // Логика кнопки главного действия
         function handleMainAction() {
             const val = document.getElementById('main-input').value.trim();
             if(!val) return alert('Поле ввода пустое!');
 
             if (currentTab === 'requests') {
-                if(val === myId) return alert('Нельзя добавить себя!');
+                if(val === currentStoredId) return alert('Нельзя добавить себя!');
                 if(requests.some(r => r.id === val)) return alert('Запрос уже есть!');
                 
                 requests.push({ id: val, name: 'Игрок_' + val });
@@ -152,7 +154,7 @@
                 alert(`Запрос для ID ${val} сохранен!\nЗайдите во вкладку "Запросы" на втором устройстве и введите этот же ID, чтобы подтвердить дружбу.`);
             } 
             else if (currentTab === 'friends') {
-                let generatedRoom = `room_${myId}_${val}`;
+                let generatedRoom = `room_${currentStoredId}_${val}`;
                 navigator.clipboard.writeText(generatedRoom);
                 playSound('fight');
                 alert(`⚔️ Бой создан!\nКод вызова: [ ${generatedRoom} ] скопирован!\n\nОтправьте его другу. Он вставит его во вкладке "Вызовы" и вы начнете дуэль.`);
@@ -175,21 +177,19 @@
                 localStorage.setItem('fluent_friends', JSON.stringify(friends));
             }
             playSound('success');
-            render();
-        }
-
-        function removeRequest(id) {
-            requests = requests.filter(r => r.id !== id);
-            localStorage.setItem('fluent_reqs', JSON.stringify(requests));
-            playSound('click');
-            render();
-        }
-
-        function playWithBot() {
+render();
+}
+function removeRequest(id) {
+requests = requests.filter(r => r.id !== id);
+localStorage.setItem('fluent_reqs', JSON.stringify(requests));
+playSound('click');
+render();
+}
+function playWithBot() {
 playSound('click');
 window.location.href = arena.html?mode=bot;
 }
-// Отрисовка контента
+// Отрисовка элементов на экране
 function render() {
 const area = document.getElementById('content-area');
 if (currentTab === 'friends') {
@@ -207,8 +207,8 @@ area.innerHTML = requests.map(r => <div class="list-item"> <span class="item-nam
 }
 }
 else if (currentTab === 'invites') {
-area.innerHTML = <div class="empty"> <b>Как играть по сети без лагов сервера:</b><br> 1. Друг создает бой во вкладке "Друзья" и скидывает вам код комнаты.<br> 2. Вставьте полученный код комнаты в поле ниже и нажмите сиреневую кнопку! </div>;
+area.innerHTML = <div class="empty"> <b>Как играть по сети без лагов сервера:</b><br> 1. Друг создает бой во вкладке "Друзья" и скидывает вам код комнаты.<br> 2. Вставьте полученный код комнаты в поле ниже и нажмите кнопку войти! </div>;
 }
 }
-// Старт отрисовки
+// Запуск первой отрисовки при входе
 render();
