@@ -1,29 +1,165 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>Fluent Arena - Voice Chat</title>
     <style>
-        body { background: #02040a; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .box { background: rgba(14,22,47,0.85); border: 1px solid #ff007f; border-radius: 24px; padding: 35px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 0 25px rgba(255, 0, 127, 0.2); }
-        .mic-icon { font-size: 3.5rem; color: #ff007f; margin-bottom: 20px; animation: pulseMic 1.5s infinite alternate; }
-        @keyframes pulseMic { from { transform: scale(1); filter: brightness(1); } to { transform: scale(1.05); filter: brightness(1.3); } }
-        .btn-menu { display: block; background: #fff; color: #000; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; margin-top: 30px; }
-        .status { color: #00f2fe; font-weight: bold; margin-bottom: 15px; }
+        :root {
+            --bg-space: #030511;
+            --card-bg: rgba(13, 18, 38, 0.85);
+            --neon-pink: #ff007f;
+            --neon-blue: #00f2fe;
+            --success: #00ff66;
+            --danger: #ff3333;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { 
+            background: radial-gradient(circle at center, #0c112b 0%, var(--bg-space) 100%); 
+            color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; 
+        }
+        .box { 
+            background: var(--card-bg); border: 2px solid var(--neon-pink); border-radius: 24px; 
+            padding: 35px; max-width: 420px; width: 100%; text-align: center; 
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.25); 
+        }
+        .mic-icon { font-size: 3.5rem; color: var(--neon-pink); margin-bottom: 20px; }
+        .mic-active { animation: pulseMic 1s infinite alternate; color: var(--success); filter: drop-shadow(0 0 15px var(--success)); }
+        @keyframes pulseMic { from { transform: scale(1); } to { transform: scale(1.1); } }
+        
+        .status { color: var(--neon-blue); font-weight: bold; margin-bottom: 20px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        input { width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 12px; outline: none; text-align: center; font-size: 1rem; }
+        input:focus { border-color: var(--neon-pink); }
+        
+        .btn-action { width: 100%; background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); background: var(--neon-pink); color: #fff; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 12px; font-size: 0.95rem; }
+        .btn-action:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--neon-pink); }
+        .btn-menu { display: block; width: 100%; background: #fff; color: #000; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; margin-top: 20px; text-align: center; font-size: 0.95rem; }
     </style>
 </head>
 <body>
     <div class="box">
-        <div class="mic-icon">🎙️</div>
-        <h2 style="margin-bottom: 10px; text-transform: uppercase;">Голосовой чат</h2>
-        <div class="status">Вставьте код вашего Voice-плагина ниже</div>
+        <div class="mic-icon" id="mic-status-icon">🎙️</div>
+        <h2 style="margin-bottom: 10px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Голосовой чат</h2>
+        <div class="status" id="voice-status">Микрофон отключен</div>
         
-        <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; color: #8fa0b5; text-align: left;">
-            <p><strong>Инструкция для разработчика:</strong></p>
-            <p style="margin-top: 4px;">Сюда можно подключить WebRTC, Agora.io или Cordova Voice плагин для связи по ID.</p>
+        <!-- ВВОД ДАННЫХ ДРУГА ДЛЯ СВЯЗИ -->
+        <input type="text" id="peer-id-input" placeholder="Введите Сигма-ID друга...">
+        <button class="btn-action" onclick="startVoiceCall()">🎙️ Подключиться к связи</button>
+        <button class="btn-action" style="background: var(--danger); display: none;" id="disconnect-btn" onclick="stopVoiceCall()">❌ Отключить микрофон</button>
+        
+        <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; color: #8fa0b5; text-align: left; line-height: 1.4;">
+            <p><strong>Как пользоваться Voice-связью:</strong></p>
+            <p style="margin-top: 4px;">1. Разреши сайту доступ к микрофону во всплывающем окне браузера.</p>
+            <p>2. Твой друг должен открыть эту же страницу со своего девайса.</p>
+            <p>3. Введи ID друга и нажми кнопку подключения — аудио-канал свяжет вас мгновенно по сети!</p>
         </div>
 
         <a href="index.html" class="btn-menu">В главное меню</a>
     </div>
+
+    <!-- Подключаем официальную библиотеку PeerJS для бесплатных аудио-звонков в реальном времени -->
+    <script src="https://unpkg.com"></script>
+    <script translate="no">
+        var myId = localStorage.getItem('fl_user_id') || "123456";
+        var peer = null;
+        var currentCall = null;
+        var localStream = null;
+
+        // Автоматически запускаем и инициализируем аудио-узел при входе на страницу
+        function initVoiceEngine() {
+            document.getElementById('voice-status').innerText = "Запуск аудио-модуля...";
+            
+            // Создаем бесплатное WebRTC подключение на базе твоего Сигма-ID
+            peer = new Peer('fluent-voice-' + myId);
+
+            peer.on('open', function(id) {
+                document.getElementById('voice-status').innerText = "Готов к подключению";
+                document.getElementById('voice-status').style.color = "var(--neon-blue)";
+            });
+
+            // Слушаем входящие звонки от твоего друга
+            peer.on('call', function(call) {
+                navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function(stream) {
+                    localStream = stream;
+                    call.answer(stream); // Отвечаем на вызов и отправляем свой голос
+                    handleStream(call);
+                }).catch(function(err) {
+                    alert("Ошибка: Браузер заблокировал доступ к микрофону!");
+                });
+            });
+
+            peer.on('error', function(err) {
+                console.log("PeerJS Error: ", err);
+            });
+        }
+
+        // Функция вызова друга по его Сигма-ID
+        function startVoiceCall() {
+            var targetId = document.getElementById('peer-id-input').value.trim();
+            if (!targetId || targetId.length !== 6 || isNaN(targetId)) {
+                alert("Введите корректный 6-значный ID друга!");
+                return;
+            }
+
+            document.getElementById('voice-status').innerText = "Соединение с #" + targetId + "...";
+
+            // Запрашиваем доступ к микрофону твоего девайса
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(function(stream) {
+                localStream = stream;
+                
+                // Набираем облачный ID друга
+                var call = peer.call('fluent-voice-' + targetId, stream);
+                handleStream(call);
+            }).catch(function(err) {
+                alert("Не удалось получить доступ к микрофону! Проверь настройки браузера.");
+            });
+        }
+
+        // Обработка входящего аудио-потока (голоса друга)
+        function handleStream(call) {
+            currentCall = call;
+            
+            call.on('stream', function(remoteStream) {
+                // Создаем скрытый аудио-элемент в браузере, чтобы пустить звук друга в твои динамики/наушники
+                var audio = document.createElement('audio');
+                audio.srcObject = remoteStream;
+                audio.autoplay = true;
+                document.body.appendChild(audio);
+
+                // Включаем неоновую анимацию пульсации микрофона на экране (Успех!)
+                document.getElementById('mic-status-icon').classList.add('mic-active');
+                document.getElementById('voice-status').innerText = "В СЕТИ С ДРУГОМ 🎙️";
+                document.getElementById('voice-status').style.color = "var(--success)";
+                
+                document.getElementById('disconnect-btn').style.display = "block";
+            });
+
+            call.on('close', function() {
+                stopVoiceCall();
+            });
+        }
+
+        // Отключение связи
+        function stopVoiceCall() {
+            if (currentCall) currentCall.close();
+            if (localStream) {
+                localStream.getTracks().forEach(function(track) { track.stop(); });
+            }
+            document.getElementById('mic-status-icon').classList.remove('mic-active');
+            document.getElementById('voice-status').innerText = "Связь разорвана";
+            document.getElementById('voice-status').style.color = "var(--danger)";
+            document.getElementById('disconnect-btn').style.display = "none";
+            setTimeout(function() {
+                document.getElementById('voice-status').innerText = "Готов к подключению";
+                document.getElementById('voice-status').style.color = "var(--neon-blue)";
+            }, 2000);
+        }
+
+        // Запуск при старте вкладки
+        window.onload = function() {
+            initVoiceEngine();
+        };
+    </script>
 </body>
 </html>
