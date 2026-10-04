@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
     <title>Fluent Messenger</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             --bg-dark: #0e1621;
@@ -29,7 +30,6 @@
         
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .settings-link-btn { color: var(--text-muted); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
-        .settings-link-btn:hover { color: var(--accent); }
         .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
         
         .add-friend-box { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; }
@@ -98,7 +98,6 @@
                     <button id="add-friend-trigger">+</button>
                 </div>
             </div>
-            <!-- ЖЕСТКО ЗАШИТЫЕ КОНТАКТЫ ДЛЯ СТОПРОЦЕНТНОГО ОТОБРАЖЕНИЯ -->
             <div class="chats-list" id="chats-list">
                 <div class="chat-item" id="btn-chat-bot">
                     <div class="chat-avatar">F</div>
@@ -136,8 +135,8 @@
                 </div>
 
                 <div class="download-section">
-Скачать мессенджер
-
+                    <div class="download-title">Скачать мессенджер</div>
+                    <div class="download-buttons">
 🤖 Android Скачать .APK
 💻 Windows Скачать .EXE
 
@@ -145,11 +144,9 @@
 Сбросить всё
 
 
-// ПОЛНОСТЬЮ АВТОНОМНЫЙ ПРЯМОЛИНЕЙНЫЙ СКРИПТ ЧЕРЕЗ СЛУШАТЕЛИ КЛИКОВ
-(function() {
 var activeUser = localStorage.getItem('fluent_session') || "Nazar";
 var activeRoom = null;
-// Навешиваем клики без onclick атрибутов в HTML
+// ПРЯМАЯ ДУБОВАЯ КЛИКАБЕЛЬНОСТЬ СТАРЫМ СТАНДАРТОМ (БЕЗ СТРЕЛОК)
 document.getElementById('open-settings-trigger').onclick = function() {
 document.getElementById('set-username').innerText = activeUser;
 document.getElementById('settings-overlay').style.display = 'flex';
@@ -167,7 +164,6 @@ localStorage.clear();
 window.location.href = 'index.html';
 }
 };
-// Переключение чатов
 document.getElementById('btn-chat-bot').onclick = function() {
 switchRoom("Fluent_Bot");
 };
@@ -182,20 +178,30 @@ var list = document.getElementById('chats-list');
 var newChat = document.createElement('div');
 newChat.className = 'chat-item';
 newChat.innerHTML = '' + val.charAt(0).toUpperCase() + '' + val + '';
-newChat.onclick = function() { switchRoom(val); };
+newChat.onclick = function() {
+switchRoom(val);
+};
 list.appendChild(newChat);
 switchRoom(val);
 input.value = "";
 };
 function switchRoom(roomName) {
 activeRoom = roomName;
+// Снимаем выделение со всех чатов и выделяем текущий
+var allItems = document.getElementsByClassName('chat-item');
+for(var i = 0; i < allItems.length; i++) {
+allItems[i].classList.remove('selected');
+}
+if(roomName === "Fluent_Bot") document.getElementById('btn-chat-bot').classList.add('selected');
+if(roomName === "Support_Bot") document.getElementById('btn-chat-support').classList.add('selected');
 document.getElementById('no-chat-placeholder').style.display = 'none';
 document.getElementById('chat-area').style.display = 'flex';
 document.getElementById('chat-title').innerText = roomName;
 renderMessages();
 }
-// Отправка сообщений
-document.getElementById('btn-send-message').onclick = sendMessage;
+document.getElementById('btn-send-message').onclick = function() {
+sendMessage();
+};
 document.getElementById('message-input').onkeypress = function(e) {
 if(e.key === 'Enter') sendMessage();
 };
@@ -203,7 +209,10 @@ function sendMessage() {
 var input = document.getElementById('message-input');
 var text = input.value.trim();
 if(!text || !activeRoom) return;
-var storage = JSON.parse(localStorage.getItem('fl_storage_packets')) || [];
+var storage = [];
+try {
+storage = JSON.parse(localStorage.getItem('fl_storage_packets')) || [];
+} catch(e) { storage = []; }
 storage.push({ from: activeUser, to: activeRoom, msg: text });
 localStorage.setItem('fl_storage_packets', JSON.stringify(storage));
 input.value = "";
@@ -212,21 +221,36 @@ renderMessages();
 function renderMessages() {
 if(!activeRoom) return;
 var box = document.getElementById('messages-box');
-var storage = JSON.parse(localStorage.getItem('fl_storage_packets')) || [];
-// Если зашли в бота первый раз и база пуста — пишем приветствие бота
-if(activeRoom === "Fluent_Bot" && storage.filter(m => m.to === "Fluent_Bot" || m.from === "Fluent_Bot").length === 0) {
+var storage = [];
+try {
+storage = JSON.parse(localStorage.getItem('fl_storage_packets')) || [];
+} catch(e) { storage = []; }
+// Авто-генерация приветствия бота при первом заходе
+if(activeRoom === "Fluent_Bot" && storage.length === 0) {
 storage.push({ from: "Fluent_Bot", to: activeUser, msg: "Привет! Вас приветствует мессенджер Fluent Messenger!" });
-storage.push({ from: "Fluent_Bot", to: activeUser, msg: "Наш мессенджер топ по 3 причинам:\n1. Скорость — сообщения летают мгновенно.\n2. Анонимность — данные лежат только у тебя.\n3. Крутой неоновый дизайн!" });
+storage.push({ from: "Fluent_Bot", to: activeUser, msg: "Наш мессенджер топ по 3 причинам:\n\n1. Скорость — сообщения летают мгновенно.\n2. Анонимность — данные лежат только у тебя.\n3. Крутой неоновый дизайн!" });
 localStorage.setItem('fl_storage_packets', JSON.stringify(storage));
 }
-var filtered = storage.filter(m => (m.from === activeUser && m.to === activeRoom) || (m.from === activeRoom && m.to === activeUser));
+var filtered = [];
+for(var i = 0; i < storage.length; i++) {
+var m = storage[i];
+if((m.from === activeUser && m.to === activeRoom) || (m.from === activeRoom && m.to === activeUser)) {
+filtered.push(m);
+}
+}
 var html = "";
+for(var j = 0; i < filtered.length; j++) {
+// Если цикл пустой, страхуемся классическим методом
+}
+// Бронебойный вывод сообщений на экран
 filtered.forEach(function(m) {
 var isMine = m.from === activeUser;
-html += '' + m.msg.replace(/</g, "<").replace(/>/g, ">") + '';
+var safeText = m.msg.replace(/</g, "<").replace(/>/g, ">");
+html += '' + safeText + '';
 });
 box.innerHTML = html;
 box.scrollTop = box.scrollHeight;
 }
-setInterval(renderMessages, 1000);
-})();
+setInterval(function() {
+renderMessages();
+}, 1000);
