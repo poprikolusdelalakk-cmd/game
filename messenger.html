@@ -34,7 +34,7 @@
         
         .add-friend-box { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; }
         .add-friend-box input { flex: 1; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; color: #fff; outline: none; font-size: 0.9rem; }
-        .add-friend-box button { background-color: var(--accent); border: none; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
+        .add-friend-box button { background-color: var(--accent); border: none; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
 
         .chats-list { flex: 1; overflow-y: auto; }
         .chat-item { display: flex; align-items: center; padding: 14px 20px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.15); transition: background 0.2s; }
@@ -45,7 +45,6 @@
         .chat-info { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
         .chat-name { font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-phone-sub { font-size: 0.75rem; color: var(--text-muted); }
-        .chat-item.selected .chat-phone-sub { color: rgba(255,255,255,0.7); }
 
         .main-chat { flex: 1; height: 100%; background-color: var(--chat-bg); display: flex; flex-direction: column; overflow: hidden; }
         .no-chat { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1rem; }
@@ -69,7 +68,7 @@
     <div class="wrapper">
         <div class="sidebar">
             <div class="sidebar-header">
-                <!-- ФИКС: Сюда выводится СТРОГО тот никнейм, который залогинен в текущей сессии -->
+                <!-- Сюда мгновенно подгружается твой никнейм -->
                 <h2 id="my-name-display">Загрузка...</h2>
                 <div class="header-actions">
                     <span class="settings-link-btn" onclick="window.location.href='settings.html'">Настройки</span>
@@ -103,21 +102,24 @@
     </div>
 
     <script>
-        // Забираем реальный ник из сессии без принудительной перезаписи на "Nazar"
-        let myName = localStorage.getItem('fluent_session') || "Гость";
+        // БРОНЕБОЙНАЯ СИНХРОНИЗАЦИЯ СЕССИИ И НИКА
+        let myName = localStorage.getItem('fluent_session') || "Nazar";
+        localStorage.setItem('fluent_session', myName);
         document.getElementById('my-name-display').innerText = myName;
 
-        // Инициализируем стартовые контакты, если их нет
-        if (!localStorage.getItem('fl_contacts_' + myName)) {
-            localStorage.setItem('fl_contacts_' + myName, JSON.stringify(["Fluent_Bot", "Support_Bot"]));
+        // ИСПРАВЛЕНО: Безопасное создание базы контактов без крашей парсера
+        let existingContacts = localStorage.getItem('fl_contacts_' + myName);
+        if (!existingContacts) {
+            let startContacts = ["Fluent_Bot", "Support_Bot"];
+            localStorage.setItem('fl_contacts_' + myName, JSON.stringify(startContacts));
             localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
             localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
 
-            let welcomeBotPackets = [
+            let initialBotMsgs = [
                 { from: "Fluent_Bot", to: myName, txt: "Привет! Вас приветствует мессенджер Fluent Messenger!" },
                 { from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. Максимальная скорость — отправка данных занимает доли секунды.\n2. Полная анонимность — все данные лежат только на твоем устройстве.\n3. Ультра-стильный неоновый кибер-дизайн!" }
             ];
-            localStorage.setItem('fluent_msg_storage', JSON.stringify(welcomeBotPackets));
+            localStorage.setItem('fluent_msg_storage', JSON.stringify(initialBotMsgs));
         }
 
         let currentChatUser = null;
@@ -127,7 +129,14 @@
         function updateContactsList() {
             const list = document.getElementById('chats-list');
             if(!list) return;
-            let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
+            
+            let contacts = [];
+            try {
+                contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
+            } catch(e) {
+                contacts = ["Fluent_Bot", "Support_Bot"];
+            }
+            
             let html = "";
             contacts.forEach(c => {
                 let isSelected = c === currentChatUser;
@@ -145,23 +154,23 @@
             list.innerHTML = html;
         }
 
-        // ФИКС ПОИСКА: Скрипт реально ищет человека в localStorage по нику или телефону
         function addContact() {
             const input = document.getElementById('friend-search-input');
             const searchValue = input.value.trim();
             if (!searchValue || searchValue === myName) return;
 
             let targetName = searchValue;
-            
-            // Если ищут по номеру, достаем привязанный никнейм из базы данных
             if (searchValue.startsWith('+') || !isNaN(searchValue)) {
                 let foundName = localStorage.getItem('fl_name_by_phone_' + searchValue);
-                if (foundName) {
-                    targetName = foundName;
-                }
+                if (foundName) targetName = foundName;
             }
 
-let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
+            let contacts = [];
+            try {
+contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
+} catch(e) {
+contacts = ["Fluent_Bot", "Support_Bot"];
+}
 if (!contacts.includes(targetName)) {
 contacts.push(targetName);
 localStorage.setItem('fl_contacts_' + myName, JSON.stringify(contacts));
@@ -181,17 +190,26 @@ function postMessage() {
 const input = document.getElementById('message-input');
 const text = input.value.trim();
 if (!text || !currentChatUser) return;
-let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
+let allMsgs = [];
+try {
+allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
+} catch(e) {
+allMsgs = [];
+}
 allMsgs.push({ from: myName, to: currentChatUser, txt: text });
 localStorage.setItem('fluent_msg_storage', JSON.stringify(allMsgs));
 input.value = '';
 updateMessagesBox();
 }
-// Обновление окна сообщений
 function updateMessagesBox() {
 if (!currentChatUser || document.getElementById('chat-area').style.display !== 'flex') return;
 const box = document.getElementById('messages-box');
-let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
+let allMsgs = [];
+try {
+allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
+} catch(e) {
+allMsgs = [];
+}
 let activeMsgs = allMsgs.filter(m => (m.from === myName && m.to === currentChatUser) || (m.from === currentChatUser && m.to === myName));
 let html = "";
 activeMsgs.forEach(m => {
