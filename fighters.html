@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluent Arena - Выбор Сигмы</title>
+    <style>
+        :root { --bg: #030511; --card: rgba(13, 18, 38, 0.85); --blue: #00f2fe; --purple: #9d4edd; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { max-width: 450px; width: 100%; text-align: center; }
+        h2 { font-size: 1.6rem; color: #fff; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .char-btn { background: var(--card); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 16px; padding: 18px; color: #fff; cursor: pointer; text-align: left; transition: 0.2s; }
+        .char-btn:hover { border-color: var(--blue); background: rgba(0, 242, 254, 0.05); transform: translateY(-2px); }
+        .char-btn h3 { font-size: 1.1rem; color: var(--blue); margin-bottom: 4px; }
+        .char-btn p { font-size: 0.75rem; color: #7f91a4; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Выбери своего Сигму-Бойца:</h2>
+        <div class="grid">
+            <button class="char-btn" onclick="select('Nazar', 140, 18, 'Крит 25%')"><h3>Nazar (Овнер)</h3><p>HP: 140 | Атака: 18<br>Пассивка: Крит 25%</p></button>
+            <button class="char-btn" onclick="select('Leon', 100, 24, 'Стелс-хил')"><h3>Леон (Бравл)</h3><p>HP: 100 | Атака: 24<br>Пассивка: Стелс-хил</p></button>
+            <button class="char-btn" onclick="select('Domer', 120, 20, 'Админка')"><h3>Домер (Грифер)</h3><p>HP: 120 | Атака: 20<br>Пассивка: Взлом брони</p></button>
+            <button class="char-btn" onclick="select('Mellstroy', 110, 16, 'Щит')"><h3>Меллстрой</h3><p>HP: 110 | Атака: 16<br>Пассивка: Золотой щит</p></button>
+        </div>
+    </div>
+    <script>
+        function select(name, hp, dmg, pass) {
+            localStorage.setItem('p_name', name);
+            localStorage.setItem('p_hp', hp);
+            localStorage.setItem('p_max_hp', hp);
+            localStorage.setItem('p_dmg', dmg);
+            localStorage.setItem('p_pass', pass);
+            window.location.href = 'search.html';
+        }
+    </script>
+</body>
+</html>
