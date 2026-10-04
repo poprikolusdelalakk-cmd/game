@@ -26,8 +26,13 @@
         
         .sidebar { width: 320px; height: 100%; background-color: var(--side-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-header h2 { color: var(--accent); font-size: 1.3rem; font-weight: bold; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
+        .sidebar-header h2 { color: var(--accent); cursor: pointer; font-size: 1.2rem; font-weight: bold; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sidebar-header h2:hover { text-decoration: underline; }
+        
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .settings-link-btn { color: var(--text-muted); cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        .settings-link-btn:hover { color: var(--accent); }
+        .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         
         .add-friend-box { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; }
         .add-friend-inputs { display: flex; gap: 8px; }
@@ -43,7 +48,6 @@
         .chat-info { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
         .chat-name { font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-phone-sub { font-size: 0.75rem; color: var(--text-muted); }
-        .chat-item.selected .chat-phone-sub { color: rgba(255,255,255,0.7); }
 
         .main-chat { flex: 1; height: 100%; background-color: var(--chat-bg); display: flex; flex-direction: column; overflow: hidden; }
         .no-chat { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1rem; }
@@ -65,7 +69,7 @@
 
         .input-box { padding: 16px 24px; background-color: var(--side-bg); border-top: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
         .input-box input { flex: 1; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 14px 18px; border-radius: 10px; color: #fff; outline: none; font-size: 1rem; }
-        .input-box button { background-color: var(--accent); border: none; color: #fff; padding: 14px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-send-click { background-color: var(--accent); border: none; color: #fff; padding: 14px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -73,15 +77,16 @@
     <div class="wrapper">
         <div class="sidebar">
             <div class="sidebar-header">
-                <!-- Сюда выводится твой РЕАЛЬНЫЙ ник -->
-                <h2 id="my-name-display">Загрузка...</h2>
-                <span class="logout-btn" onclick="logout()">Выйти</span>
+                <h2 id="my-name-display" onclick="window.location.href='./settings.html'">Ник</h2>
+                <div class="header-actions">
+                    <span class="settings-link-btn" onclick="window.location.href='./settings.html'">Настройки</span>
+                    <span class="logout-btn" onclick="logout()">Выйти</span>
+                </div>
             </div>
             <div class="add-friend-box">
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:2px;">Добавить друга (Ник или Номер):</div>
+                <input type="text" id="friend-search-input" placeholder="Ник или номер друга...">
                 <div class="add-friend-inputs">
-                    <input type="text" id="friend-search-input" placeholder="Ник или +7...">
-                    <button onclick="addContact()">+</button>
+                    <button style="width:100%; font-size:1rem;" onclick="addContact()">Добавить контакт</button>
                 </div>
             </div>
             <div class="chats-list" id="chats-list"></div>
@@ -89,11 +94,10 @@
 
         <div class="main-chat">
             <div class="no-chat" id="no-chat-placeholder">
-                <span>Выбери контакт слева или добавь через «+», чтобы начать общение</span>
+                <span>Выбери контакт слева для начала общения</span>
             </div>
             <div class="chat-area" id="chat-area">
                 <div class="chat-header">
-                    <!-- Сюда выводится имя ДРУГА -->
                     <div class="chat-title-text" id="chat-title">Чат</div>
                     <div class="header-controls">
                         <button class="control-btn add-btn" id="add-contact-action" onclick="saveToContacts()">Добавить</button>
@@ -104,7 +108,7 @@
                 <div class="messages-box" id="messages-box"></div>
                 <div class="input-box">
                     <input type="text" id="message-input" placeholder="Напиши сообщение..." onkeypress="handleEnter(event)">
-                    <button onclick="sendMsg()">Отправить</button>
+                    <button class="btn-send-click" onclick="sendMsg()">Отправить</button>
                 </div>
             </div>
         </div>
@@ -115,7 +119,7 @@
         let currentChatUser = null;
 
         if (!myName) {
-            window.location.href = 'index.html';
+            window.location.href = './index.html';
         } else {
             document.getElementById('my-name-display').innerText = myName;
             if (!localStorage.getItem(`fl_contacts_${myName}`)) {
@@ -129,7 +133,7 @@
 
         function logout() {
             localStorage.removeItem('fluent_session');
-            window.location.href = 'index.html';
+            window.location.href = './index.html';
         }
 
         function updateContactsList() {
@@ -152,14 +156,12 @@
                     </div>
                 `;
             });
-            list.innerHTML = html;
-        }
-
-        function addContact() {
-            const input = document.getElementById('friend-search-input');
-            const searchValue = input.value.trim();
-            if (!searchValue || searchValue === myName) return;
-
+list.innerHTML = html;
+}
+function addContact() {
+const input = document.getElementById('friend-search-input');
+const searchValue = input.value.trim();
+if (!searchValue || searchValue === myName) return;
 let targetName = searchValue;
 if (searchValue.startsWith('+') || !isNaN(searchValue)) {
 targetName = localStorage.getItem(fl_name_by_phone_${searchValue}) || searchValue;
@@ -220,7 +222,7 @@ const text = input.value.trim();
 if (!text || !currentChatUser) return;
 let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
 if (blacklist.includes(currentChatUser)) {
-alert("Разблокируйте пользователя для отправки сообщений!");
+alert("Пользователь заблокирован!");
 return;
 }
 let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
@@ -237,7 +239,7 @@ let activeMsgs = allMsgs.filter(m => (m.from === myName && m.to === currentChatU
 let html = "";
 activeMsgs.forEach(m => {
 let isMine = m.from === myName;
-html += <div class="bubble ${isMine ? 'outgoing' : 'incoming'}"> <div class="msg-text">${escapeHTML(m.txt)}</div> </div>;
+html += <div class="bubble ${isMine ? 'outgoing' : 'incoming'}"><div class="msg-text">${escapeHTML(m.txt)}</div></div>;
 });
 if (box.innerHTML !== html) {
 box.innerHTML = html;
