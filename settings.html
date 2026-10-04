@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Настройки</title>
+    <style>
+        body { background: #02040a; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .box { background: rgba(14,22,47,0.85); border: 1px solid rgba(0,242,254,0.2); border-radius: 20px; padding: 30px; max-width: 400px; width: 100%; text-align: center; }
+        .btn-menu { display: block; background: #fff; color: #000; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 style="margin-bottom:25px;">⚙️ НАСТРОЙКИ СИСТЕМЫ</h2>
+        <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; text-align:left; border:1px solid rgba(255,255,255,0.05);">
+            <p style="margin-bottom:8px; color:#8fa0b5;">Твой уникальный аккаунт-код:</p>
+            <p style="font-size:1.4rem; font-weight:bold; color:#00f2fe; letter-spacing:1px;" id="set-id-val">------</p>
+        </div>
+        <a href="index.html" class="btn-menu">В меню</a>
+    </div>
+    <script>
+        document.getElementById('set-id-val').innerText = localStorage.getItem('fl_user_id') || "102943";
+    </script>
+</body>
+</html>
