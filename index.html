@@ -5,41 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fluent Arena - Главное Меню</title>
     <style>
-        :root { --bg: #02040a; --card: rgba(6, 11, 28, 0.8); --blue: #00f2fe; --purple: #9d4edd; --success: #00ff66; }
+        :root { --bg: #030511; --card: rgba(10, 15, 35, 0.75); --blue: #00f2fe; --purple: #9d4edd; --success: #00ff66; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: radial-gradient(circle at center, #0b112c 0%, var(--bg) 100%); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .wrapper { width: 100%; max-width: 420px; padding: 20px; }
-        .menu-card { background: var(--card); border-radius: 32px; border: 1px solid rgba(0, 242, 254, 0.3); padding: 40px 30px; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 30px 70px rgba(0,0,0,0.8); }
-        .logo { font-size: 2.6rem; font-weight: 900; background: linear-gradient(135deg, #fff, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; filter: drop-shadow(0 0 15px var(--blue)); text-transform: uppercase; }
-        .id-badge { font-size: 0.9rem; color: var(--blue); margin-bottom: 25px; font-weight: bold; background: rgba(0,242,254,0.1); display: inline-block; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(0,242,254,0.2); }
-        .tabs-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
-        .btn { display: block; width: 100%; padding: 16px; border-radius: 14px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; text-decoration: none; text-align: center; transition: all 0.2s; }
-        .btn-main { background: linear-gradient(135deg, var(--blue), var(--purple)); color: #02040a; font-weight: 900; font-size: 1.3rem; box-shadow: 0 0 20px rgba(0,242,254,0.3); }
-        .btn-main:hover { transform: scale(1.03); box-shadow: 0 0 30px var(--blue); }
+        .menu-card { background: var(--card); border-radius: 32px; border: 1px solid rgba(0, 242, 254, 0.3); padding: 40px 30px; text-align: center; box-shadow: 0 30px 70px rgba(0,0,0,0.8); }
+        .logo { font-size: 2.6rem; font-weight: 900; background: linear-gradient(135deg, #fff, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; text-transform: uppercase; }
+        .welcome-user { font-size: 1.1rem; color: #fff; margin-bottom: 10px; font-weight: bold; }
+        .id-badge { font-size: 0.85rem; color: var(--blue); margin-bottom: 25px; font-weight: bold; background: rgba(0,242,254,0.1); display: inline-block; padding: 6px 14px; border-radius: 20px; }
+        .tabs-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .btn { display: block; width: 100%; padding: 16px; border-radius: 14px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; text-decoration: none; text-align: center; transition: 0.2s; }
+        .btn-main { background: linear-gradient(135deg, var(--blue), var(--purple)); color: #02040a; font-weight: 900; font-size: 1.3rem; }
+        .btn-main:hover { transform: scale(1.02); }
         .btn-sub { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
-        .btn-sub:hover { border-color: var(--blue); background: rgba(0,242,254,0.05); }
+        .btn-sub:hover { border-color: var(--blue); }
     </style>
 </head>
 <body>
     <div class="wrapper">
         <div class="menu-card">
             <div class="logo">Fluent Arena</div>
-            <div class="id-badge">Твой Сигма-ID: <span id="my-id-val">------</span></div>
+            <div class="welcome-user">Превед, Сигма <span id="username-display" style="color:var(--blue)">Nazar</span>!</div>
+            <div class="id-badge">Твой Сигма-ID: <span id="my-id-val">654321</span></div>
             
             <div class="tabs-grid">
-                <a href="fighters.html" class="btn btn-main">⚔️ Найти матч PvP</a>
-                <a href="inventory.html" class="btn btn-sub">📦 Мой Инвентарь</a>
-                <a href="friends.html" class="btn btn-sub">👥 Список Друзей</a>
-                <a href="settings.html" class="btn btn-sub">⚙️ Настройки Профиля</a>
+                <a href="friends.html" class="btn btn-main">⚔️ Вызвать Друга (PvP)</a>
+                <a href="inventory.html" class="btn btn-sub">📦 Инвентарь</a>
+                <a href="settings.html" class="btn btn-sub">⚙️ Настройки и Музыка</a>
             </div>
         </div>
     </div>
     <script>
-        // Генерация рандомного ID
         if (!localStorage.getItem('fl_user_id')) {
-            var randId = Math.floor(100000 + Math.random() * 900000);
-            localStorage.setItem('fl_user_id', randId);
+            localStorage.setItem('fl_user_id', Math.floor(100000 + Math.random() * 900000));
         }
+        var currentNick = localStorage.getItem('fl_user_nick') || "Nazar";
+        document.getElementById('username-display').innerText = currentNick;
         document.getElementById('my-id-val').innerText = localStorage.getItem('fl_user_id');
     </script>
 </body>
