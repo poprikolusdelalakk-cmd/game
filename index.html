@@ -37,6 +37,9 @@
     <script>
         let isSignUpMode = false;
 
+        // Автоматически вычисляем правильный базовый путь репозитория на GitHub Pages
+        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+
         function renderFields() {
             const area = document.getElementById('inputs-area');
             if (isSignUpMode) {
@@ -75,8 +78,8 @@
             localStorage.setItem('fl_name_by_phone_' + phone, name);
             localStorage.setItem('fluent_session', name);
             
-            // Жесткий переход по прямой ссылке Гитхаба
-            window.location.href = 'https://github.io';
+            // Исправленный переход: строго с учетом папки репозитория
+            window.location.href = window.location.origin + basePath + 'chat.html';
         }
 
         function processLogin() {
@@ -92,12 +95,12 @@
             localStorage.setItem('fl_pass_by_name_' + resolvedName, pass);
             localStorage.setItem('fluent_session', resolvedName);
             
-            // Жесткий переход по прямой ссылке Гитхаба
-            window.location.href = 'https://github.io';
+            // Исправленный переход: строго с учетом папки репозитория
+            window.location.href = window.location.origin + basePath + 'chat.html';
         }
 
         if (localStorage.getItem('fluent_session')) {
-            window.location.href = 'https://github.io';
+            window.location.href = window.location.origin + basePath + 'chat.html';
         } else {
             renderFields();
         }
