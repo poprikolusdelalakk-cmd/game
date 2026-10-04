@@ -7,56 +7,53 @@
     <title>Fluent Arena - Главное Меню</title>
     <style>
         :root {
-            --bg-space: #030511;
-            --card-bg: rgba(10, 15, 35, 0.7);
+            --bg-space: #02040a;
+            --card-bg: rgba(6, 11, 28, 0.75);
             --neon-blue: #00f2fe;
             --neon-purple: #9d4edd;
-            --text-main: #ffffff;
-            --text-muted: #5c6c8f;
             --success: #00ff66;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body, html { 
-            background: radial-gradient(circle at center, #0c112b 0%, var(--bg-space) 100%); 
-            color: var(--text-main); width: 100%; height: 100%; overflow: hidden; 
+            background: radial-gradient(circle at center, #0b112c 0%, var(--bg-space) 100%); 
+            color: #fff; width: 100%; height: 100%; overflow: hidden; 
             display: flex; align-items: center; justify-content: center;
         }
         .stars {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1;
             background: radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
-            background-size: 300px 300px; opacity: 0.25; animation: spaceScroll 40s linear infinite;
+            background-size: 250px 250px; opacity: 0.3; animation: spaceScroll 30s linear infinite;
         }
         @keyframes spaceScroll {
             from { background-position: 0 0; }
-            to { background-position: 300px 600px; }
+            to { background-position: 250px 500px; }
         }
-        .wrapper { position: relative; z-index: 10; width: 100%; max-width: 410px; padding: 20px; }
+        .wrapper { position: relative; z-index: 10; width: 100%; max-width: 420px; padding: 20px; }
         .menu-card {
-            background: var(--card-bg); border-radius: 28px; border: 1px solid rgba(0, 242, 254, 0.25);
-            padding: 45px 35px; text-align: center; backdrop-filter: blur(25px);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 242, 254, 0.15);
+            background: var(--card-bg); border-radius: 32px; border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 50px 35px; text-align: center; backdrop-filter: blur(20px);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 242, 254, 0.15);
         }
         .brand-logo {
-            font-size: 2.5rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;
-            background: linear-gradient(135deg, #ffffff 30%, var(--neon-blue) 70%, var(--neon-purple));
+            font-size: 2.8rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff, var(--neon-blue), var(--neon-purple));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            margin-bottom: 6px; filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.4));
+            margin-bottom: 8px; filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.5));
         }
-        .brand-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
-        
+        .brand-subtitle { font-size: 0.85rem; color: #5c6c8f; text-transform: uppercase; letter-spacing: 3px; font-weight: 800; margin-bottom: 45px; }
         .btn-play {
             display: block; width: 100%; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            color: #030511; border: none; padding: 20px; border-radius: 16px; 
-            font-size: 1.4rem; font-weight: 900; cursor: pointer; 
-            text-transform: uppercase; text-decoration: none; letter-spacing: 1px;
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4); transition: all 0.3s ease; margin-bottom: 35px; text-align: center;
+            color: #02040a; border: none; padding: 22px; border-radius: 18px; 
+            font-size: 1.5rem; font-weight: 900; cursor: pointer; 
+            text-transform: uppercase; text-decoration: none; letter-spacing: 1.5px;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.5), 0 0 60px rgba(157, 78, 221, 0.3); 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 35px; text-align: center;
         }
-        .btn-play:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 35px var(--neon-blue), 0 0 70px var(--neon-purple); filter: brightness(1.2); }
-        
-        .stats-panel { background-color: rgba(3, 5, 17, 0.6); padding: 20px; border-radius: 16px; border: 1px solid rgba(0, 242, 254, 0.1); display: flex; flex-direction: column; gap: 10px; text-align: left; }
+        .btn-play:hover { transform: scale(1.04) translateY(-3px); filter: brightness(1.25); box-shadow: 0 0 45px var(--neon-blue), 0 0 90px var(--neon-purple); }
+        .stats-panel { background-color: rgba(2, 4, 10, 0.6); padding: 22px; border-radius: 18px; border: 1px solid rgba(0, 242, 254, 0.15); display: flex; flex-direction: column; gap: 12px; text-align: left; }
         .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
-        .stat-label { color: rgba(255,255,255,0.4); }
-        .stat-val { font-weight: 700; font-size: 1.05rem; }
+        .stat-label { color: #5c6c8f; font-weight: 600; }
+        .stat-val { font-weight: 800; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -64,21 +61,18 @@
     <div class="wrapper">
         <div class="menu-card">
             <div class="brand-logo">Fluent Arena</div>
-            <div class="brand-subtitle">Королевская битва Сигм</div>
-
-            <!-- Жесткий переход на новую отдельную вкладку arena.html -->
-            <a href="arena.html" class="btn-play">НАЧАТЬ БОЙ</a>
-
+            <div class="brand-subtitle">Cyber Arena PvP v3.0</div>
+            <a href="fighters.html" class="btn-play">Начать Бой</a>
             <div class="stats-panel">
-                <div class="stat-row"><span class="stat-label">Бойцов онлайн:</span><span class="stat-val" style="color: var(--success);" id="stat-online">54</span></div>
-                <div class="stat-row"><span class="stat-label">Сервер хостинга:</span><span class="stat-val" style="color: var(--neon-blue);">Fluent Cloud v3</span></div>
+                <div class="stat-row"><span class="stat-label">Сигмы в сети:</span><span class="stat-val" style="color: var(--success);" id="stat-online">1,482</span></div>
+                <div class="stat-row"><span class="stat-label">Твой статус:</span><span class="stat-val" style="color: var(--neon-blue);">Грандмастер</span></div>
             </div>
         </div>
     </div>
-    <script translate="no">
+    <script>
         setInterval(function() {
-            document.getElementById('stat-online').innerText = Math.floor(Math.random() * 6) + 52;
-        }, 2500);
+            document.getElementById('stat-online').innerText = (1450 + Math.floor(Math.random() * 45)).toLocaleString();
+        }, 2000);
     </script>
 </body>
 </html>
