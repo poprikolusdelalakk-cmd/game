@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLUENT ARENA - ВЫЗОВЫ</title>
+    <script src="https://unpkg.com"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #060b13; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
+        .card { background: #0d1625; border: 2px solid #1e293b; border-radius: 20px; padding: 25px; width: 100%; max-width: 420px; }
+        h2 { text-align: center; margin-bottom: 10px; color: #f59e0b; text-transform: uppercase; }
+        .nav-menu { display: flex; gap: 5px; margin-bottom: 20px; background: #111827; padding: 5px; border-radius: 10px; }
+        .nav-btn { flex: 1; padding: 8px; background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: bold; cursor: pointer; border-radius: 6px; }
+        .nav-btn.active { color: white; background: #1e293b; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; background: #111827; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #1e293b; }
+        .item-name { font-weight: bold; font-size: 14px; color: #f59e0b; }
+        .btn-join { padding: 8px 16px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+        .empty { text-align: center; color: #475569; font-size: 13px; padding: 40px 0; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>⚔️ Вызовы на Бой</h2>
+        
+        <div class="nav-menu">
+            <button class="nav-btn" onclick="window.location.href='friends.html'">Друзья</button>
+            <button class="nav-btn" onclick="window.location.href='requests.html'">Запросы (Сообщения)</button>
+            <button class="nav-btn active">Вызовы ⚔️</button>
+        </div>
+
+        <div id="invites-box"></div>
+    </div>
+
+    <script>
+        const myId = localStorage.getItem('sigma_id');
+        let activeInvites = JSON.parse(sessionStorage.getItem('active_duels')) || [];
+        const box = document.getElementById('invites-box');
+
+        const client = mqtt.connect('wss://test.mosquitto.org:8081');
+        client.on('connect', () => { client.subscribe(`fluentarena/user/${myId}`); });
+
+        client.on('message', (topic, message) => {
+            let packet = JSON.parse(message.toString());
+            if(packet.type === 'duel_invite') {
+                if(!activeInvites.some(i => i.room === packet.room)) {
+                    activeInvites.push({ name: packet.fromName, room: packet.room });
+                    sessionStorage.setItem('active_duels', JSON.stringify(activeInvites));
+                    renderInvites();
+                }
+            }
+        });
+
+        function renderInvites() {
+            if(activeInvites.length === 0) {
+                box.innerHTML = `<div class="empty">Никто не вызывает вас прямо сейчас.<br>Откройте эту страницу на телефоне и ждите вызов с ПК!</div>`;
+            } else {
+                box.innerHTML = activeInvites.map(i => `
+                    <div class="list-item">
+                        <span class="item-name">⚔️ ВЫЗОВ ОТ: ${i.name}</span>
+                        <button class="btn-join" onclick="acceptFight('${i.room}')">ПРИНЯТЬ</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function acceptFight(room) {
+            // Очищаем вызов перед входом
+            activeInvites = activeInvites.filter(i => i.room !== room);
+            sessionStorage.setItem('active_duels', JSON.stringify(activeInvites));
+            window.location.href = `arena.html?mode=online&role=guest&room=${room}`;
+        }
+
+        renderInvites();
+    </script>
+</body>
+</html>
