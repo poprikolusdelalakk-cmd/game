@@ -3,48 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>Fluent Arena - Сражение</title>
     <style>
-        :root { --bg: #030511; --card: rgba(13, 18, 38, 0.85); --blue: #00f2fe; --purple: #9d4edd; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
+        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --purple: #9d4edd; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: auto; margin-bottom: auto; }
-        .card { background: var(--card); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 20px; padding: 20px; text-align: center; }
-        .fighter { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 15px; text-align: left; }
-        .name { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
-        .hp-bg { width: 100%; height: 12px; background: #222; border-radius: 6px; overflow: hidden; }
-        .hp-fill { height: 100%; background: var(--success); width: 100%; transition: width 0.2s; }
-        .hp-txt { font-size: 0.75rem; text-align: right; margin-top: 4px; color: #7f91a4; }
-        .actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
-        .btn { background: var(--blue); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn:hover { background: #fff; }
-        .log { background: rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; height: 90px; overflow-y: auto; font-size: 0.85rem; color: #ffb703; text-align: left; border: 1px solid rgba(255,255,255,0.02); }
+        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .container { max-width: 500px; width: 100%; display: flex; flex-direction: column; gap: 18px; margin: auto; }
+        .card { background: var(--card); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 24px; padding: 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+        .fighter { background: rgba(2, 4, 10, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 18px; text-align: left; box-shadow: inset 0 0 15px rgba(255,255,255,0.02); }
+        .name { font-weight: 800; font-size: 1.2rem; margin-bottom: 10px; display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hp-bg { width: 100%; height: 16px; background: #111; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+        .hp-fill { height: 100%; background: linear-gradient(90deg, #00ff66, #11ff88); width: 100%; transition: width 0.25s ease; }
+        .hp-txt { font-size: 0.85rem; text-align: right; margin-top: 5px; color: #8fa0b5; font-weight: bold; }
+        .actions { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .btn { background: linear-gradient(135deg, var(--blue), var(--purple)); color: #02040a; border: none; padding: 16px; border-radius: 14px; font-size: 1.1rem; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,242,254,0.3); transition: all 0.2s; }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,242,254,0.4); }
+        .log { background: rgba(0, 0, 0, 0.7); border-radius: 16px; padding: 15px; height: 110px; overflow-y: auto; font-size: 0.88rem; color: #ffb703; text-align: left; border: 1px solid rgba(0, 242, 254, 0.15); line-height: 1.4; font-weight: 600; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card" style="padding: 10px; font-weight: bold; color: var(--blue); text-transform: uppercase;">КИБЕР АРЕНА БОЯ</div>
+        <div class="card" style="padding: 14px; font-weight: 900; color: var(--blue); text-transform: uppercase; letter-spacing: 1.5px; font-size: 1.1rem; text-shadow: 0 0 10px rgba(0,242,254,0.3);">⚡ КИБЕР АРЕНА МОНИТОР ⚡</div>
 
-        <!-- ИГРОК -->
-        <div class="fighter" style="border-left: 4px solid var(--blue);">
-            <div class="name"><span id="p-display-name">Боец</span> <span id="p-weapon" style="font-size:0.75rem; color:#ffb703;">Кулаки</span></div>
+        <!-- НАЗАР ИЛИ ДРУГОЙ ИГРОК -->
+        <div class="fighter" style="border-right: 4px solid var(--blue); background: rgba(0, 242, 254, 0.02);">
+            <div class="name"><span id="p-display-name">Боец</span> <span id="p-weapon" style="font-size:0.8rem; color:#ffb703;">👊 Кулаки</span></div>
             <div class="hp-bg"><div class="hp-fill" id="p-bar"></div></div>
-            <div class="hp-txt"><span id="p-text">100/100</span> HP</div>
+            <div class="hp-txt"><span id="p-text">150/150</span> HP</div>
         </div>
 
-        <!-- РАНДОМНЫЙ БОТ -->
-        <div class="fighter" style="border-left: 4px solid var(--pink);">
-            <div class="name"><span id="e-display-name">Загрузка бота...</span> <span style="font-size:0.75rem; color:var(--danger);">BOT</span></div>
-            <div class="hp-bg"><div class="hp-fill" id="e-bar" style="background:var(--danger);"></div></div>
-            <div class="hp-txt"><span id="e-text">100/100</span> HP</div>
+        <!-- РАНДОМНЫЙ БОСС ВРАГ -->
+        <div class="fighter" style="border-right: 4px solid var(--pink); background: rgba(255, 0, 127, 0.02);">
+            <div class="name"><span id="e-display-name">Подгрузка ИИ...</span> <span style="font-size:0.8rem; color:var(--danger); letter-spacing: 1px;">⚙️ ENEMY BOT</span></div>
+            <div class="hp-bg"><div class="hp-fill" id="e-bar" style="background: linear-gradient(90deg, var(--pink), var(--danger));"></div></div>
+            <div class="hp-txt"><span id="e-text">120/120</span> HP</div>
         </div>
 
-        <!-- КНОПКИ АТАК -->
+        <!-- УПРАВЛЕНИЕ БОЕМ -->
         <div class="actions" id="act-zone">
-            <button class="btn" onclick="attack()">⚔️ Нанести удар</button>
+            <button class="btn" onclick="attack()">⚔️ Нанести комбо-удар</button>
         </div>
 
-        <div class="log" id="arena-log">⚔️ Раунд начался! Бей первым!</div>
+        <div class="log" id="arena-log">🤖 ИИ Сеть развернута. Твой ход, Сигма!</div>
     </div>
 
     <script>
@@ -52,19 +53,18 @@
         var pHp = parseInt(localStorage.getItem('p_hp')) || 100;
         var pMax = parseInt(localStorage.getItem('p_max_hp')) || 100;
         var pDmg = parseInt(localStorage.getItem('p_dmg')) || 15;
-        var pPass = localStorage.getItem('p_pass') || "";
         var bonusDmg = parseInt(localStorage.getItem('fl_bonus_dmg')) || 0;
+        var activeWeaponName = localStorage.getItem('fl_active_weapon_name') || "Кулаки";
 
-        // Выбираем рандомного бота-соперника
-        var bots = ["Влад А4 Босс", "Скибиди Туалет", "Фредди Фазбер", "Глент Мутант", "Злой Кобяков"];
+        var bots = ["Влад А4 [MEGA БОСС]", "Скибиди Титан Унитаз", "Фредди Фазбер Кибер-версия", "Глент-Мутант", "Админ-Взломщик ReallyWorld"];
         var eName = bots[Math.floor(Math.random() * bots.length)];
-        var eHp = 80 + Math.floor(Math.random() * 50);
+        var eHp = 90 + Math.floor(Math.random() * 60);
         var eMax = eHp;
-        var eDmg = 12 + Math.floor(Math.random() * 8);
+        var eDmg = 14 + Math.floor(Math.random() * 10);
 
         document.getElementById('p-display-name').innerText = pName;
         document.getElementById('e-display-name').innerText = eName;
-        if(bonusDmg > 0) document.getElementById('p-weapon').innerText = "Снаряжение +" + bonusDmg + " Атк";
+        document.getElementById('p-weapon').innerText = activeWeaponName + " (+" + bonusDmg + " Атк)";
 
         function refresh() {
             document.getElementById('p-text').innerText = pHp + "/" + pMax;
@@ -76,50 +76,49 @@
         function attack() {
             if (pHp <= 0 || eHp <= 0) return;
             
-            // Твой удар
             var finalDmg = pDmg + bonusDmg;
-            if (pName === "Nazar" && Math.random() < 0.25) {
-                finalDmg = Math.floor(finalDmg * 1.8);
-                log("⚡ КРИТ ОТ НАЗАРА! Нанесено " + finalDmg + " урона!");
+            if (pName === "Nazar" && Math.random() < 0.30) { 
+                finalDmg = Math.floor(finalDmg * 2.0);
+                log("⚡ КРИТИЧЕСКИЙ УДАР НАЗАРА: Нанесено " + finalDmg + " супер-урона!");
             } else {
-                log("⚔️ Ты врезал боту " + eName + " на -" + finalDmg + " HP!");
+                log("⚔️ Ты активировал атаку! Босс " + eName + " схватил -" + finalDmg + " HP!");
             }
             
             eHp = Math.max(0, eHp - finalDmg);
             refresh();
 
             if (eHp <= 0) {
-                log("🏆 ТЫ ПОБЕДИЛ! Бот пал смертью храбрых.");
+                log("🏆 ПОБЕДА! Босс стёрт в цифровой порошок.");
                 localStorage.setItem('battle_res', 'win');
                 endGame();
                 return;
             }
 
-            // Удар бота
-            document.getElementById('act-zone').innerHTML = `<button class="btn" style="background:#444; color:#aaa; cursor:not-allowed;">Защита...</button>`;
+            // Ход Босса
+            document.getElementById('act-zone').innerHTML = `<button class="btn" style="background:#1b1f2e; color:#5c6c8f; box-shadow:none; cursor:not-allowed;">Генерация защиты ИИ...</button>`;
             setTimeout(function() {
                 if(eHp <= 0) return;
                 var ed = eDmg;
                 if(pName === "Mellstroy" && Math.random() < 0.25) {
-                    ed = Math.floor(ed * 0.3);
-                    log("💎 Пассивка Меллстроя: Щит заблокал 70% урона!");
+                    ed = Math.floor(ed * 0.25);
+                    log("💎 Бриллиантовый Щит Меллстроя заблокировал 75% урона!");
                 }
                 pHp = Math.max(0, pHp - ed);
-                log("💥 " + eName + " ударил в ответ на -" + ed + " HP!");
+                log("💥 Босс " + eName + " въебал комбу в ответ на -" + ed + " HP!");
                 refresh();
 
                 if (pHp <= 0) {
-                    log("💀 ТЫ ПРОИГРАЛ! Боец повержен.");
+                    log("💀 КАТКА СЛИТА! Ты погиб на арене.");
                     localStorage.setItem('battle_res', 'fail');
                     endGame();
                 } else {
-                    document.getElementById('act-zone').innerHTML = `<button class="btn" onclick="attack()">⚔️ Нанести удар</button>`;
+                    document.getElementById('act-zone').innerHTML = `<button class="btn" onclick="attack()">⚔️ Нанести комбо-удар</button>`;
                 }
             }, 600);
         }
 
         function endGame() {
-            document.getElementById('act-zone').innerHTML = `<button class="btn" style="background:var(--pink); color:#fff;" onclick="window.location.href='result.html'">Завершить бой 🚩</button>`;
+            document.getElementById('act-zone').innerHTML = `<button class="btn" style="background:linear-gradient(135deg, var(--pink), var(--purple)); color:#fff; box-shadow: 0 0 20px var(--pink);" onclick="window.location.href='result.html'">Завершить бой и забрать лут 🚩</button>`;
         }
 
         function log(t) {
