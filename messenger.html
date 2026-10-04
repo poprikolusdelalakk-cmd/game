@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>Fluent Messenger - Чат</title>
     <style>
         :root {
@@ -85,7 +86,7 @@
     <div class="wrapper">
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2 id="my-name-display">Загрузка...</h2>
+                <h2 id="my-name-display">Nazar</h2>
                 <div class="header-actions">
                     <span class="settings-link-btn" onclick="openSettingsModal()">Настройки</span>
                     <span class="logout-btn" onclick="logout()">Выйти</span>
@@ -116,7 +117,7 @@
                 <div class="messages-box" id="messages-box"></div>
                 <div class="input-box">
                     <input type="text" id="message-input" placeholder="Напиши сообщение..." onkeypress="handleEnter(event)">
-                    <button class="btn-send-click" onclick="sendMsg()">Отправить</button>
+                    <button class="btn-send-click" onclick="postMessage()">Отправить</button>
                 </div>
             </div>
         </div>
@@ -135,22 +136,20 @@
     </div>
 
     <script>
-        // АВТОМАТИЧЕСКАЯ ГАРАНТИРОВАННАЯ ИНИЦИАЛИЗАЦИЯ
-        let myName = localStorage.getItem('fluent_session');
-        if (!myName || myName === "Никнейм" || myName === "Загрузка...") {
-            myName = "Nazar";
-            localStorage.setItem('fluent_session', "Nazar");
-        }
-document.getElementById('my-name-display').innerText = myName;
-// Создаем контакты с Ботом
+        let myName = localStorage.getItem('fluent_session') || "Nazar";
+        document.getElementById('my-name-display').innerText = myName;
+
+        // Авто-инициализация базы контактов и бота
+if (!localStorage.getItem('fl_contacts_' + myName)) {
 localStorage.setItem('fl_contacts_' + myName, JSON.stringify(["Fluent_Bot", "Support_Bot"]));
 localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
 localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
 let welcomeBotPackets = [
-{ from: "Fluent_Bot", to: myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
-{ from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. Максимальная скорость — отправка сообщений занимает доли секунды.\n2. Полная анонимность — вся база переписок хранится локально на твоем девайсе.\n3. Ультра-стильный и лаконичный неоновый кибер-дизайн!" }
+{ from: "Fluent_Bot", to: myName, txt: "Привет! Вас приветствует мессенджер Fluent Messenger!" },
+{ from: "Fluent_Bot", to: myName, txt: "Наш мессенджер является топовым по 3 причинам:\n\n1. Максимальное быстродействие — отправка данных занимает доли секунды.\n2. Полная конфиденциальность — вся база переписок хранится локально на вашем девайсе.\n3. Ультра-стильный и лаконичный неоновый кибер-дизайн!" }
 ];
 localStorage.setItem('fluent_msg_storage', JSON.stringify(welcomeBotPackets));
+}
 let currentChatUser = null;
 updateContactsList();
 setInterval(updateMessagesBox, 1000);
@@ -245,7 +244,7 @@ document.getElementById('chat-area').style.display = 'none';
 document.getElementById('no-chat-placeholder').style.display = 'flex';
 updateContactsList();
 }
-function sendMsg() {
+function postMessage() {
 const input = document.getElementById('message-input');
 const text = input.value.trim();
 if (!text || !currentChatUser) return;
@@ -275,5 +274,5 @@ box.innerHTML = html;
 box.scrollTop = box.scrollHeight;
 }
 }
-function handleEnter(e) { if (e.key === 'Enter') sendMsg(); }
+function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
 function escapeHTML(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
