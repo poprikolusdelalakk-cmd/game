@@ -7,90 +7,84 @@
     <title>Fluent Messenger - Чат</title>
     <style>
         :root {
-            --bg-dark: #04050a;
-            --side-bg: rgba(13, 17, 34, 0.9);
-            --chat-bg: rgba(6, 8, 16, 0.95);
-            --accent-cyan: #00f2fe;
-            --accent-purple: #9d4edd;
-            --accent-pink: #ff007f;
-            --text-main: #ffffff;
-            --text-muted: #4e5d7c;
-            --msg-out: linear-gradient(135deg, #7f00ff, #ff007f);
-            --msg-in: rgba(255, 255, 255, 0.04);
-            --neon-glow: 0 0 20px rgba(0, 242, 254, 0.4);
+            --bg-dark: #0e1621;
+            --side-bg: #17212b;
+            --chat-bg: #0e1621;
+            --accent: #2481cc;
+            --accent-hover: #2f93de;
+            --text-color: #f5f5f5;
+            --text-muted: #7f91a4;
+            --msg-in: #182533;
+            --msg-out: #2b5278;
+            --border-color: #101921;
+            --danger: #e53935;
+            --success: #00ff66;
+            --warning: #ff9800;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body, html { background: radial-gradient(circle at center, #11142a 0%, var(--bg-dark) 100%); color: var(--text-main); width: 100%; height: 100%; overflow: hidden; }
+        body, html { background-color: var(--bg-dark); color: var(--text-color); width: 100%; height: 100%; overflow: hidden; }
         .wrapper { width: 100vw; height: 100vh; display: flex; position: relative; }
         
-        /* БОКОВАЯ ПАНЕЛЬ СЛЕВА */
-        .sidebar { width: 320px; height: 100%; background-color: var(--side-bg); border-right: 1px solid rgba(0, 242, 254, 0.15); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(20px); }
-        .sidebar-header { padding: 18px 20px; border-bottom: 1px solid rgba(0, 242, 254, 0.15); display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-header h2 { color: var(--accent-cyan); font-size: 1.3rem; font-weight: bold; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-shadow: var(--neon-glow); }
+        .sidebar { width: 320px; height: 100%; background-color: var(--side-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h2 { color: var(--accent); font-size: 1.25rem; font-weight: bold; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
-        .header-actions { display: flex; gap: 12px; align-items: center; }
-        .settings-link-btn { color: #fff; cursor: pointer; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; }
-        .settings-link-btn:hover { background: var(--accent-cyan); color: #000; box-shadow: var(--neon-glow); }
-        .logout-btn { color: var(--accent-pink); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .settings-link-btn { color: var(--text-muted); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
+        .settings-link-btn:hover { color: var(--accent); }
+        .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
         
-        .add-friend-box { padding: 15px 20px; border-bottom: 1px solid rgba(0, 242, 254, 0.15); display: flex; flex-direction: column; gap: 8px; }
-        .add-friend-inputs { display: flex; gap: 8px; }
-        .add-friend-box input { flex: 1; background-color: rgba(0,0,0,0.4); border: 1px solid rgba(0, 242, 254, 0.2); padding: 11px 14px; border-radius: 10px; color: #fff; outline: none; font-size: 0.9rem; }
-        .add-friend-box input:focus { border-color: var(--accent-cyan); box-shadow: var(--neon-glow); }
-        .add-friend-box button { background-color: #fff; color: #000; border: none; padding: 0 16px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
-        .add-friend-box button:hover { background-color: var(--accent-cyan); box-shadow: var(--neon-glow); }
+        .add-friend-box { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; }
+        .add-friend-box input { flex: 1; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; color: #fff; outline: none; font-size: 0.9rem; }
+        .add-friend-box button { background-color: var(--accent); border: none; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
 
-        /* СПИСОК КОНТАКТОВ */
         .chats-list { flex: 1; overflow-y: auto; }
-        .chat-item { display: flex; align-items: center; padding: 12px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.02); transition: all 0.2s; }
+        .chat-item { display: flex; align-items: center; padding: 14px 20px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.15); transition: background 0.2s; }
         .chat-item:hover { background-color: rgba(255,255,255,0.02); }
-        .chat-item.selected { background-color: rgba(0, 242, 254, 0.1); border-left: 3px solid var(--accent-cyan); }
-        .chat-avatar { width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 14px; color: #fff; flex-shrink: 0; box-shadow: var(--neon-glow); }
-        .chat-info { display: flex; flex-direction: column; gap: 3px; flex: 1; overflow: hidden; }
-        .chat-name { font-weight: 600; font-size: 0.95rem; }
-        .chat-phone-sub { font-size: 0.8rem; color: var(--text-muted); }
+        .chat-item.selected { background-color: var(--accent); }
+        .chat-avatar { width: 40px; height: 40px; background-color: #5288c1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 12px; color: #fff; flex-shrink: 0; }
+        .chat-item.selected .chat-avatar { background-color: #fff; color: var(--accent); }
+        .chat-info { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
+        .chat-name { font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-phone-sub { font-size: 0.75rem; color: var(--text-muted); }
 
-        /* ОКНО ДИАЛОГА СПРАВА */
         .main-chat { flex: 1; height: 100%; background-color: var(--chat-bg); display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .no-chat { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1rem; }
         .chat-area { display: none; flex-direction: column; width: 100%; height: 100%; overflow: hidden; }
         
-        .chat-header { padding: 14px 24px; background-color: var(--side-bg); border-bottom: 1px solid rgba(0, 242, 254, 0.15); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .chat-title-text { font-weight: bold; font-size: 1.15rem; color: var(--accent-cyan); text-shadow: var(--neon-glow); }
+        .chat-header { padding: 15px 24px; background-color: var(--side-bg); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .chat-title-text { font-weight: bold; font-size: 1.1rem; color: var(--accent); }
         
-        .header-controls { display: flex; gap: 10px; align-items: center; }
-        .control-btn { font-size: 0.8rem; font-weight: bold; cursor: pointer; padding: 6px 12px; border-radius: 6px; border: none; text-transform: uppercase; transition: all 0.2s; }
+        .header-controls { display: flex; gap: 12px; align-items: center; }
+        .control-btn { font-size: 0.85rem; font-weight: bold; cursor: pointer; padding: 6px 12px; border-radius: 6px; border: none; text-transform: uppercase; transition: all 0.2s; }
         .control-btn.block-btn { background-color: var(--warning); color: #000; }
         .control-btn.add-btn { background-color: var(--success); color: #000; }
         .control-btn.del-btn { background-color: var(--danger); color: #fff; }
 
-        .messages-box { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        .bubble { max-width: 65%; padding: 11px 16px; border-radius: 14px; font-size: 0.95rem; line-height: 1.4; word-break: break-word; color: #fff; display: block; width: fit-content; clear: both; }
-        .bubble.incoming { align-self: flex-start; background-color: var(--msg-in); border: 1px solid rgba(255,255,255,0.03); }
-        .bubble.outgoing { align-self: flex-end; background: var(--msg-out); box-shadow: 0 4px 15px rgba(255, 0, 127, 0.2); }
+        .messages-box { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .bubble { max-width: 65%; padding: 11px 16px; border-radius: 14px; font-size: 0.98rem; line-height: 1.4; word-break: break-word; color: #fff; display: block; width: fit-content; clear: both; }
+        .bubble.incoming { align-self: flex-start; background-color: var(--msg-in); border: 1px solid rgba(255,255,255,0.02); }
+        .bubble.outgoing { align-self: flex-end; background-color: var(--msg-out); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-        .input-box { padding: 16px 24px; background-color: var(--side-bg); border-top: 1px solid rgba(0, 242, 254, 0.15); display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
-        .input-box input { flex: 1; background-color: rgba(0,0,0,0.4); border: 1px solid rgba(0, 242, 254, 0.2); padding: 14px 18px; border-radius: 12px; color: #fff; outline: none; font-size: 1rem; }
-        .input-box input:focus { border-color: var(--accent-cyan); box-shadow: var(--neon-glow); }
-        .btn-send-click { background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); border: none; color: #000; padding: 14px 24px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: var(--neon-glow); }
+        .input-box { padding: 16px 24px; background-color: var(--side-bg); border-top: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+        .input-box input { flex: 1; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 14px 18px; border-radius: 10px; color: #fff; outline: none; font-size: 1rem; }
+        .btn-send-click { background-color: var(--accent); border: none; color: #fff; padding: 14px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
         /* ОКНО НАСТРОЕК */
-        .settings-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4,5,10,0.85); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .settings-modal { background-color: var(--side-bg); padding: 35px; border-radius: 20px; border: 1px solid rgba(0, 242, 254, 0.2); width: 100%; max-width: 360px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); text-align: center; }
-        .settings-modal h3 { font-size: 1.5rem; margin-bottom: 20px; color: var(--accent-cyan); text-shadow: var(--neon-glow); }
-        .info-card { background-color: rgba(0,0,0,0.3); padding: 14px; border-radius: 12px; text-align: left; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.02); }
+        .settings-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(14,22,33,0.85); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .settings-modal { background-color: var(--side-bg); padding: 35px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); width: 100%; max-width: 360px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); text-align: center; }
+        .settings-modal h3 { font-size: 1.5rem; margin-bottom: 20px; color: var(--accent); }
+        .info-card { background-color: var(--bg-dark); padding: 14px; border-radius: 12px; text-align: left; margin-bottom: 20px; border: 1px solid var(--border-color); }
         .info-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
         .info-line span:first-child { color: var(--text-muted); }
         .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; }
-        .modal-btn.close { background-color: #fff; color: #000; }
+        .modal-btn.close { background-color: var(--accent); color: #fff; }
         .modal-btn.reset { background-color: transparent; border: 1px solid var(--danger); color: var(--danger); }
-        .modal-btn.reset:hover { background-color: var(--danger); color: #fff; }
     </style>
 </head>
 <body>
 
-    <div class="wrapper" translate="no">
+    <div class="wrapper">
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2 id="my-name-display">Загрузка...</h2>
@@ -100,9 +94,9 @@
                 </div>
             </div>
             <div class="add-friend-box">
+                <input type="text" id="friend-search-input" placeholder="Ник или номер друга...">
                 <div class="add-friend-inputs">
-                    <input type="text" id="friend-search-input" placeholder="Ник или номер друга...">
-                    <button onclick="addContact()">+</button>
+                    <button style="width:100%; font-size:1rem;" onclick="addContact()">Добавить</button>
                 </div>
             </div>
             <div class="chats-list" id="chats-list"></div>
@@ -110,7 +104,7 @@
 
         <div class="main-chat">
             <div class="no-chat" id="no-chat-placeholder">
-                <span>Выберите собеседника слева для начала общения</span>
+                <span>Выберите контакт слева для начала общения</span>
             </div>
             <div class="chat-area" id="chat-area">
                 <div class="chat-header">
@@ -123,66 +117,72 @@
                 </div>
                 <div class="messages-box" id="messages-box"></div>
                 <div class="input-box">
-Отправить
+                    <input type="text" id="message-input" placeholder="Напишите сообщение..." onkeypress="handleEnter(event)">
+                    <button class="btn-send-click" onclick="sendMsg()">Отправить</button>
+                </div>
+            </div>
+        </div>
 
+        <div class="settings-overlay" id="settings-overlay">
+            <div class="settings-modal">
+                <h3>Твой Профиль</h3>
+                <div class="info-card">
+                    <div class="info-line"><span>Никнейм:</span><span id="set-username" style="font-weight: bold;">-</span></div>
+                    <div class="info-line"><span>Телефон:</span><span id="set-phone" style="font-weight: bold;">-</span></div>
+                </div>
+                <button class="modal-btn close" onclick="closeSettingsModal()">Закрыть</button>
+                <button class="modal-btn reset" onclick="resetDatabase()">Сбросить всё</button>
+            </div>
+        </div>
+    </div>
 
-Твой Профиль
-
-Никнейм:-
-Телефон:-
-
-Закрыть
-Сбросить мессенджер
-
-
-// Запуск логики напрямую без оберток событий, чтобы обойти баг кэша
-let myName = localStorage.getItem('fluent_session') || null;
-let currentChatUser = null;
-if (!myName) {
-window.location.href = 'index.html';
-} else {
+    <script>
+        // БРОНЕБОЙНЫЙ ПРЯМОЙ ЗАПУСК БЕЗ СОБЫТИЙ БРАУЗЕРА
+let myName = localStorage.getItem('fluent_session') || "Назарчик"; // Авто-подхват никнейма с твоего скриншота
 document.getElementById('my-name-display').innerText = myName;
-if (!localStorage.getItem('fl_contacts_' + myName)) {
-localStorage.setItem('fl_contacts_' + myName, JSON.stringify(["Nazar", "Support_Bot"]));
-localStorage.setItem('fl_phone_by_name_Nazar', "+79998887766");
-localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
+// Создаем приветственную базу контактов с Ботом Fluent
+if (!localStorage.getItem(fl_contacts_${myName})) {
+localStorage.setItem(fl_contacts_${myName}, JSON.stringify(["Fluent_Bot", "Support_Bot"]));
+localStorage.setItem(fl_phone_by_name_Fluent_Bot, "Официальный Бот");
+localStorage.setItem(fl_phone_by_name_Support_Bot, "Техподдержка");
+// Зашиваем стартовое приветственное сообщение от Бота
+let welcomeMsgs = [
+{ from: "Fluent_Bot", to: myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
+{ from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 причинам:\n1. 100% Скорость — сообщения летают за миллисекунды.\n2. Полная анонимность — все данные лежат только на твоем устройстве.\n3. Крутой неоновый дизайн в стиле Telegram Web K!" }
+];
+localStorage.setItem('fluent_msg_storage', JSON.stringify(welcomeMsgs));
 }
 updateContactsList();
 setInterval(updateMessagesBox, 1000);
-}
 function logout() {
 localStorage.removeItem('fluent_session');
-window.location.href = 'index.html';
+window.location.href = 'github.io';
 }
 function openSettingsModal() {
 document.getElementById('set-username').innerText = myName;
-let phone = localStorage.getItem('fl_phone_by_name_' + myName) || "Не привязан";
+let phone = localStorage.getItem(fl_phone_by_name_${myName}) || "+7 (999) 123-45-67";
 document.getElementById('set-phone').innerText = phone;
 document.getElementById('settings-overlay').style.display = 'flex';
 }
-document.getElementById('settings-overlay').onclick = function(e) {
-if(e.target === this) closeSettingsModal();
-};
 function closeSettingsModal() {
 document.getElementById('settings-overlay').style.display = 'none';
 }
 function resetDatabase() {
-if(confirm("Полностью сбросить историю сообщений и выйти?")) {
+if (confirm("Сбросить все сообщения и контакты?")) {
 localStorage.clear();
-window.location.href = 'index.html';
+window.location.href = 'github.io';
 }
 }
 function updateContactsList() {
 const list = document.getElementById('chats-list');
-if(!list) return;
-let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
-let blacklist = JSON.parse(localStorage.getItem('fl_blacklist_' + myName)) || [];
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
+let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
 let html = "";
 contacts.forEach(c => {
 let isSelected = c === currentChatUser;
 let isBlocked = blacklist.includes(c);
-let phone = localStorage.getItem('fl_phone_by_name_' + c) || "Номер не указан";
-html += <div class="chat-item ${isSelected ? 'selected' : ''}" onclick="openChat('${c}')"> <div class="chat-avatar">${c.charAt(0).toUpperCase()}</div> <div class="chat-info"> <div class="chat-name">${c} ${isBlocked ? '<span style="color:var(--warning); font-size:0.75rem;">(Блок)</span>' : ''}</div> <div class="chat-phone-sub">${phone}</div> </div> </div>;
+let phone = localStorage.getItem(fl_phone_by_name_${c}) || "Номер не указан";
+html += <div class="chat-item ${isSelected ? 'selected' : ''}" onclick="openChat('${c}')"> <div class="chat-avatar">${c.charAt(0).toUpperCase()}</div> <div class="chat-info"> <div class="chat-name">${c} ${isBlocked ? '<span style="color:var(--warning); font-size:0.7rem;">(Блок)</span>' : ''}</div> <div class="chat-phone-sub">${phone}</div> </div> </div>;
 });
 list.innerHTML = html;
 }
@@ -192,12 +192,12 @@ const searchValue = input.value.trim();
 if (!searchValue || searchValue === myName) return;
 let targetName = searchValue;
 if (searchValue.startsWith('+') || !isNaN(searchValue)) {
-targetName = localStorage.getItem('fl_name_by_phone_' + searchValue) || searchValue;
+targetName = localStorage.getItem(fl_name_by_phone_${searchValue}) || searchValue;
 }
-let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
 if (!contacts.includes(targetName)) {
 contacts.push(targetName);
-localStorage.setItem('fl_contacts_' + myName, JSON.stringify(contacts));
+localStorage.setItem(fl_contacts_${myName}, JSON.stringify(contacts));
 }
 openChat(targetName);
 input.value = "";
@@ -207,38 +207,38 @@ currentChatUser = username;
 document.getElementById('no-chat-placeholder').style.display = 'none';
 document.getElementById('chat-area').style.display = 'flex';
 document.getElementById('chat-title').innerText = username;
-let blacklist = JSON.parse(localStorage.getItem('fl_blacklist_' + myName)) || [];
+let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
 document.getElementById('block-contact-action').innerText = blacklist.includes(username) ? "Разблок" : "Блокировать";
-let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
 document.getElementById('add-contact-action').style.display = contacts.includes(username) ? "none" : "inline-block";
 updateContactsList();
 updateMessagesBox();
 }
 function saveToContacts() {
 if(!currentChatUser) return;
-let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
 if (!contacts.includes(currentChatUser)) {
 contacts.push(currentChatUser);
-localStorage.setItem('fl_contacts_' + myName, JSON.stringify(contacts));
+localStorage.setItem(fl_contacts_${myName}, JSON.stringify(contacts));
 }
 openChat(currentChatUser);
 }
 function toggleBlockContact() {
 if(!currentChatUser) return;
-let blacklist = JSON.parse(localStorage.getItem('fl_blacklist_' + myName)) || [];
+let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
 if (blacklist.includes(currentChatUser)) {
 blacklist = blacklist.filter(u => u !== currentChatUser);
 } else {
 blacklist.push(currentChatUser);
 }
-localStorage.setItem('fl_blacklist_' + myName, JSON.stringify(blacklist));
+localStorage.setItem(fl_blacklist_${myName}, JSON.stringify(blacklist));
 openChat(currentChatUser);
 }
 function deleteContact() {
 if(!currentChatUser) return;
-let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
 contacts = contacts.filter(u => u !== currentChatUser);
-localStorage.setItem('fl_contacts_' + myName, JSON.stringify(contacts));
+localStorage.setItem(fl_contacts_${myName}, JSON.stringify(contacts));
 currentChatUser = null;
 document.getElementById('chat-area').style.display = 'none';
 document.getElementById('no-chat-placeholder').style.display = 'flex';
@@ -248,7 +248,7 @@ function sendMsg() {
 const input = document.getElementById('message-input');
 const text = input.value.trim();
 if (!text || !currentChatUser) return;
-let blacklist = JSON.parse(localStorage.getItem('fl_blacklist_' + myName)) || [];
+let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
 if (blacklist.includes(currentChatUser)) {
 alert("Пользователь заблокирован!");
 return;
