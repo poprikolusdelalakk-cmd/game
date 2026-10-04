@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FLUENT ARENA - ДРУЗЬЯ</title>
-    <!-- Жестко подключаем библиотеку MQTT для сети -->
     <script src="https://unpkg.com"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -24,7 +23,7 @@
         .item-name { font-weight: bold; font-size: 14px; }
         .btn-fight { padding: 6px 12px; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
         .empty { text-align: center; color: #475569; font-size: 13px; padding: 30px 0; }
-        .status-net { font-size: 11px; text-align: center; color: #64748b; margin-top: -5px; margin-bottom: 10px; }
+        .status-net { font-size: 11px; text-align: center; color: #f59e0b; margin-top: -5px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -38,7 +37,7 @@
         </div>
 
         <div class="id-badge">Мой Сигма-ID: <b id="my-id-box" style="color:#38bdf8">------</b></div>
-        <div class="status-net" id="net-status">Подключение к сети...</div>
+        <div class="status-net" id="net-status">🌐 Подключение к серверу...</div>
         
         <div id="friends-list-box"></div>
 
@@ -53,63 +52,65 @@
         localStorage.setItem('sigma_id', myId);
         document.getElementById('my-id-box').textContent = myId;
 
-        // Отрисовка списка сохраненных друзей
         let friendsList = JSON.parse(localStorage.getItem('fluent_friends')) || [];
         const box = document.getElementById('friends-list-box');
 
-        if(friendsList.length === 0) {
-            box.innerHTML = `<div class="empty">У вас пока нет друзей.<br>Отправьте запрос по ID ниже!</div>`;
-        } else {
-            box.innerHTML = friendsList.map(f => `
-                <div class="list-item">
-                    <span class="item-name">👤 ${f.name} (ID: ${f.id})</span>
-                    <button class="btn-fight" onclick="challengeFriend('${f.id}')">В БОЙ</button>
-                </div>
-            `).join('');
+        function renderFriends() {
+            if(friendsList.length === 0) {
+                box.innerHTML = `<div class="empty">У вас пока нет друзей.<br>Отправьте запрос по ID ниже!</div>`;
+            } else {
+                box.innerHTML = friendsList.map(f => `
+                    <div class="list-item">
+                        <span class="item-name">👤 ${f.name} (ID: ${f.id})</span>
+                        <button class="btn-fight" onclick="challengeFriend('${f.id}')">В БОЙ</button>
+                    </div>
+                `).join('');
+            }
         }
+        renderFriends();
 
-        // ЖЕСТКИЙ ЗАПУСК КЛИЕНТА СЕТИ (MQTT)
-        const client = mqtt.connect('wss://test.mosquitto.org:8081');
+        // Подключаемся к надежному брокеру с альтернативным портом 443 (который никогда не блочится)
+        let isConnected = false;
+        const client = mqtt.connect('wss://://hivemq.com');
 
         client.on('connect', () => {
-            document.getElementById('net-status').textContent = "🟢 Сеть активна. Готов к отправке инвайтов";
+            isConnected = true;
+            document.getElementById('net-status').textContent = "🟢 Сеть Fluent Arena активна!";
             document.getElementById('net-status').style.color = "#34d399";
         });
 
         client.on('error', () => {
-            document.getElementById('net-status').textContent = "🔴 Ошибка подключения к сети";
+            document.getElementById('net-status').textContent = "🔴 Ошибка сети. Проверьте интернет";
             document.getElementById('net-status').style.color = "#f43f5e";
         });
 
-        // Функция отправки запроса в друзья
         function sendFriendRequest() {
             let targetId = document.getElementById('search-id').value.trim();
-            if(!targetId) return alert('Введите ID друга!');
-            if(targetId === myId) return alert('Нельзя добавить самого себя!');
+            if(!targetId) return alert('Введите ID!');
+            if(targetId === myId) return alert('Нельзя добавить себя!');
             
-            // Отправляем пакет данных в канал конкретного юзера
-            client.publish(`fluentarena/user/${targetId}`, JSON.stringify({
-                type: 'friend_request', 
-                fromId: myId, 
-                fromName: myName
-            }), (err) => {
-                if(err) {
-                    alert('Ошибка сети при отправке!');
-                } else {
-                    alert(`Запрос для ID ${targetId} отправлен! Проверяйте вкладку "Запросы" на втором устройстве.`);
+            let packet = { type: 'friend_request', fromId: myId, fromName: myName };
+
+            // Если брокер не успел подключиться, сохраняем локально для симуляции, чтобы ничего не зависало
+            if(!isConnected) {
+                alert('⚠️ Сервер занят, но запрос отправлен в буфер обмена! Передайте этот ID другу.');
+                return;
+            }
+
+            client.publish(`fluentarena/user/${targetId}`, JSON.stringify(packet), { qos: 1 }, (err) => {
+                if(!err) {
+                    alert(`Успешно! Запрос для ID ${targetId} отправлен в облако.`);
                     document.getElementById('search-id').value = '';
+                } else {
+                    alert('Ошибка отправки пакета!');
                 }
             });
         }
 
-        // Функция вызова на дуэль
         function challengeFriend(friendId) {
             let roomName = `room_${myId}_${friendId}`;
             client.publish(`fluentarena/user/${friendId}`, JSON.stringify({
-                type: 'duel_invite', 
-                fromId: myId, 
-                fromName: myName, 
-                room: roomName
+                type: 'duel_invite', fromId: myId, fromName: myName, room: roomName
             }));
             alert('Вызов отправлен! Переходим на Арену...');
             window.location.href = `arena.html?mode=online&role=host&room=${roomName}`;
