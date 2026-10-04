@@ -6,14 +6,13 @@
     <title>Fluent Messenger</title>
     <style>
         :root {
-            --bg-color: #030408;
-            --panel-bg: rgba(13, 17, 34, 0.8);
+            --bg-color: #080914;
+            --panel-bg: rgba(18, 20, 38, 0.9);
             --accent-cyan: #00f2fe;
             --accent-blue: #007bff;
             --accent-pink: #ff007f;
             --text-main: #ffffff;
             --text-muted: #6272a4;
-            --neon-glow: 0 0 20px rgba(0, 242, 254, 0.5);
         }
 
         * {
@@ -24,7 +23,7 @@
         }
 
         body {
-            background: radial-gradient(circle at center, #0d112d 0%, var(--bg-color) 100%);
+            background: radial-gradient(circle at center, #141836 0%, var(--bg-color) 100%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -35,14 +34,13 @@
 
         .container {
             width: 100%;
-            max-width: 460px;
+            max-width: 440px;
             height: 85vh;
             background: var(--panel-bg);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 32px;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255,255,255,0.1);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            border-radius: 28px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -65,12 +63,11 @@
         }
 
         .logo-area h1 {
-            font-size: 2.8rem;
+            font-size: 2.6rem;
             font-weight: 800;
             background: linear-gradient(135deg, #fff 40%, var(--accent-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
         }
 
         .logo-area p {
@@ -95,13 +92,11 @@
             color: #fff;
             font-size: 1rem;
             outline: none;
-            transition: all 0.2s ease;
         }
 
         input:focus {
-            background: rgba(255, 255, 255, 0.07);
             border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
         }
 
         .btn {
@@ -114,23 +109,18 @@
             font-weight: 700;
             border-radius: 16px;
             cursor: pointer;
-            transition: all 0.2s ease;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .btn:hover {
             background: var(--accent-cyan);
-            box-shadow: var(--neon-glow);
-            transform: translateY(-1px);
         }
 
         .switch-mode {
             color: var(--accent-cyan);
             font-size: 0.9rem;
             cursor: pointer;
-            font-weight: 500;
-            user-select: none;
+            text-decoration: underline;
         }
 
         .app-screen {
@@ -152,9 +142,7 @@
         .app-header h2 {
             font-size: 1.3rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #fff, var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent-cyan);
         }
 
         .logout-btn {
@@ -162,14 +150,12 @@
             font-size: 0.85rem;
             cursor: pointer;
             font-weight: 700;
-            text-transform: uppercase;
         }
 
         .tab-bar {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.1);
         }
 
         .tab-btn {
@@ -181,13 +167,11 @@
             font-weight: 600;
             cursor: pointer;
             text-align: center;
-            transition: all 0.2s ease;
         }
 
         .tab-btn.active {
             color: var(--accent-cyan);
             border-bottom: 2px solid var(--accent-cyan);
-            background: rgba(255, 255, 255, 0.02);
         }
 
         .tab-content {
@@ -202,14 +186,6 @@
             display: flex;
         }
 
-        .stats-title {
-            font-size: 1.1rem;
-            color: var(--accent-cyan);
-            margin-bottom: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
         .stat-row {
             display: flex;
             justify-content: space-between;
@@ -218,24 +194,11 @@
             background: rgba(255, 255, 255, 0.03);
             border-radius: 14px;
             margin-bottom: 10px;
-            border: 1px solid rgba(255,255,255,0.02);
         }
 
         .stat-num {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 800;
-            color: #fff;
-        }
-
-        .stat-num.online-indicator::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #00ff66;
-            border-radius: 50%;
-            margin-right: 8px;
-            box-shadow: 0 0 10px #00ff66;
         }
 
         .chats-list-container {
@@ -251,42 +214,22 @@
             background: rgba(255, 255, 255, 0.04);
             border-radius: 16px;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.04);
-            transition: all 0.2s ease;
-        }
-
-        .chat-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--accent-cyan);
         }
 
         .chat-avatar {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 1.1rem;
             margin-right: 15px;
-            color: #000;
-        }
-
-        .chat-info {
-            flex: 1;
         }
 
         .chat-name {
             font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 2px;
-        }
-
-        .chat-preview {
-            font-size: 0.85rem;
-            color: var(--text-muted);
         }
 
         .active-dialog-view {
@@ -294,7 +237,7 @@
             flex-direction: column;
             height: 100%;
             width: 100%;
-            background: var(--bg-color);
+            background: #080914;
             position: absolute;
             top: 0; left: 0; z-index: 10;
         }
@@ -304,7 +247,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.06);
             display: flex;
             align-items: center;
-            background: rgba(255,255,255,0.02);
         }
 
         .back-btn {
@@ -331,70 +273,71 @@
             border-radius: 18px;
             display: flex;
             flex-direction: column;
-            gap: 2px;
         }
 
-        .msg-box.incoming { align-self: flex-start; background: rgba(255,255,255,0.06); border-bottom-left-radius: 4px; }
-        .msg-box.outgoing { align-self: flex-end; background: linear-gradient(135deg, var(--accent-blue), #0052cc); border-bottom-right-radius: 4px; }
-        .msg-sender { font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); }
-        .msg-text { font-size: 0.95rem; line-height: 1.4; word-break: break-word; }
-        .msg-time { font-size: 0.65rem; color: rgba(255,255,255,0.4); align-self: flex-end; }
+        .msg-box.incoming { align-self: flex-start; background: rgba(255,255,255,0.06); }
+        .msg-box.outgoing { align-self: flex-end; background: var(--accent-blue); }
+        .msg-text { font-size: 0.95rem; word-break: break-word; }
 
         .input-area {
             padding: 16px 20px;
             border-top: 1px solid rgba(255,255,255,0.06);
             display: flex;
             gap: 10px;
-            background: rgba(0,0,0,0.3);
         }
 
-.input-area input { flex: 1; padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #fff; outline: none; }
-.input-area input:focus { border-color: var(--accent-cyan); }
-.btn-send { width: auto; padding: 0 20px; background: var(--accent-cyan); color: #000; border-radius: 14px; }
+        .input-area input { flex: 1; padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #fff; outline: none; }
+        .btn-send { width: auto; padding: 0 20px; background: var(--accent-cyan); color: #000; border-radius: 14px; border: none; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
 
+    <div class="container">
+        <!-- АВТОРИЗАЦИЯ -->
+        <div class="auth-screen" id="auth-screen">
+            <div class="logo-area">
+                <h1>Fluent Messenger</h1>
+                <p>Безопасное общение нового поколения</p>
+            </div>
+            <div class="input-group">
+                <input type="text" id="user-email" placeholder="Никнейм или Email">
+                <input type="password" id="user-password" placeholder="Пароль">
+                <button class="btn" id="main-btn" onclick="processAuth()">Войти</button>
+            </div>
+            <div class="switch-mode" id="mode-toggle" onclick="toggleMode()">Создать новый akкаунт</div>
+        </div>
 
-Fluent Messenger
-Безопасное неоновое общение
-Войти
-Создать новый аккаунт
-Fluent Messenger
+        <!-- КОРНЕВОЙ ЭКРАН -->
+        <div class="app-screen" id="app-screen">
+            <div class="app-header">
+                <h2>Fluent</h2>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span id="user-display" style="font-weight:600; color:var(--accent-cyan);">User</span>
+                    <span class="logout-btn" onclick="exitChat()">Выйти</span>
+                </div>
+            </div>
 
-User
-Выйти
+            <div class="tab-bar">
+                <button class="tab-btn active" id="tab0" onclick="switchTab(0)">Инфо</button>
+                <button class="tab-btn" id="tab1" onclick="switchTab(1)">Чаты</button>
+                <button class="tab-btn" id="tab2" onclick="switchTab(2)">Друзья</button>
+            </div>
 
-Инфо
-Чаты
-Друзья
-Глобальные метрики
-
-Онлайн сейчас
-24
-
-
-Людей на сайте
-1,482
-
-
-Всего скачало
-42,910
-
-
-Всего заходило
-342,109
-
-Найти друга по нику
-
+            <!-- ВКЛАДКА 0 -->
+            <div class="tab-content active" id="content0">
+                <div class="stat-row"><span>Онлайн</span><span class="stat-num" id="stat-online" style="color:#00ff66">28</span></div>
+                <div class="stat-row"><span>Людей на сайте</span><span class="stat-num" id="stat-site">1 544</span></div>
+                <div class="stat-row"><span>Всего скачало</span><span class="stat-num" id="stat-downloads">43 115</span></div>
+                <div class="stat-row"><span>Всего заходило</span><span class="stat-num" id="stat-entries">84 201</span></div>
+            </div>
 
 Найти
 
-
-Введите ник и нажмите кнопку, чтобы создать чат.
-
+Введи ник для создания чата
 ◀
 ?
 
 Чат
-в сети
 
 
 
@@ -404,55 +347,19 @@ User
 
 
 
-const sndNode = new (window.AudioContext || window.webkitAudioContext)();
-function playBlip() {
-try {
-if (sndNode.state === 'suspended') sndNode.resume();
-const osc = sndNode.createOscillator();
-const gain = sndNode.createGain();
-osc.connect(gain); gain.connect(sndNode.destination);
-osc.type = 'sine';
-osc.frequency.setValueAtTime(580, sndNode.currentTime);
-osc.frequency.exponentialRampToValueAtTime(320, sndNode.currentTime + 0.06);
-gain.gain.setValueAtTime(0.08, sndNode.currentTime);
-gain.gain.linearRampToValueAtTime(0.001, sndNode.currentTime + 0.06);
-osc.start(); osc.stop(sndNode.currentTime + 0.06);
-} catch(e) {}
-}
 let signUpState = false;
 let activeUser = localStorage.getItem('fluent_session') || null;
 let activeTargetChat = null;
-let liveOnline = Math.floor(Math.random() * 10) + 25;
-let liveSite = Math.floor(Math.random() * 40) + 1520;
-let liveDownloads = 43112;
-let liveEntries = parseInt(localStorage.getItem('fl_total_entries')) || Math.floor(Math.random() * 1000) + 84200;
-liveEntries += 1;
-localStorage.setItem('fl_total_entries', liveEntries);
-function updateLiveStats() {
-liveOnline += Math.floor(Math.random() * 3) - 1;
-if(liveOnline < 10) liveOnline = 14;
-liveSite += Math.floor(Math.random() * 2);
-if(Math.random() > 0.8) liveDownloads += 1;
-document.getElementById('stat-online').innerText = liveOnline;
-document.getElementById('stat-site').innerText = liveSite.toLocaleString('ru-RU');
-document.getElementById('stat-downloads').innerText = liveDownloads.toLocaleString('ru-RU');
-document.getElementById('stat-entries').innerText = liveEntries.toLocaleString('ru-RU');
-}
-setInterval(updateLiveStats, 3000);
-updateLiveStats();
 if (activeUser) { startMessenger(activeUser); }
 function toggleMode() {
-playBlip();
 signUpState = !signUpState;
-document.getElementById('main-title').innerText = signUpState ? "Регистрация" : "Fluent Messenger";
 document.getElementById('main-btn').innerText = signUpState ? "Создать аккаунт" : "Войти";
 document.getElementById('mode-toggle').innerText = signUpState ? "Уже есть профиль? Войти" : "Создать новый аккаунт";
 }
 function processAuth() {
-playBlip();
 const login = document.getElementById('user-email').value.trim();
 const pass = document.getElementById('user-password').value.trim();
-if (!login || !pass) { alert("Заполни все поля!"); return; }
+if (!login || !pass) { alert("Заполните поля!"); return; }
 if (signUpState) {
 localStorage.setItem(fl_u_${login}, pass);
 localStorage.setItem('fluent_session', login);
@@ -485,7 +392,6 @@ localStorage.removeItem('fluent_session');
 location.reload();
 }
 function switchTab(idx) {
-playBlip();
 for(let i=0; i<3; i++) {
 document.getElementById(tab${i}).classList.remove('active');
 document.getElementById(content${i}).classList.remove('active');
@@ -498,39 +404,28 @@ function renderChatsList() {
 const listContainer = document.getElementById('chats-list');
 let friends = JSON.parse(localStorage.getItem(fl_friends_${activeUser})) || [];
 if(friends.length === 0) {
-listContainer.innerHTML = <div style="text-align:center; color:var(--text-muted); margin-top:20px;">Список чатов пуст. Найдите друзей во вкладке "Друзья"</div>;
+listContainer.innerHTML = <div style="text-align:center; color:var(--text-muted); margin-top:20px;">Список пуст. Добавь друзей в меню "Друзья"</div>;
 return;
 }
 let html = "";
 friends.forEach(f => {
-let packets = JSON.parse(localStorage.getItem('fluent_packets')) || [];
-let pairMsgs = packets.filter(m => (m.from === activeUser && m.to === f) || (m.from === f && m.to === activeUser));
-let lastText = pairMsgs.length > 0 ? pairMsgs[pairMsgs.length - 1].text : "Нет сообщений";
-if(lastText.length > 25) lastText = lastText.substring(0, 22) + "...";
-html += <div class="chat-item" onclick="openDialog('${f}')"> <div class="chat-avatar">${f.charAt(0).toUpperCase()}</div> <div class="chat-info"> <div class="chat-name">${f}</div> <div class="chat-preview">${cleanHtml(lastText)}</div> </div> </div>;
+html += <div class="chat-item" onclick="openDialog('${f}')"> <div class="chat-avatar">${f.charAt(0).toUpperCase()}</div> <div class="chat-info"><div class="chat-name">${f}</div></div> </div>;
 });
 listContainer.innerHTML = html;
 }
 function addFriendChat() {
-playBlip();
 const input = document.getElementById('search-friend-input');
 const targetName = input.value.trim();
-const status = document.getElementById('search-status');
-if(!targetName) { alert("Введите никнейм!"); return; }
-if(targetName === activeUser) { alert("Нельзя добавить самого себя!"); return; }
+if(!targetName || targetName === activeUser) return;
 let friends = JSON.parse(localStorage.getItem(fl_friends_${activeUser})) || [];
-if(friends.includes(targetName)) {
-status.innerText = Чат с ${targetName} уже существует! Переходим...;
-setTimeout(() => { openDialog(targetName); input.value = ""; }, 800);
-return;
-}
+if(!friends.includes(targetName)) {
 friends.push(targetName);
 localStorage.setItem(fl_friends_${activeUser}, JSON.stringify(friends));
-status.innerHTML = <span style="color:#00ff66;">Чат с ${targetName} успешно создан!</span>;
-setTimeout(() => { openDialog(targetName); input.value = ""; status.innerText = "Введите ник и нажмите кнопку, чтобы создать чат."; }, 1000);
+}
+openDialog(targetName);
+input.value = "";
 }
 function openDialog(target) {
-playBlip();
 activeTargetChat = target;
 document.getElementById('dialog-title').innerText = target;
 document.getElementById('dialog-avatar').innerText = target.charAt(0).toUpperCase();
@@ -538,7 +433,6 @@ document.getElementById('active-dialog').style.display = 'flex';
 syncMessages();
 }
 function closeDialog() {
-playBlip();
 activeTargetChat = null;
 document.getElementById('active-dialog').style.display = 'none';
 renderChatsList();
@@ -547,7 +441,6 @@ function postMessage() {
 const field = document.getElementById('input-message');
 const txt = field.value.trim();
 if (!txt || !activeTargetChat) return;
-playBlip();
 let store = JSON.parse(localStorage.getItem('fluent_packets')) || [];
 store.push({ from: activeUser, to: activeTargetChat, text: txt, time: Date.now() });
 localStorage.setItem('fluent_packets', JSON.stringify(store));
@@ -560,19 +453,14 @@ const flow = document.getElementById('msg-flow');
 let store = JSON.parse(localStorage.getItem('fluent_packets')) || [];
 let dialogMsgs = store.filter(m => (m.from === activeUser && m.to === activeTargetChat) || (m.from === activeTargetChat && m.to === activeUser));
 let html = "";
-if (dialogMsgs.length === 0) {
-html = <div style="text-align:center; color:var(--text-muted); margin-top:40px; font-size:0.9rem;">Тут пока пусто. Напишите первое сообщение другу!</div>;
-} else {
 dialogMsgs.forEach(msg => {
 const isMine = msg.from === activeUser;
-const clock = new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-html += <div class="msg-box ${isMine ? 'outgoing' : 'incoming'}"> <div class="msg-sender">${msg.from}</div> <div class="msg-text">${cleanHtml(msg.text)}</div> <div class="msg-time">${clock}</div> </div>;
+html += <div class="msg-box ${isMine ? 'outgoing' : 'incoming'}"> <div class="msg-text">${msg.text}</div> </div>;
 });
-}
 if (flow.innerHTML !== html) {
 flow.innerHTML = html;
 flow.scrollTop = flow.scrollHeight;
 }
 }
 function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
-function cleanHtml(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
+
