@@ -6,336 +6,315 @@
     <title>Fluent Messenger</title>
     <style>
         :root {
-            --bg-color: #0e1118;
-            --panel-bg: #17212b;
-            --chat-bg: #0e1621;
-            --accent-cyan: #2481cc;
-            --accent-light: #5288c1;
-            --accent-pink: #e53935;
-            --text-main: #f5f5f5;
-            --text-muted: #7f91a4;
-            --msg-out: #2b5278;
-            --msg-in: #182533;
+            --bg-dark: #090a10;
+            --side-bg: rgba(18, 22, 39, 0.9);
+            --chat-bg: rgba(13, 15, 28, 0.95);
+            --accent-cyan: #00f2fe;
+            --accent-purple: #9d4edd;
+            --accent-pink: #ff007f;
+            --text-main: #ffffff;
+            --text-muted: #5c6b89;
+            --msg-out: linear-gradient(135deg, #7f00ff, #ff007f);
+            --msg-in: rgba(255, 255, 255, 0.05);
+            --neon-glow: 0 0 20px rgba(0, 242, 254, 0.4);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        body {
-            background-color: var(--bg-color);
+        body, html {
+            background: radial-gradient(circle at center, #11142a 0%, var(--bg-dark) 100%);
             color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
 
-        .container {
+        .wrapper {
             width: 100vw;
             height: 100vh;
             display: flex;
-            overflow: hidden;
             position: relative;
         }
 
-        /* ЭКРАН ВХОДА */
-        .auth-screen {
+        /* ПОЛНОЭКРАННЫЙ СТИЛЬНЫЙ ВХОД */
+        .auth-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-color);
+            background-color: var(--bg-dark);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 100;
-            padding: 20px;
+            z-index: 9999;
         }
 
-        .auth-box {
+        .auth-form {
             width: 100%;
-            max-width: 360px;
-            background-color: var(--panel-bg);
-            padding: 40px 30px;
-            border-radius: 16px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            max-width: 380px;
+            background-color: var(--side-bg);
+            padding: 45px 35px;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.7);
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
         }
 
-        .auth-box h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #fff;
+        .auth-form h1 {
+            font-size: 2.4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
 
-        .auth-box p {
+        .auth-form p {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-top: -15px;
+            margin-bottom: 30px;
         }
 
-        .input-group {
+        .auth-inputs {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
+            margin-bottom: 25px;
         }
 
         input {
             width: 100%;
-            background-color: var(--chat-bg);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 14px 16px;
-            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            padding: 15px 18px;
+            border-radius: 12px;
             color: #fff;
             font-size: 1rem;
             outline: none;
+            transition: all 0.2s;
         }
 
         input:focus {
             border-color: var(--accent-cyan);
+            box-shadow: var(--neon-glow);
         }
 
-        .btn {
+        .action-btn {
             width: 100%;
-            background-color: var(--accent-cyan);
-            color: #fff;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: #000;
             border: none;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            border-radius: 12px;
             cursor: pointer;
             text-transform: uppercase;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            box-shadow: var(--neon-glow);
         }
 
-        .btn:hover {
-            background-color: var(--accent-light);
+        .action-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.7);
         }
 
-        /* ГЛАВНЫЙ ЭКРАН МЕССЕНДЖЕРА */
-        .app-screen {
+        /* ИНТЕРФЕЙС МЕССЕНДЖЕРА НА ВЕСЬ ЭКРАН */
+        .app-window {
             display: none;
             width: 100%;
             height: 100%;
         }
 
-        /* Левая панель чатов */
-        .side-panel {
-            width: 340px;
+        /* Левая колонка как в Discord/Ferrumcord */
+        .sidebar {
+            width: 320px;
             height: 100%;
-            background-color: var(--panel-bg);
-            border-right: 1px solid rgba(0,0,0,0.2);
+            background-color: var(--side-bg);
+            border-right: 1px solid rgba(255,255,255,0.05);
             display: flex;
             flex-direction: column;
+            backdrop-filter: blur(20px);
         }
 
-        .side-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(0,0,0,0.15);
+        .sidebar-header {
+            padding: 20px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .side-header h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
+        .sidebar-header h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .logout-btn {
+        .exit-btn {
             color: var(--accent-pink);
             font-size: 0.85rem;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
-        .tab-bar {
+        .navigation-tabs {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            background-color: rgba(0,0,0,0.1);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background-color: rgba(0,0,0,0.2);
         }
 
-        .tab-btn {
-            padding: 12px 0;
+        .nav-tab {
+            padding: 14px 0;
             background: none;
             border: none;
             color: var(--text-muted);
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
+            text-transform: uppercase;
             text-align: center;
         }
 
-        .tab-btn.active {
+        .nav-tab.active {
             color: var(--accent-cyan);
             border-bottom: 2px solid var(--accent-cyan);
+            background-color: rgba(255,255,255,0.01);
         }
 
-        .tab-content {
+        .tab-panel-content {
             flex: 1;
             overflow-y: auto;
             display: none;
         }
 
-        .tab-content.active {
+        .tab-panel-content.active {
             display: block;
         }
 
-        /* Стили вкладки Инфо */
-        .info-padding {
-            padding: 20px;
-        }
-
-        .stat-card {
-            background-color: var(--chat-bg);
-            padding: 14px 16px;
-            border-radius: 12px;
-            margin-bottom: 10px;
+        /* Вкладка Инфо */
+        .info-pane { padding: 20px; }
+        .metric-card {
+            background-color: rgba(0,0,0,0.2);
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid rgba(255,255,255,0.03);
         }
+        .metric-val { font-weight: 800; font-size: 1.2rem; }
 
-        .stat-num {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        /* Список чатов */
-        .chat-item {
+        /* Список каналов/чатов */
+        .chat-row-item {
             display: flex;
             align-items: center;
-            padding: 14px 20px;
+            padding: 12px 20px;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: all 0.2s ease;
+            margin: 4px 10px;
+            border-radius: 12px;
         }
 
-        .chat-item:hover {
-            background-color: rgba(255,255,255,0.03);
-        }
+        .chat-row-item:hover { background-color: rgba(255,255,255,0.03); }
+        .chat-row-item.selected { background-color: rgba(0, 242, 254, 0.15); border: 1px solid var(--accent-cyan); }
 
-        .chat-item.active {
-            background-color: var(--accent-cyan);
-        }
-
-        .chat-avatar {
-            width: 46px;
-            height: 46px;
-            background: linear-gradient(135deg, #5288c1, #2481cc);
-            border-radius: 50%;
+        .circle-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-weight: 800;
             margin-right: 14px;
-            color: #fff;
+            color: #000;
         }
 
-        .chat-item.active .chat-avatar {
-            background: #fff;
-            color: var(--accent-cyan);
-        }
-
-        .chat-name {
-            font-weight: 600;
-            font-size: 1rem;
-        }
+        .chat-name { font-weight: 700; font-size: 1rem; }
 
         /* Правая панель диалога */
-        .main-dialog {
+        .dialog-pane {
             flex: 1;
             height: 100%;
             background-color: var(--chat-bg);
             display: flex;
             flex-direction: column;
-            position: relative;
         }
 
-        .dialog-placeholder {
+        .no-chat-screen {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
 
-        .dialog-view {
+        .chat-active-screen {
             display: none;
             flex-direction: column;
             width: 100%;
             height: 100%;
         }
 
-        .dialog-header {
-            padding: 15px 24px;
-            background-color: var(--panel-bg);
-            border-bottom: 1px solid rgba(0,0,0,0.2);
+        .chat-top-bar {
+            padding: 16px 24px;
+            background-color: var(--side-bg);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .messages-area {
+        .chat-room-name { font-weight: 800; font-size: 1.15rem; color: var(--accent-cyan); }
+
+        .chat-scroller {
             flex: 1;
             padding: 24px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .msg-box {
-            max-width: 65%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 0.95rem;
+        .bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.98rem;
             line-height: 1.4;
             word-break: break-word;
         }
 
-        .msg-box.incoming {
-            align-self: flex-start;
-            background-color: var(--msg-in);
-            color: #fff;
-        }
+        .bubble.incoming { align-self: flex-start; background: var(--msg-in); border: 1px solid rgba(255,255,255,0.05); }
+        .bubble.outgoing { align-self: flex-end; background: var(--msg-out); box-shadow: 0 4px 15px rgba(255, 0, 127, 0.2); }
 
-        .msg-box.outgoing {
-            align-self: flex-end;
-            background-color: var(--msg-out);
-            color: #fff;
-        }
-
-        .input-area {
-            padding: 16px 24px;
-            background-color: var(--panel-bg);
+        .chat-footer-input {
+            padding: 18px 24px;
+            background-color: var(--side-bg);
             display: flex;
-            gap: 12px;
+            gap: 15px;
             align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
 
-        .input-area input {
-            flex: 1;
-        }
+        .chat-footer-input input { flex: 1; }
 
-        .btn-send {
-            width: auto;
-            padding: 0 20px;
-        }
-
-        .video-box {
-            border: 2px dashed rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 40px 20px;
+        .shorts-container {
+            border: 2px dashed rgba(0, 242, 254, 0.15);
+            border-radius: 20px;
+            padding: 50px 20px;
             text-align: center;
             color: var(--text-muted);
             margin: 20px;
@@ -344,50 +323,38 @@
 </head>
 <body>
 
-    <div class="container">
-        <!-- ЭКРАН 1: АВТОРИЗАЦИЯ -->
-        <div class="auth-screen" id="auth-screen">
-            <div class="auth-box">
-                <div>
-                    <h1>Fluent Messenger</h1>
-                    <p>Безопасное общение нового поколения</p>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="user-email" placeholder="Никнейм или Email">
-                    <input type="password" id="user-password" placeholder="Пароль">
-                    <button class="btn" onclick="processAuth()">Войти / Создать</button>
+    <div class="wrapper">
+        <!-- ЭКРАН АВТОРИЗАЦИИ -->
+        <div class="auth-overlay" id="auth-screen">
+            <div class="auth-form">
+                <h1>Fluent Messenger</h1>
+                <p>Вход в защищенную кибер-сеть чатов</p>
+                <div class="auth-inputs">
+                    <input type="text" id="user-email" placeholder="Твой Никнейм">
+                    <input type="password" id="user-password" placeholder="Пароль доступа">
+                    <button class="action-btn" onclick="executeAuth()">Войти / Создать</button>
                 </div>
             </div>
-        </div>
-
-        <!-- ЭКРАН 2: ПРИЛОЖЕНИЕ -->
-        <div class="app-screen" id="app-screen">
-            <!-- ЛЕВАЯ КОЛОНКА -->
-            <div class="side-panel">
-                <div class="side-header">
-                    <h2 id="user-display">Nazar</h2>
-                    <span class="logout-btn" onclick="exitChat()">Выйти</span>
-                </div>
-
-                <div class="tab-bar">
-                    <button class="tab-btn active" id="tab0" onclick="switchTab(0)">Инфо</button>
-                    <button class="tab-btn" id="tab1" onclick="switchTab(1)">Чаты</button>
-                    <button class="tab-btn" id="tab2" onclick="switchTab(2)">Поиск</button>
+Nazar
+Выйти
+Инфо
+Чаты
+Поиск
 Видео
-Онлайн сейчас18
+Онлайн0
 Всего заходов0
-Зарегистрировано0
+Зарегано0
 
 Найти
 
-Введи ник для создания чата
+Введите имя друга для старта диалога
 
 🎬
 Fluent Shorts
-Плеер коротких роликов находится в разработке по запросу Nazar
+Модуль публикации коротких видео-роликов зарезервирован под апдейт Nazarowner!
 
 
-Выберите чат из списка слева, чтобы начать общение
+Выберите пользователя или канал слева для начала общения
 ?
 
 Чат
@@ -402,115 +369,113 @@ Fluent Shorts
 
 
 
-let signUpState = false;
-let activeUser = localStorage.getItem('fluent_session') || null;
-let activeTargetChat = null;
-let totalEntries = parseInt(localStorage.getItem('fl_total_entries')) || 412;
-let totalReg = parseInt(localStorage.getItem('fl_total_reg')) || 57;
-totalEntries += 1;
-localStorage.setItem('fl_total_entries', totalEntries);
-function renderLiveStats() {
-let fakeOnline = Math.floor(Math.random() * 5) + 14;
-document.getElementById('stat-online').innerText = fakeOnline;
-document.getElementById('stat-entries').innerText = totalEntries.toLocaleString('ru-RU');
-document.getElementById('stat-reg').innerText = totalReg.toLocaleString('ru-RU');
+let sessionUser = localStorage.getItem('fluent_session') || null;
+let selectedRoomUser = null;
+let counterEntries = parseInt(localStorage.getItem('fl_total_entries')) || 514;
+let counterReg = parseInt(localStorage.getItem('fl_total_reg')) || 64;
+counterEntries += 1;
+localStorage.setItem('fl_total_entries', counterEntries);
+function refreshMetrics() {
+let activeLiveCount = Math.floor(Math.random() * 4) + 12;
+document.getElementById('stat-online').innerText = activeLiveCount;
+document.getElementById('stat-entries').innerText = counterEntries.toLocaleString('ru-RU');
+document.getElementById('stat-reg').innerText = counterReg.toLocaleString('ru-RU');
 }
-setInterval(renderLiveStats, 3000);
-if (activeUser) { startMessenger(activeUser); }
-function processAuth() {
-const login = document.getElementById('user-email').value.trim();
-const pass = document.getElementById('user-password').value.trim();
-if (!login || !pass) { alert("Заполните поля!"); return; }
-const storedPass = localStorage.getItem(fl_u_${login});
-if (!storedPass) {
-localStorage.setItem(fl_u_${login}, pass);
-totalReg += 1;
-localStorage.setItem('fl_total_reg', totalReg);
+setInterval(refreshMetrics, 3000);
+if (sessionUser) { launchMessenger(sessionUser); }
+function executeAuth() {
+const nameField = document.getElementById('user-email').value.trim();
+const passField = document.getElementById('user-password').value.trim();
+if (!nameField || !passField) { alert("Заполни поля!"); return; }
+if (!localStorage.getItem(fl_u_${nameField})) {
+localStorage.setItem(fl_u_${nameField}, passField);
+counterReg += 1;
+localStorage.setItem('fl_total_reg', counterReg);
 }
-localStorage.setItem('fluent_session', login);
-startMessenger(login);
+localStorage.setItem('fluent_session', nameField);
+launchMessenger(nameField);
 }
-function startMessenger(username) {
-activeUser = username;
+function launchMessenger(username) {
+sessionUser = username;
 document.getElementById('user-display').innerText = username;
 document.getElementById('auth-screen').style.display = 'none';
 document.getElementById('app-screen').style.display = 'flex';
-if(!localStorage.getItem(fl_friends_${activeUser})) {
-localStorage.setItem(fl_friends_${activeUser}, JSON.stringify(["Nazar", "Support_Bot"]));
+if(!localStorage.getItem(fl_friends_${sessionUser})) {
+localStorage.setItem(fl_friends_${sessionUser}, JSON.stringify(["Nazar", "Support_Bot"]));
 }
-renderLiveStats();
-switchTab(1);
-renderChatsList();
-setInterval(syncMessages, 1000);
+refreshMetrics();
+handleTabShift(1);
+buildRoomList();
+setInterval(flushMessages, 1000);
 }
-function exitChat() {
+function performLogout() {
 localStorage.removeItem('fluent_session');
 location.reload();
 }
-function switchTab(idx) {
+function handleTabShift(idx) {
 for(let i=0; i<4; i++) {
 document.getElementById(tab${i}).classList.remove('active');
 document.getElementById(content${i}).classList.remove('active');
 }
 document.getElementById(tab${idx}).classList.add('active');
 document.getElementById(content${idx}).classList.add('active');
-if(idx === 1) renderChatsList();
+if(idx === 1) buildRoomList();
 }
-function renderChatsList() {
-const listContainer = document.getElementById('chats-list');
-let friends = JSON.parse(localStorage.getItem(fl_friends_${activeUser})) || [];
+function buildRoomList() {
+const list = document.getElementById('chats-list');
+let friends = JSON.parse(localStorage.getItem(fl_friends_${sessionUser})) || [];
 let html = "";
 friends.forEach(f => {
-let isCurrent = f === activeTargetChat;
-html += <div class="chat-item ${isCurrent ? 'active' : ''}" onclick="openDialog('${f}')"> <div class="chat-avatar">${f.charAt(0).toUpperCase()}</div> <div><div class="chat-name">${f}</div></div> </div>;
+let isCurrent = f === selectedRoomUser;
+html += <div class="chat-row-item ${isCurrent ? 'selected' : ''}" onclick="engageRoom('${f}')"> <div class="circle-avatar">${f.charAt(0).toUpperCase()}</div> <div><div class="chat-name">${f}</div></div> </div>;
 });
-listContainer.innerHTML = html;
+list.innerHTML = html;
 }
-function addFriendChat() {
-const input = document.getElementById('search-friend-input');
-const targetName = input.value.trim();
-if(!targetName || targetName === activeUser) return;
-let friends = JSON.parse(localStorage.getItem(fl_friends_${activeUser})) || [];
-if(!friends.includes(targetName)) {
-friends.push(targetName);
-localStorage.setItem(fl_friends_${activeUser}, JSON.stringify(friends));
+function createNewFriendChat() {
+const inp = document.getElementById('search-friend-input');
+const target = inp.value.trim();
+if(!target || target === sessionUser) return;
+let friends = JSON.parse(localStorage.getItem(fl_friends_${sessionUser})) || [];
+if(!friends.includes(target)) {
+friends.push(target);
+localStorage.setItem(fl_friends_${sessionUser}, JSON.stringify(friends));
 }
-openDialog(targetName);
-input.value = "";
+engageRoom(target);
+inp.value = "";
 }
-function openDialog(target) {
-activeTargetChat = target;
+function engageRoom(targetName) {
+selectedRoomUser = targetName;
 document.getElementById('dialog-placeholder').style.display = 'none';
 document.getElementById('dialog-view').style.display = 'flex';
-document.getElementById('dialog-title').innerText = target;
-document.getElementById('dialog-avatar').innerText = target.charAt(0).toUpperCase();
-renderChatsList();
-syncMessages();
+document.getElementById('dialog-title').innerText = targetName;
+document.getElementById('dialog-avatar').innerText = targetName.charAt(0).toUpperCase();
+buildRoomList();
+flushMessages();
 }
-function postMessage() {
+function dispatchMessage() {
 const field = document.getElementById('input-message');
 const txt = field.value.trim();
-if (!txt || !activeTargetChat) return;
+if (!txt || !selectedRoomUser) return;
 let store = JSON.parse(localStorage.getItem('fluent_packets')) || [];
-store.push({ from: activeUser, to: activeTargetChat, text: txt, time: Date.now() });
+store.push({ from: sessionUser, to: selectedRoomUser, text: txt, time: Date.now() });
 localStorage.setItem('fluent_packets', JSON.stringify(store));
 field.value = '';
-syncMessages();
+flushMessages();
 }
-function syncMessages() {
-if (!activeTargetChat || document.getElementById('dialog-view').style.display !== 'flex') return;
+function flushMessages() {
+if (!selectedRoomUser || document.getElementById('dialog-view').style.display !== 'flex') return;
 const flow = document.getElementById('msg-flow');
 let store = JSON.parse(localStorage.getItem('fluent_packets')) || [];
-let dialogMsgs = store.filter(m => (m.from === activeUser && m.to === activeTargetChat) || (m.from === activeTargetChat && m.to === activeUser));
+let dialogMsgs = store.filter(m => (m.from === sessionUser && m.to === selectedRoomUser) || (m.from === selectedRoomUser && m.to === sessionUser));
 let html = "";
 dialogMsgs.forEach(msg => {
-const isMine = msg.from === activeUser;
-html += <div class="msg-box ${isMine ? 'outgoing' : 'incoming'}"> <div class="msg-text">${msg.text}</div> </div>;
+const isMine = msg.from === sessionUser;
+html += <div class="bubble ${isMine ? 'outgoing' : 'incoming'}"> <div class="msg-text">${msg.text}</div> </div>;
 });
 if (flow.innerHTML !== html) {
 flow.innerHTML = html;
 flow.scrollTop = flow.scrollHeight;
 }
 }
-function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
+function handleEnterKey(e) { if (e.key === 'Enter') dispatchMessage(); }
 
