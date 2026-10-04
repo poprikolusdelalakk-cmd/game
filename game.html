@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>Fluent Game - Игровой Процесс</title>
+    <style>
+        :root {
+            --bg-space: #060919;
+            --card-bg: rgba(13, 18, 38, 0.75);
+            --neon-blue: #00f2fe;
+            --neon-purple: #9d4edd;
+            --neon-pink: #ff007f;
+            --text-main: #ffffff;
+            --text-muted: #6f7f9f;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body, html { 
+            background: radial-gradient(circle at center, #12183a 0%, var(--bg-space) 100%); 
+            color: var(--text-main); 
+            width: 100%; height: 100%; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center;
+        }
+        .space-bg {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1;
+            background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
+            background-size: 550px 550px; opacity: 0.2;
+        }
+        .wrapper { position: relative; z-index: 10; width: 100%; max-width: 460px; padding: 20px; }
+        .game-card {
+            background: var(--card-bg); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 24px;
+            padding: 35px 25px; text-align: center; backdrop-filter: blur(15px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .genie-sphere-box { width: 120px; height: 140px; margin: 0 auto 25px auto; }
+        .genie-sphere {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--neon-blue) 0%, var(--neon-purple) 70%, #000 100%);
+            box-shadow: 0 0 30px var(--neon-blue), 0 0 50px var(--neon-purple);
+            animation: floatGlow 3s ease-in-out infinite;
+        }
+        @keyframes floatGlow {
+            0% { transform: translateY(0px); filter: brightness(1); }
+            50% { transform: translateY(-8px); filter: brightness(1.2); }
+            100% { transform: translateY(0px); filter: brightness(1); }
+        }
+        .bubble-text { font-size: 1.15rem; font-weight: bold; line-height: 1.5; min-height: 65px; margin-bottom: 30px; }
+        
+        .answers-grid { display: flex; flex-direction: column; gap: 10px; }
+        .btn-choice {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-choice:hover { background: rgba(0, 242, 254, 0.1); border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 254, 0.2); }
+        
+        .input-fail { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 15px; text-align: center; font-size: 1rem; }
+        .btn-action { background: var(--neon-blue); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="space-bg"></div>
+    <div class="wrapper">
+        <div class="game-card">
+            <div class="genie-sphere-box"><div class="genie-sphere" id="sphere"></div></div>
+            <div class="bubble-text" id="bubble">Загадайте любого персонажа, а я попробую угадать его за пару шагов!</div>
+            <div id="buttons-area">
+                <button class="btn-action" onclick="initEngine()">Начать отгадывание</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        var step = 0;
+        var log = {};
+
+        var db = [
+            { name: "Фредди Фазбер (ФНАФ)", tags: { real: "нет", game: "да", robot: "да" } },
+            { name: "Бонни (ФНАФ)", tags: { real: "нет", game: "да", robot: "да" } },
+            { name: "Влад А4", tags: { real: "да", blogger: "да", video: "да" } },
+            { name: "Мистер Бист (MrBeast)", tags: { real: "да", blogger: "да", video: "да" } },
+            { name: "Человек-Паук", tags: { real: "нет", game: "нет", hero: "да" } },
+            { name: "Наруто Узумаки", tags: { real: "нет", game: "нет", anime: "да" } },
+            { name: "Стив (Майнкрафт)", tags: { real: "нет", game: "да", blocks: "да" } }
+        ];
+
+        var questions = [
+            { id: "real", text: "Ваш персонаж реально существует в нашем мире?" },
+            { id: "game", text: "Этот персонаж взят из какой-то видеоигры?" },
+            { id: "robot", text: "Это робот или аниматроник?" },
+            { id: "blogger", text: "Этот человек является известным блогером?" },
+            { id: "video", text: "Он снимает ролики на Ютуб?" },
+            { id: "hero", text: "Это супергерой из комиксов или фильмов?" },
+            { id: "anime", text: "Ваш персонаж из мира японского аниме?" },
+            { id: "blocks", text: "Он как-то связан с кубиками или блоками?" }
+        ];
+
+        function initEngine() {
+            step = 0;
+            log = {};
+            document.getElementById('sphere').style.background = "radial-gradient(circle at 30% 30%, var(--neon-blue) 0%, var(--neon-purple) 70%, #000 100%)";
+            next();
+        }
+
+        function next() {
+            if (step < questions.length) {
+                var q = questions[step];
+                document.getElementById('bubble').innerText = q.text;
+                document.getElementById('buttons-area').innerHTML = `
+                    <div class="answers-grid">
+                        <button class="btn-choice" onclick="ans('${q.id}', 'да')">Да</button>
+                        <button class="btn-choice" onclick="ans('${q.id}', 'нет')">Нет</button>
+                        <button class="btn-choice" onclick="ans('${q.id}', 'хз')">Не знаю</button>
+                    </div>
+                `;
+            } else {
+                predict();
+            }
+        }
+
+        function ans(id, value) {
+            log[id] = value;
+            step++;
+            next();
+        }
+
+        function predict() {
+            var filtered = db.filter(function(char) {
+                for (var key in log) {
+                    if (log[key] !== "хз" && char.tags[key] && char.tags[key] !== log[key]) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            if (filtered.length > 0) {
+                var charName = filtered[0].name;
+                document.getElementById('sphere').style.boxShadow = "0 0 30px var(--neon-pink), 0 0 50px var(--neon-purple)";
+                document.getElementById('bubble').innerText = "Я уверен, что это...\n✨ " + charName + " ✨";
+                document.getElementById('buttons-area').innerHTML = `
+                    <div class="answers-grid">
+                        <button class="btn-choice" style="border-color:var(--neon-blue);" onclick="win()">Угадал! 👍</button>
+                        <button class="btn-choice" onclick="fail()">Не угадал 👎</button>
+                    </div>
+                `;
+            } else {
+                fail();
+            }
+        }
+
+        function win() {
+            var total = parseInt(localStorage.getItem('fl_total_matches')) || 4329;
+            localStorage.setItem('fl_total_matches', total + 1);
+            document.getElementById('bubble').innerText = "Ха-ха! Джинн Fluent Game прочитал твои мысли! Попробуем ещё раз?";
+            document.getElementById('buttons-area').innerHTML = `<button class="btn-action" onclick="window.location.href='index.html'">В меню</button>`;
+        }
+
+        function fail() {
+            document.getElementById('bubble').innerText = "Ого, ты перехитрил меня! Напиши, кого ты загадал, чтобы я добавил его в базу:";
+            document.getElementById('buttons-area').innerHTML = `
+                <input type="text" id="new-name" class="input-fail" placeholder="Имя персонажа...">
+                <button class="btn-action" onclick="save()">Внести в свиток</button>
+            `;
+        }
+
+        function save() {
+            var txt = document.getElementById('new-name').value.trim();
+            if (txt) {
+                var newTags = {};
+                for (var k in log) { if (log[k] !== "хз") newTags[k] = log[k]; }
+                db.push({ name: txt, tags: newTags });
+                document.getElementById('bubble').innerText = "Отлично! Персонаж '" + txt + "' добавлен в мою кибер-память!";
+                document.getElementById('buttons-area').innerHTML = `<button class="btn-action" onclick="window.location.href='index.html'">В меню</button>`;
+            }
+        }
+    </script>
+</body>
+</html>
