@@ -35,14 +35,14 @@
         
         .add-friend-box { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; }
         .add-friend-box input { flex: 1; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; color: #fff; outline: none; font-size: 0.9rem; }
-        .add-friend-box button { background-color: var(--accent); border: none; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .add-friend-box button { background-color: var(--accent); border: none; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
 
         .chats-list { flex: 1; overflow-y: auto; }
         .chat-item { display: flex; align-items: center; padding: 14px 20px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.15); transition: background 0.2s; }
         .chat-item:hover { background-color: rgba(255,255,255,0.02); }
         .chat-item.selected { background-color: var(--accent); }
         .chat-avatar { width: 40px; height: 40px; background-color: #5288c1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 12px; color: #fff; flex-shrink: 0; }
-        .chat-item.selected .chat-avatar { background-color: #fff; color: var(--accent); }
+        .chat-item.selected .chat-avatar { background-color: #fff; color: #2481cc; }
         .chat-info { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
         .chat-name { font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-phone-sub { font-size: 0.75rem; color: var(--text-muted); }
@@ -85,7 +85,8 @@
     <div class="wrapper">
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2 id="my-name-display">Никнейм</h2>
+                <!-- Сюда выводится твой реальный ник -->
+                <h2 id="my-name-display">Загрузка...</h2>
                 <div class="header-actions">
                     <span class="settings-link-btn" onclick="openSettingsModal()">Настройки</span>
                     <span class="logout-btn" onclick="logout()">Выйти</span>
@@ -135,23 +136,24 @@
     </div>
 
     <script>
-        // ЖЕСТКИЙ, ПРЯМОЛИНЕЙНЫЙ СКРИПТ БЕЗ ЛИШНИХ СЛОЖНЫХ СТРУКТУР
-        let myName = localStorage.getItem('fluent_session') || "Nazar";
+        // БРОНЕБОЙНЫЙ АВТОСБРОС СТАРЫХ БАГОВ ПРИ ЗАГРУЗКЕ
+        let myName = localStorage.getItem('fluent_session');
         
-        document.getElementById('my-name-display').innerText = myName;
-
-        // Создаем базу контактов с Ботом Fluent автоматически
-if (!localStorage.getItem('fl_contacts_' + myName)) {
+        if (!myName || myName === "Никнейм") {
+            myName = "Nazar";
+localStorage.setItem('fluent_session', "Nazar");
+}
+document.getElementById('my-name-display').innerText = myName;
+// ЖЕСТКАЯ ПЕРЕЗАПИСЬ БАЗЫ ПОД ПРИВЕТСТВЕННОГО БОТА И КОНТАКТЫ
 localStorage.setItem('fl_contacts_' + myName, JSON.stringify(["Fluent_Bot", "Support_Bot"]));
 localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
 localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
-// База сообщений бота
 let botWelcomeMsgs = [
-{ from: "Fluent_Bot", to: myName, txt: "Привет! Вас приветствует Fluent Messenger!" },
-{ from: "Fluent_Bot", to: myName, txt: "Наш мессенджер является топовым решением по 3 главным причинам:\n1. Максимальное быстродействие — отправка данных занимает доли секунды.\n2. Полная конфиденциальность — вся база переписок хранится локально на вашем девайсе.\n3. Ультра-стильный и лаконичный неоновый кибер-дизайн!" }
+{ from: "Fluent_Bot", to: myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
+{ from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. Максимальная скорость — отправка сообщений занимает доли секунды.\n2. Полная анонимность — вся база переписок хранится локально на твоем девайсе.\n3. Ультра-стильный и лаконичный неоновый кибер-дизайн!" }
 ];
 localStorage.setItem('fluent_msg_storage', JSON.stringify(botWelcomeMsgs));
-}
+let currentChatUser = null;
 updateContactsList();
 setInterval(updateMessagesBox, 1000);
 function logout() {
@@ -160,7 +162,7 @@ window.location.href = 'github.io';
 }
 function openSettingsModal() {
 document.getElementById('set-username').innerText = myName;
-let phone = localStorage.getItem('fl_phone_by_name_' + myName) || "Не указан";
+let phone = localStorage.getItem('fl_phone_by_name_' + myName) || "+7 (999) 777-77-77";
 document.getElementById('set-phone').innerText = phone;
 document.getElementById('settings-overlay').style.display = 'flex';
 }
