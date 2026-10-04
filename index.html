@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAZAR GAME | Кибер Джинн</title>
+    <style>
+        :root {
+            --bg-color: #06070d;
+            --card-bg: rgba(15, 18, 36, 0.85);
+            --accent-cyan: #00f2fe;
+            --accent-purple: #9d4edd;
+            --accent-pink: #ff007f;
+            --neon-glow: 0 0 25px rgba(0, 242, 254, 0.45);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #111428 0%, var(--bg-color) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 750px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        header {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            filter: drop-shadow(0 2px 20px rgba(0, 242, 254, 0.6));
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Красивая сетка статистики */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            text-shadow: var(--neon-glow);
+            margin-bottom: 6px;
+        }
+
+        .stat-value.online::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #00ff66;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 12px #00ff66;
+            vertical-align: middle;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Главная карточка игры */
+        .game-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.6);
+        }
+
+        .genie-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            border-radius: 50%;
+            margin: 0 auto 30px auto;
+            box-shadow: 0 0 40px rgba(157, 78, 221, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            animation: float 4s ease-in-out infinite;
+            user-select: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .game-text {
+            font-size: 1.4rem;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            min-height: 80px;
+            font-weight: 500;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: #020205;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--neon-glow);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.8);
+        }
+
+        .btn-choice {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            min-width: 150px;
+        }
+
+        .btn-yes:hover {
+            background: linear-gradient(135deg, #00ff66, #00ffcc);
+            border-color: #00ff66;
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.6);
+            color: #000;
+        }
+
+        .btn-no:hover {
+            background: linear-gradient(135deg, #ff0055, #ff00aa);
+            border-color: #ff0055;
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);
+            color: #fff;
+        }
+
+        /* FAQ Блок */
+        .info-card {
+            background: rgba(10, 11, 22, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 35px;
+        }
+
+        .info-card h2 {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #fff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 0;
+        }
+
+        .faq-item:last-child { border: none; }
+
+        .faq-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .faq-question:hover { color: var(--accent-cyan); }
+
+        .faq-question::after {
+            content: '▼';
+            font-size: 0.8rem;
+            color: var(--accent-purple);
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-question::after {
+            transform: rotate(180deg);
+            color: var(--accent-cyan);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, margin 0.3s ease;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            margin-top: 12px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <header>
+            <h1>NAZAR GAME</h1>
+            <p>Загадай популярного блогера, а цифровой Джинн его угадает!</p>
+        </header>
+
+        <!-- СТАТИСТИКА -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value online" id="stat-online">1</div>
+                <div class="stat-label">Онлайн</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-visitors">0</div>
+                <div class="stat-label">Визиты</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-guessed">0</div>
+                <div class="stat-label">Угадано</div>
+            </div>
+        </div>
+
+        <!-- ИГРА -->
+        <div class="game-card">
+            <div class="genie-avatar" id="genie-icon">🔮</div>
+            <div class="game-text" id="game-text">
+                Привет! Я великий цифровой Джинн от NAZAR GAME. Я умею читать мысли через экран. Загадай любого популярного ютубера, нажми кнопку ниже, и проверим мою силу!
+            </div>
+            <div class="btn-group" id="action-area">
+                <button class="btn" onclick="startGame()">ИГРАТЬ</button>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="info-card">
+            <h2>Информация об игре & FAQ</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Как это работает? Неужели это магия?</div>
+                <div class="faq-answer">
+                    Нет, это продвинутая математика и алгоритм фильтрации тегов! Когда вы отвечаете на вопросы, система мгновенно отсекает сотни неподходящих вариантов. В конце остается только тот блогер, которого вы загадали.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Кого именно может угадать Джинн?</div>
+                <div class="faq-answer">
+На данный момент в тестовую базу NAZAR GAME внесены самые популярные блогеры рунета: Влад А4, Куплинов, Мармок, Мистер Макс и Ивангай. База будет постоянно расширяться!
+
+Что делать, если Джинн не угадал?
+
+Такое бывает, если вы случайно ответили неверно на один из вопросов, либо если вашего блогера ещё нет в нашей цифровой базе данных. Нажмите кнопку «Сыграть еще раз» и проверьте джинна заново!
+
+Безопасны ли мои данные статистики?
+
+Абсолютно! Игра использует технологию LocalStorage вашего браузера. Данные о количестве ваших визитов и побед хранятся прямо на вашем устройстве локально. Разработчик NAZAR GAME гарантирует полную анонимность.
+
+
+© 2026 NAZAR GAME ENTERTAINMENT
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playClickSound() {
+if (audioCtx.state === 'suspended') audioCtx.resume();
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.type = 'sine';
+osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
+gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+osc.start();
+osc.stop(audioCtx.currentTime + 0.1);
+}
+
+function playWinSound() {
+if (audioCtx.state === 'suspended') audioCtx.resume();
+const now = audioCtx.currentTime;
+const notes = [440, 554.37, 659.25, 880];
+notes.forEach((freq, index) => {
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.type = 'triangle';
+osc.frequency.setValueAtTime(freq, now + index * 0.08);
+gain.gain.setValueAtTime(0.12, now + index * 0.08);
+gain.gain.linearRampToValueAtTime(0.001, now + index * 0.08 + 0.4);
+osc.start(now + index * 0.08);
+osc.stop(now + index * 0.08 + 0.4);
+});
+}
+let totalVisitors = parseInt(localStorage.getItem('nazar_visitors')) || 0;
+let totalGuessed = parseInt(localStorage.getItem('nazar_guessed')) || 0;
+totalVisitors += 1;
+localStorage.setItem('nazar_visitors', totalVisitors);
+document.getElementById('stat-visitors').innerText = totalVisitors.toLocaleString('ru-RU');
+document.getElementById('stat-guessed').innerText = totalGuessed.toLocaleString('ru-RU');
+let liveOnline = Math.floor(Math.random() * 8) + 14;
+document.getElementById('stat-online').innerText = liveOnline;
+setInterval(() => {
+liveOnline += Math.floor(Math.random() * 3) - 1;
+if (liveOnline < 1) liveOnline = 1;
+document.getElementById('stat-online').innerText = liveOnline;
+}, 4000);
+function toggleFaq(element) {
+playClickSound();
+const item = element.parentElement;
+item.classList.toggle('active');
+}
+
+const bloggers = [
+{ name: "Влад А4", gaming: false, lifestyle: true, subs_over_20m: true },
+{ name: "Куплинов (Kuplinov Play)", gaming: true, lifestyle: false, subs_over_20m: false },
+{ name: "Mister Max", gaming: false, lifestyle: true, subs_over_20m: true },
+{ name: "Marmok", gaming: true, lifestyle: false, subs_over_20m: false },
+{ name: "Ивангай", gaming: true, lifestyle: true, subs_over_20m: false }
+];
+const questions = [
+{ text: "Ваш блогер в основном снимает прохождение видеоигр (летсплеи)?", tag: "gaming" },
+{ text: "Ваш блогер снимает влоги, челленджи или лайфстайл-видео?", tag: "lifestyle" },
+{ text: "На канале этого блогера больше 20 миллионов подписчиков?", tag: "subs_over_20m" }
+];
+let currentCandidates = [];
+let questionIndex = 0;
+function startGame() {
+playClickSound();
+currentCandidates = [...bloggers];
+questionIndex = 0;
+document.getElementById('genie-icon').innerText = '🤔';
+askNextQuestion();
+}
+function askNextQuestion() {
+if (currentCandidates.length === 1) {
+showResult(currentCandidates[0].name);
+return;
+}
+if (questionIndex >= questions.length || currentCandidates.length === 0) {
+if (currentCandidates.length > 0) {
+showResult(currentCandidates[0].name);
+} else {
+showResult(null);
+}
+return;
+}
+
+const currentQuestion = questions[questionIndex];
+document.getElementById('game-text').innerText = currentQuestion.text;
+document.getElementById('action-area').innerHTML = <button class="btn btn-choice btn-yes" onclick="handleAnswer(true)">Да</button> <button class="btn btn-choice btn-no" onclick="handleAnswer(false)">Нет</button>;
+}
+function handleAnswer(isYes) {
+playClickSound();
+const currentQuestion = questions[questionIndex];
+const tag = currentQuestion.tag;
+currentCandidates = currentCandidates.filter(b => b[tag] === isYes);
+questionIndex++;
+askNextQuestion();
+}
+function showResult(winnerName) {
+const textElem = document.getElementById('game-text');
+const actionArea = document.getElementById('action-area');
+const iconElem = document.getElementById('genie-icon');
+if (winnerName) {
+playWinSound();
+iconElem.innerText = '😎';
+textElem.innerHTML = 'Я уверен на 100%! Ты загадал: 
+' + winnerName + '';
+totalGuessed += 1;
+localStorage.setItem('nazar_guessed', totalGuessed);
+document.getElementById('stat-guessed').innerText = totalGuessed.toLocaleString('ru-RU');
+} else {
+iconElem.innerText = '😵';
+textElem.innerText = "Упс! Мои цифровые алгоритмы запутались. Скорее всего, такого блогера еще нет в моей базе тегов. Попробуешь еще раз?";
+}
+actionArea.innerHTML = <button class="btn" onclick="startGame()">СЫГРАТЬ ЕЩЕ РАЗ</button>;
+}
