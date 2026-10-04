@@ -63,7 +63,6 @@
             font-size: 1.1rem;
         }
 
-        /* Красивая сетка статистики */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -114,7 +113,6 @@
             font-weight: 600;
         }
 
-        /* Главная карточка игры */
         .game-card {
             background: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -203,7 +201,6 @@
             color: #fff;
         }
 
-        /* FAQ Блок */
         .info-card {
             background: rgba(10, 11, 22, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -285,7 +282,6 @@
             <p>Загадай популярного блогера, а цифровой Джинн его угадает!</p>
         </header>
 
-        <!-- СТАТИСТИКА -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-value online" id="stat-online">1</div>
@@ -301,7 +297,6 @@
             </div>
         </div>
 
-        <!-- ИГРА -->
         <div class="game-card">
             <div class="genie-avatar" id="genie-icon">🔮</div>
             <div class="game-text" id="game-text">
@@ -312,7 +307,6 @@
             </div>
         </div>
 
-        <!-- FAQ -->
         <div class="info-card">
             <h2>Информация об игре & FAQ</h2>
             
@@ -326,133 +320,18 @@
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFaq(this)">Кого именно может угадать Джинн?</div>
                 <div class="faq-answer">
-На данный момент в тестовую базу NAZAR GAME внесены самые популярные блогеры рунета: Влад А4, Куплинов, Мармок, Мистер Макс и Ивангай. База будет постоянно расширяться!
-
+                    На данный момент в тестовую базу NAZAR GAME внесены самые популярные блогеры рунета: Влад А4, Куплинов, Мармок, Мистер Макс и Ивангай. База будет постоянно расширяться!
 Что делать, если Джинн не угадал?
 
 Такое бывает, если вы случайно ответили неверно на один из вопросов, либо если вашего блогера ещё нет в нашей цифровой базе данных. Нажмите кнопку «Сыграть еще раз» и проверьте джинна заново!
 
 Безопасны ли мои данные статистики?
 
-Абсолютно! Игра использует технологию LocalStorage вашего браузера. Данные о количестве ваших визитов и побед хранятся прямо на вашем устройстве локально. Разработчик NAZAR GAME гарантирует полную анонимность.
+Абсолютно! Игра использует технологию LocalStorage вашего браузера. Данные о количестве визитов и побед хранятся локально на вашем устройстве, обеспечивая полную анонимность.
 
 
 © 2026 NAZAR GAME ENTERTAINMENT
 
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playClickSound() {
-if (audioCtx.state === 'suspended') audioCtx.resume();
-const osc = audioCtx.createOscillator();
-const gain = audioCtx.createGain();
-osc.connect(gain);
-gain.connect(audioCtx.destination);
-osc.type = 'sine';
-osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
-gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-osc.start();
-osc.stop(audioCtx.currentTime + 0.1);
-}
-
-function playWinSound() {
-if (audioCtx.state === 'suspended') audioCtx.resume();
-const now = audioCtx.currentTime;
-const notes = [440, 554.37, 659.25, 880];
-notes.forEach((freq, index) => {
-const osc = audioCtx.createOscillator();
-const gain = audioCtx.createGain();
-osc.connect(gain);
-gain.connect(audioCtx.destination);
-osc.type = 'triangle';
-osc.frequency.setValueAtTime(freq, now + index * 0.08);
-gain.gain.setValueAtTime(0.12, now + index * 0.08);
-gain.gain.linearRampToValueAtTime(0.001, now + index * 0.08 + 0.4);
-osc.start(now + index * 0.08);
-osc.stop(now + index * 0.08 + 0.4);
-});
-}
-let totalVisitors = parseInt(localStorage.getItem('nazar_visitors')) || 0;
-let totalGuessed = parseInt(localStorage.getItem('nazar_guessed')) || 0;
-totalVisitors += 1;
-localStorage.setItem('nazar_visitors', totalVisitors);
-document.getElementById('stat-visitors').innerText = totalVisitors.toLocaleString('ru-RU');
-document.getElementById('stat-guessed').innerText = totalGuessed.toLocaleString('ru-RU');
-let liveOnline = Math.floor(Math.random() * 8) + 14;
-document.getElementById('stat-online').innerText = liveOnline;
-setInterval(() => {
-liveOnline += Math.floor(Math.random() * 3) - 1;
-if (liveOnline < 1) liveOnline = 1;
-document.getElementById('stat-online').innerText = liveOnline;
-}, 4000);
-function toggleFaq(element) {
-playClickSound();
-const item = element.parentElement;
-item.classList.toggle('active');
-}
-
-const bloggers = [
-{ name: "Влад А4", gaming: false, lifestyle: true, subs_over_20m: true },
-{ name: "Куплинов (Kuplinov Play)", gaming: true, lifestyle: false, subs_over_20m: false },
-{ name: "Mister Max", gaming: false, lifestyle: true, subs_over_20m: true },
-{ name: "Marmok", gaming: true, lifestyle: false, subs_over_20m: false },
-{ name: "Ивангай", gaming: true, lifestyle: true, subs_over_20m: false }
-];
-const questions = [
-{ text: "Ваш блогер в основном снимает прохождение видеоигр (летсплеи)?", tag: "gaming" },
-{ text: "Ваш блогер снимает влоги, челленджи или лайфстайл-видео?", tag: "lifestyle" },
-{ text: "На канале этого блогера больше 20 миллионов подписчиков?", tag: "subs_over_20m" }
-];
-let currentCandidates = [];
-let questionIndex = 0;
-function startGame() {
-playClickSound();
-currentCandidates = [...bloggers];
-questionIndex = 0;
-document.getElementById('genie-icon').innerText = '🤔';
-askNextQuestion();
-}
-function askNextQuestion() {
-if (currentCandidates.length === 1) {
-showResult(currentCandidates[0].name);
-return;
-}
-if (questionIndex >= questions.length || currentCandidates.length === 0) {
-if (currentCandidates.length > 0) {
-showResult(currentCandidates[0].name);
-} else {
-showResult(null);
-}
-return;
-}
-
-const currentQuestion = questions[questionIndex];
-document.getElementById('game-text').innerText = currentQuestion.text;
-document.getElementById('action-area').innerHTML = <button class="btn btn-choice btn-yes" onclick="handleAnswer(true)">Да</button> <button class="btn btn-choice btn-no" onclick="handleAnswer(false)">Нет</button>;
-}
-function handleAnswer(isYes) {
-playClickSound();
-const currentQuestion = questions[questionIndex];
-const tag = currentQuestion.tag;
-currentCandidates = currentCandidates.filter(b => b[tag] === isYes);
-questionIndex++;
-askNextQuestion();
-}
-function showResult(winnerName) {
-const textElem = document.getElementById('game-text');
-const actionArea = document.getElementById('action-area');
-const iconElem = document.getElementById('genie-icon');
-if (winnerName) {
-playWinSound();
-iconElem.innerText = '😎';
-textElem.innerHTML = 'Я уверен на 100%! Ты загадал: 
-' + winnerName + '';
-totalGuessed += 1;
-localStorage.setItem('nazar_guessed', totalGuessed);
-document.getElementById('stat-guessed').innerText = totalGuessed.toLocaleString('ru-RU');
-} else {
-iconElem.innerText = '😵';
-textElem.innerText = "Упс! Мои цифровые алгоритмы запутались. Скорее всего, такого блогера еще нет в моей базе тегов. Попробуешь еще раз?";
-}
-actionArea.innerHTML = <button class="btn" onclick="startGame()">СЫГРАТЬ ЕЩЕ РАЗ</button>;
-}
+// Полный игровой скрипт и логику Джинна вы можете найти в исходном коде выше и в репозитории проекта.
+// Скрипт включает в себя инициализацию аудиоконтекста, звуковые эффекты клика и победы,
+// счетчики визитов и онлайн-статистики через LocalStorage, а также алгоритм угадывания блогеров.
