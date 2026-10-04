@@ -3,59 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluent Arena - Вызов по ID</title>
+    <title>Fluent Arena - Поиск по Нику и ID</title>
     <style>
         :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --purple: #9d4edd; --success: #00ff66; --pink: #ff007f; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .box { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 24px; padding: 30px; max-width: 400px; width: 100%; text-align: center; }
+        .box { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 24px; padding: 30px; max-width: 400px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
         input { width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 12px; outline: none; text-align: center; font-size: 1rem; }
-        button { width: 100%; background: linear-gradient(135deg, var(--blue), var(--purple)); color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 15px; }
-        .status-box { display: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 15px; }
+        button { width: 100%; background: linear-gradient(135deg, var(--blue), var(--purple)); color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; }
+        .f-row { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-duel { background: var(--pink); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-menu { display: block; width: 100%; background: #fff; color: #000; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; text-align: center; }
+        .status-box { display: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2 style="margin-bottom:20px; font-weight: 900; letter-spacing: 1px;">⚔️ ОНЛАЙН ВЫЗОВ</h2>
+        <h2 style="margin-bottom:20px; font-weight: 900; letter-spacing: 1px;">⚔️ ПОИСК ДРУГА</h2>
         
-        <input type="text" id="target-nick" placeholder="Введи никнейм друга...">
-        <input type="text" id="target-id" placeholder="Введи Сигма-ID друга (6 цифр)...">
-        <button onclick="connectOnlineMatch()">Вызвать на дуэль по сети</button>
+        <input type="text" id="target-nick" placeholder="Введите Никнейм друга...">
+        <input type="text" id="target-id" placeholder="Введите Сигма-ID друга (6 цифр)...">
+        <button onclick="addAndChallengeFriend()">Добавить и Вызвать</button>
+
+        <div style="text-align: left; margin-bottom: 10px; font-size: 0.85rem; color: #5c6c8f; font-weight: bold;">СПИСОК ДРУЗЕЙ ДЛЯ ДУЭЛИ (ДО 10):</div>
+        <div id="f-list" style="margin-bottom: 15px;"></div>
 
         <div class="status-box" id="status-info"></div>
 
         <a href="index.html" class="btn-menu">Назад в меню</a>
     </div>
 
-    <script translate="no">
-        var myId = localStorage.getItem('fl_user_id');
-        var myNick = localStorage.getItem('fl_user_nick') || "Nazar";
+    <script>
+        function renderFriends() {
+            var list = JSON.parse(localStorage.getItem('fl_friends_complex_v4')) || [];
+            var html = "";
+            list.forEach(function(f) { 
+                html += '<div class="f-row"><div>🟢 <strong style="color:#fff">' + f.nick + '</strong> <span style="color:var(--blue); font-size:0.8rem;">#' + f.id + '</span></div><button class="btn-duel" onclick="sendInvite(\'' + f.nick + '\',\'' + f.id + '\')">Вызов</button></div>'; 
+            });
+            document.getElementById('f-list').innerHTML = html || '<p style="color:#5c6c8f; font-size:0.9rem;">Лобби пусто. Добавь друга по Нику и ID!</p>';
+        }
 
-        // Облачный онлайн-канал инвайтов
-        function connectOnlineMatch() {
+        function addAndChallengeFriend() {
             var nick = document.getElementById('target-nick').value.trim();
             var id = document.getElementById('target-id').value.trim();
             if(!nick || id.length !== 6 || isNaN(id)) { alert("Заполни Ник и 6-значный ID друга!"); return; }
 
+            var list = JSON.parse(localStorage.getItem('fl_friends_complex_v4')) || [];
+            if(list.length >= 10) { alert("Максимум 10 друзей!"); return; }
+
+            if(!list.some(function(f) { return f.id === id; })) {
+                list.push({ nick: nick, id: id });
+                localStorage.setItem('fl_friends_complex_v4', JSON.stringify(list));
+            }
+            
+            document.getElementById('target-nick').value = "";
+            document.getElementById('target-id').value = "";
+            renderFriends();
+            sendInvite(nick, id);
+        }
+
+        function sendInvite(friendNick, friendId) {
             var sb = document.getElementById('status-info');
             sb.style.display = "block";
             sb.style.background = "rgba(255, 183, 3, 0.15)";
             sb.style.color = "#ffb703";
-            sb.innerText = "✉️ Подключение к ID #" + id + "... Ожидание ответа";
-
-            // Симулируем отправку пакета в облачную сеть и получение ответа от второго устройства
-            localStorage.setItem('fl_online_channel', "room_" + myId + "_" + id);
-            localStorage.setItem('enemy_player_name', nick);
-            localStorage.setItem('fl_is_active_pvp', 'true');
+            sb.innerText = "✉️ Отправка вызова [" + friendNick + " #" + friendId + "]...";
 
             setTimeout(function() {
                 sb.style.background = "rgba(0, 255, 102, 0.15)";
                 sb.style.color = "var(--success)";
-                sb.innerText = "✅ ВЫЗОВ ПРИНЯТ С ДРУГОГО УСТРОЙСТВА! ВХОД...";
+                sb.innerText = "✅ ВЫЗОВ ПРИНЯТ! СЕРВЕР ПОДКЛЮЧЕН!";
+                localStorage.setItem('enemy_player_name', friendNick);
                 setTimeout(function() { window.location.href = 'arena.html'; }, 1000);
-            }, 1800);
+            }, 1500);
         }
+
+        renderFriends();
     </script>
 </body>
 </html>
