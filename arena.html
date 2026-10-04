@@ -3,233 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate">
-    <title>Fluent Arena - Бой</title>
+    <title>Fluent Arena - Сражение</title>
     <style>
-        :root {
-            --bg-space: #030511;
-            --card-bg: rgba(13, 18, 38, 0.85);
-            --neon-blue: #00f2fe;
-            --neon-purple: #9d4edd;
-            --neon-pink: #ff007f;
-            --success: #00ff66;
-            --danger: #ff3333;
-            --warning: #ffb703;
-        }
+        :root { --bg: #030511; --card: rgba(13, 18, 38, 0.85); --blue: #00f2fe; --purple: #9d4edd; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body, html { 
-            background: radial-gradient(circle at center, #0c112b 0%, var(--bg-space) 100%); 
-            color: #fff; width: 100%; height: 100%; overflow-y: auto;
-            display: flex; flex-direction: column; align-items: center; padding: 20px;
-        }
-        .stars { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; background: radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 25px); background-size: 250px 200px; opacity: 0.15; }
-        .container { position: relative; z-index: 10; width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; }
-        
-        .game-card { background: var(--card-bg); border-radius: 24px; border: 1px solid rgba(0, 242, 254, 0.2); padding: 25px 20px; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
-        .brand-title { font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(135deg, #fff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
-        
-        .grid-select { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-        .char-select-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 15px; color: #fff; cursor: pointer; text-align: left; transition: all 0.2s; }
-        .char-select-btn:hover { border-color: var(--neon-blue); background: rgba(0, 242, 254, 0.05); }
-        .char-select-btn h3 { font-size: 1.1rem; color: var(--neon-blue); margin-bottom: 4px; }
-        .char-select-btn p { font-size: 0.75rem; color: #7f91a4; }
-
-        .battle-screen { display: none; flex-direction: column; gap: 15px; width: 100%; }
-        .fighter-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 15px; text-align: left; }
-        .fighter-name { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
-        .hp-bar-bg { width: 100%; height: 14px; background: #222; border-radius: 7px; overflow: hidden; }
-        .hp-bar-fill { height: 100%; background: var(--success); width: 100%; transition: width 0.2s; }
-        .hp-text { font-size: 0.8rem; margin-top: 4px; text-align: right; color: #7f91a4; }
-
-        .battle-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .btn-action { background: var(--neon-blue); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 0.95rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-action:hover { background: #fff; box-shadow: 0 0 15px #fff; }
-        .btn-action.ult { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
-
-        .log-box { background: rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; height: 100px; overflow-y: auto; font-size: 0.85rem; color: var(--warning); text-align: left; border: 1px solid rgba(255,255,255,0.02); }
-
-        .shop-box { background: rgba(13, 18, 38, 0.9); border: 1px solid var(--neon-purple); border-radius: 20px; padding: 15px; display: none; flex-direction: column; gap: 10px; }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
-        .shop-item-info h4 { color: var(--neon-blue); font-size: 0.95rem; }
-        .shop-item-info p { font-size: 0.75rem; color: #7f91a4; }
-        .btn-buy { background: var(--success); color: #000; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: auto; margin-bottom: auto; }
+        .card { background: var(--card); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 20px; padding: 20px; text-align: center; }
+        .fighter { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 15px; text-align: left; }
+        .name { font-weight: bold; font-size: 1.05rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .hp-bg { width: 100%; height: 12px; background: #222; border-radius: 6px; overflow: hidden; }
+        .hp-fill { height: 100%; background: var(--success); width: 100%; transition: width 0.2s; }
+        .hp-txt { font-size: 0.75rem; text-align: right; margin-top: 4px; color: #7f91a4; }
+        .actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 5px; }
+        .btn { background: var(--blue); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn:hover { background: #fff; }
+        .log { background: rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; height: 90px; overflow-y: auto; font-size: 0.85rem; color: #ffb703; text-align: left; border: 1px solid rgba(255,255,255,0.02); }
     </style>
 </head>
 <body>
-    <div class="stars"></div>
     <div class="container">
-        <!-- КАРТОЧКА ВЫБОРА ПЕРСОНАЖА -->
-        <div class="game-card" id="selection-card">
-            <div class="brand-title">Fluent Arena</div>
-            <div style="margin-top: 15px; font-size: 1.1rem; font-weight: bold;">Выбери своего Сигму-Бойца:</div>
-            <div class="grid-select">
-                <button class="char-select-btn" onclick="startBattle('Nazar')"><h3>Nazar (Овнер)</h3><p>HP: 140 | Урон: 18<br>Пассивка: Крит 25%</p></button>
-                <button class="char-select-btn" onclick="startBattle('Leon')"><h3>Леон (Бравл)</h3><p>HP: 100 | Урон: 24<br>Пассивка: Стелс-хил</p></button>
-                <button class="char-select-btn" onclick="startBattle('Domer')"><h3>Домер (Грифер)</h3><p>HP: 120 | Урон: 20<br>Пассивка: Взлом брони</p></button>
-                <button class="char-select-btn" onclick="startBattle('Mellstroy')"><h3>Меллстрой</h3><p>HP: 110 | Урон: 16<br>Пассивка: Золотой щит</p></button>
-            </div>
+        <div class="card" style="padding: 10px; font-weight: bold; color: var(--blue); text-transform: uppercase;">КИБЕР АРЕНА БОЯ</div>
+
+        <!-- ИГРОК -->
+        <div class="fighter" style="border-left: 4px solid var(--blue);">
+            <div class="name"><span id="p-display-name">Боец</span> <span id="p-weapon" style="font-size:0.75rem; color:#ffb703;">Кулаки</span></div>
+            <div class="hp-bg"><div class="hp-fill" id="p-bar"></div></div>
+            <div class="hp-txt"><span id="p-text">100/100</span> HP</div>
         </div>
 
-        <!-- ИГРОВОЙ ЭКРАН СРАЖЕНИЯ -->
-        <div class="battle-screen" id="battle-screen">
-            <div class="game-card" style="padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
-                <div>Монеты: <span id="gold-val" style="color: var(--warning); font-weight: bold;">0</span> 💰</div>
-                <div style="font-weight: bold; color: var(--neon-pink);">Волна: <span id="wave-val">1</span></div>
-                <button style="background:none; border:1px solid var(--neon-purple); color:#fff; padding:5px 10px; border-radius:6px; cursor:pointer;" onclick="toggleShop()">Магазин 🛒</button>
-            </div>
-
-            <!-- МАГАЗИН ОРУЖИЯ -->
-            <div class="shop-box" id="shop-box">
-                <div style="font-weight: bold; text-align: center; color: var(--neon-purple); margin-bottom: 5px;">ДАРКНЕТ МАГАЗИН</div>
-                <div class="shop-item">
-                    <div class="shop-item-info"><h4>Лопата Мортиса</h4><p>Урон +8 к базовой атаке</p></div>
-                    <button class="btn-buy" onclick="buyWeapon('shovel', 40)">40 💰</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-info"><h4>Меч Грифера</h4><p>Урон +14 к базовой атаке</p></div>
-                    <button class="btn-buy" onclick="buyWeapon('sword', 80)">80 💰</button>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-info"><h4>Админка ReallyWorld</h4><p>Урон +25 | Здоровье +40</p></div>
-                    <button class="btn-buy" onclick="buyWeapon('admin', 150)">150 💰</button>
-                </div>
-            </div>
-
-            <!-- ТВОЙ БОЕЦ -->
-            <div class="fighter-box" style="border: 1px solid var(--neon-blue);">
-                <div class="fighter-name"><span id="player-name">Твой Боец</span> <span id="weapon-badge" style="font-size:0.75rem; color:var(--warning);">Кулаки</span></div>
-                <div class="hp-bar-bg"><div class="hp-bar-fill" id="player-hp-bar"></div></div>
-                <div class="hp-text"><span id="player-hp-text">100/100</span> HP</div>
-            </div>
-
-            <!-- ВРАГ / БОСС -->
-            <div class="fighter-box" style="border: 1px solid var(--neon-pink);">
-                <div class="fighter-name"><span id="enemy-name">Босс</span><span style="color:var(--danger); font-size:0.8rem;">BOSS</span></div>
-                <div class="hp-bar-bg"><div class="hp-bar-fill" id="enemy-hp-bar" style="background:var(--danger);"></div></div>
-                <div class="hp-text"><span id="enemy-hp-text">60/60</span> HP</div>
-            </div>
-
-            <!-- КНОПКИ ДЕЙСТВИЙ -->
-            <div class="battle-actions">
-                <button class="btn-action" onclick="playerAttack('normal')">⚔️ Атака</button>
-                <button class="btn-action ult" id="ult-btn" onclick="playerAttack('ult')">🔥 Ульта (0%)</button>
-            </div>
-
-            <!-- ЛОГ ИГРЫ -->
-            <div class="log-box" id="game-log"></div>
+        <!-- РАНДОМНЫЙ БОТ -->
+        <div class="fighter" style="border-left: 4px solid var(--pink);">
+            <div class="name"><span id="e-display-name">Загрузка бота...</span> <span style="font-size:0.75rem; color:var(--danger);">BOT</span></div>
+            <div class="hp-bg"><div class="hp-fill" id="e-bar" style="background:var(--danger);"></div></div>
+            <div class="hp-txt"><span id="e-text">100/100</span> HP</div>
         </div>
+
+        <!-- КНОПКИ АТАК -->
+        <div class="actions" id="act-zone">
+            <button class="btn" onclick="attack()">⚔️ Нанести удар</button>
+        </div>
+
+        <div class="log" id="arena-log">⚔️ Раунд начался! Бей первым!</div>
     </div>
 
-    <script translate="no">
-        var player = { name: "", hp: 100, maxHp: 100, dmg: 10, type: "", weaponDmg: 0, ultCharge: 0 };
-        var enemy = { name: "", hp: 60, maxHp: 60, dmg: 8 };
-        
-        var gold = 0;
-        var wave = 1;
-        var weaponsOwned = [];
+    <script>
+        var pName = localStorage.getItem('p_name') || "Сигма";
+        var pHp = parseInt(localStorage.getItem('p_hp')) || 100;
+        var pMax = parseInt(localStorage.getItem('p_max_hp')) || 100;
+        var pDmg = parseInt(localStorage.getItem('p_dmg')) || 15;
+        var pPass = localStorage.getItem('p_pass') || "";
+        var bonusDmg = parseInt(localStorage.getItem('fl_bonus_dmg')) || 0;
 
-        var bossNames = ["Скибиди Туалет", "Аниматроник Фредди", "Крипер-Мутант", "Злой Глент", "Влад А4 Босс", "Читер ReallyWorld"];
+        // Выбираем рандомного бота-соперника
+        var bots = ["Влад А4 Босс", "Скибиди Туалет", "Фредди Фазбер", "Глент Мутант", "Злой Кобяков"];
+        var eName = bots[Math.floor(Math.random() * bots.length)];
+        var eHp = 80 + Math.floor(Math.random() * 50);
+        var eMax = eHp;
+        var eDmg = 12 + Math.floor(Math.random() * 8);
 
-        function startBattle(type) {
-            player.type = type;
-            if (type === 'Nazar') { player.name = "Сигма Nazar"; player.hp = 140; player.maxHp = 140; player.dmg = 18; }
-            if (type === 'Leon') { player.name = "Леон Бравл"; player.hp = 100; player.maxHp = 100; player.dmg = 24; }
-            if (type === 'Domer') { player.name = "Домер Грифер"; player.hp = 120; player.maxHp = 120; player.dmg = 20; }
-            if (type === 'Mellstroy') { player.name = "Меллстрой 💎"; player.hp = 110; player.maxHp = 110; player.dmg = 16; }
+        document.getElementById('p-display-name').innerText = pName;
+        document.getElementById('e-display-name').innerText = eName;
+        if(bonusDmg > 0) document.getElementById('p-weapon').innerText = "Снаряжение +" + bonusDmg + " Атк";
 
-            document.getElementById('selection-card').style.display = 'none';
-            document.getElementById('battle-screen').style.display = 'flex';
-            
-            spawnEnemy();
-            updateStats();
-            addLog("⚔️ Ты зашёл на арену как " + player.name + "! Волна 1 началась.");
+        function refresh() {
+            document.getElementById('p-text').innerText = pHp + "/" + pMax;
+            document.getElementById('p-bar').style.width = (pHp / pMax * 100) + "%";
+            document.getElementById('e-text').innerText = eHp + "/" + eMax;
+            document.getElementById('e-bar').style.width = (eHp / eMax * 100) + "%";
         }
 
-        function spawnEnemy() {
-var nameIndex = (wave - 1) % bossNames.length;
-enemy.name = bossNames[nameIndex] + " [Ур." + wave + "]";
-enemy.maxHp = 50 + (wave * 25);
-enemy.hp = enemy.maxHp;
-enemy.dmg = 6 + (wave * 3);
-updateStats();
-}
-function updateStats() {
-document.getElementById('gold-val').innerText = gold;
-document.getElementById('wave-val').innerText = wave;
-document.getElementById('player-hp-text').innerText = player.hp + "/" + player.maxHp;
-document.getElementById('player-hp-bar').style.width = (player.hp / player.maxHp * 100) + "%";
-document.getElementById('enemy-name').innerText = enemy.name;
-document.getElementById('enemy-hp-text').innerText = enemy.hp + "/" + enemy.maxHp;
-document.getElementById('enemy-hp-bar').style.width = (enemy.hp / enemy.maxHp * 100) + "%";
-document.getElementById('ult-btn').innerText = "🔥 Ульта (" + player.ultCharge + "%)";
-}
-function playerAttack(mode) {
-if (player.hp <= 0 || enemy.hp <= 0) return;
-var finalDmg = player.dmg + player.weaponDmg;
-if (mode === 'ult') {
-if (player.ultCharge < 100) { addLog("❌ Ульта ещё не заряжена!"); return; }
-finalDmg = Math.floor(finalDmg * 2.5);
-player.ultCharge = 0;
-addLog("🔥 " + player.name + " ИСПОЛЬЗОВАЛ УЛЬТУ НА " + finalDmg + " УРОНА!");
-} else {
-if (player.type === 'Nazar' && Math.random() < 0.25) {
-finalDmg = Math.floor(finalDmg * 1.8);
-addLog("⚡ КРИТИЧЕСКИЙ УДАР от Назара: " + finalDmg + " урона!");
-} else {
-addLog("⚔️ Ты нанёс " + finalDmg + " урона боссу " + enemy.name);
-}
-if (player.ultCharge < 100) player.ultCharge = Math.min(100, player.ultCharge + 25);
-}
-enemy.hp = Math.max(0, enemy.hp - finalDmg);
-updateStats();
-if (enemy.hp <= 0) {
-var reward = 15 + (wave * 10);
-gold += reward;
-addLog("💀 БОСС ПОВЕРЖЕН! Ты получил +" + reward + " золота!");
-wave++;
-if (player.type === 'Leon') {
-player.hp = Math.min(player.maxHp, player.hp + 30);
-addLog("🦎 Пассивка Леона: Стелс-регенерация (+30 HP)");
-}
-setTimeout(spawnEnemy, 1500);
-return;
-}
-setTimeout(enemyAttack, 500);
-}
-function enemyAttack() {
-if (enemy.hp <= 0) return;
-var edmg = enemy.dmg;
-if (player.type === 'Mellstroy' && Math.random() < 0.25) {
-edmg = Math.floor(edmg * 0.3);
-addLog("💎 Меллстрой врубил Золотой Щит! Заблокировано 70% урона.");
-}
-player.hp = Math.max(0, player.hp - edmg);
-addLog("💥 " + enemy.name + " врезал тебе на -" + edmg + " HP!");
-updateStats();
-if (player.hp <= 0) {
-addLog("💀 ТЫ ПОГИБ НА " + wave + " ВОЛНЕ! Игра окончена.");
-document.getElementById('buttons-area').innerHTML = <button class="btn-action" style="background:var(--danger); color:#fff;" onclick="location.reload()">Начать заново</button>;
-}
-}
-function toggleShop() {
-var shop = document.getElementById('shop-box');
-shop.style.display = (shop.style.display === 'none' || shop.style.display === '') ? 'flex' : 'none';
-}
-function buyWeapon(wType, cost) {
-if (gold < cost) { alert("Мало золота, иди дерись на арене!"); return; }
-if (weaponsOwned.includes(wType)) { alert("Это оружие уже у тебя в руках!"); return; }
-gold -= cost;
-weaponsOwned.push(wType);
-if (wType === 'shovel') { player.weaponDmg = 8; document.getElementById('weapon-badge').innerText = "Лопата Мортиса 🛠️"; }
-if (wType === 'sword') { player.weaponDmg = 14; document.getElementById('weapon-badge').innerText = "Меч Грифера ⚔️"; }
-if (wType === 'admin') { player.weaponDmg = 25; player.maxHp += 40; player.hp += 40; document.getElementById('weapon-badge').innerText = "Админка ReallyWorld 👑"; }
-addLog("💰 Ты успешно купил улучшение оружия!");
-toggleShop();
-updateStats();
-}
-function addLog(text) {
-var box = document.getElementById('game-log');
-box.innerHTML += text + "
-";
-box.scrollTop = box.scrollHeight;
-}
+        function attack() {
+            if (pHp <= 0 || eHp <= 0) return;
+            
+            // Твой удар
+            var finalDmg = pDmg + bonusDmg;
+            if (pName === "Nazar" && Math.random() < 0.25) {
+                finalDmg = Math.floor(finalDmg * 1.8);
+                log("⚡ КРИТ ОТ НАЗАРА! Нанесено " + finalDmg + " урона!");
+            } else {
+                log("⚔️ Ты врезал боту " + eName + " на -" + finalDmg + " HP!");
+            }
+            
+            eHp = Math.max(0, eHp - finalDmg);
+            refresh();
+
+            if (eHp <= 0) {
+                log("🏆 ТЫ ПОБЕДИЛ! Бот пал смертью храбрых.");
+                localStorage.setItem('battle_res', 'win');
+                endGame();
+                return;
+            }
+
+            // Удар бота
+            document.getElementById('act-zone').innerHTML = `<button class="btn" style="background:#444; color:#aaa; cursor:not-allowed;">Защита...</button>`;
+            setTimeout(function() {
+                if(eHp <= 0) return;
+                var ed = eDmg;
+                if(pName === "Mellstroy" && Math.random() < 0.25) {
+                    ed = Math.floor(ed * 0.3);
+                    log("💎 Пассивка Меллстроя: Щит заблокал 70% урона!");
+                }
+                pHp = Math.max(0, pHp - ed);
+                log("💥 " + eName + " ударил в ответ на -" + ed + " HP!");
+                refresh();
+
+                if (pHp <= 0) {
+                    log("💀 ТЫ ПРОИГРАЛ! Боец повержен.");
+                    localStorage.setItem('battle_res', 'fail');
+                    endGame();
+                } else {
+                    document.getElementById('act-zone').innerHTML = `<button class="btn" onclick="attack()">⚔️ Нанести удар</button>`;
+                }
+            }, 600);
+        }
+
+        function endGame() {
+            document.getElementById('act-zone').innerHTML = `<button class="btn" style="background:var(--pink); color:#fff;" onclick="window.location.href='result.html'">Завершить бой 🚩</button>`;
+        }
+
+        function log(t) {
+            var l = document.getElementById('arena-log');
+            l.innerHTML += "<br>" + t;
+            l.scrollTop = l.scrollHeight;
+        }
+        refresh();
+    </script>
+</body>
+</html>
