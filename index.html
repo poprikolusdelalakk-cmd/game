@@ -36,12 +36,9 @@
 
     <script>
         let isSignUpMode = false;
-
-        // Автоматически вычисляем правильный базовый путь репозитория на GitHub Pages
-        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        const area = document.getElementById('inputs-area');
 
         function renderFields() {
-            const area = document.getElementById('inputs-area');
             if (isSignUpMode) {
                 document.getElementById('auth-title').innerText = "Регистрация";
                 area.innerHTML = `
@@ -78,8 +75,8 @@
             localStorage.setItem('fl_name_by_phone_' + phone, name);
             localStorage.setItem('fluent_session', name);
             
-            // Исправленный переход: строго с учетом папки репозитория
-            window.location.href = window.location.origin + basePath + 'chat.html';
+            // ПЕРЕНАПРАВЛЯЕМ НА СОВЕРШЕННО НОВУЮ ВКЛАДКУ-СТРАНИЦУ
+            window.location.href = 'messenger.html';
         }
 
         function processLogin() {
@@ -95,12 +92,12 @@
             localStorage.setItem('fl_pass_by_name_' + resolvedName, pass);
             localStorage.setItem('fluent_session', resolvedName);
             
-            // Исправленный переход: строго с учетом папки репозитория
-            window.location.href = window.location.origin + basePath + 'chat.html';
+            // ПЕРЕНАПРАВЛЯЕМ НА СОВЕРШЕННО НОВУЮ ВКЛАДКУ-СТРАНИЦУ
+            window.location.href = 'messenger.html';
         }
 
         if (localStorage.getItem('fluent_session')) {
-            window.location.href = window.location.origin + basePath + 'chat.html';
+            window.location.href = 'messenger.html';
         } else {
             renderFields();
         }
