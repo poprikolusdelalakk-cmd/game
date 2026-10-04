@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FLUENT ARENA - БОЙ</title>
+    <!-- Подключаем MQTT для связи без серверов и библиотеку конфетти -->
+    <script src="https://unpkg.com"></script>
     <script src="https://jsdelivr.net"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
             background-color: #060b13;
             color: #ffffff;
@@ -31,26 +28,18 @@
             flex-direction: column;
             gap: 15px;
         }
-        /* Панель здоровья игроков */
         .hud {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(13, 22, 37, 0.8);
+            background: rgba(13, 22, 37, 0.9);
             border: 2px solid #1e293b;
             border-radius: 16px;
             padding: 15px 20px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
         }
-        .player-info {
-            width: 42%;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .player-info.player2 {
-            align-items: flex-end;
-        }
+        .player-info { width: 42%; display: flex; flex-direction: column; gap: 6px; }
+        .player-info.player2 { align-items: flex-end; }
         .username {
             font-size: 16px;
             font-weight: 700;
@@ -61,35 +50,12 @@
             text-overflow: ellipsis;
             max-width: 100%;
         }
-        .player2 .username {
-            color: #f43f5e;
-            text-shadow: 0 0 8px rgba(244, 63, 94, 0.4);
-        }
-        .hp-bar-bg {
-            width: 100%;
-            height: 16px;
-            background: #111827;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #374151;
-        }
-        .hp-bar-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, #38bdf8, #0ea5e9);
-            transition: width 0.1s ease-out;
-        }
-        .player2 .hp-bar-fill {
-            background: linear-gradient(90deg, #f43f5e, #e11d48);
-        }
-        .vs-badge {
-            font-size: 20px;
-            font-weight: 900;
-            color: #f59e0b;
-            text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-            padding: 0 10px;
-        }
-        /* Игровое поле */
+        .player2 .username { color: #f43f5e; text-shadow: 0 0 8px rgba(244, 63, 94, 0.4); }
+        .hp-bar-bg { width: 100%; height: 16px; background: #111827; border-radius: 8px; overflow: hidden; border: 1px solid #374151; position: relative; }
+        .hp-bar-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #38bdf8, #0ea5e9); transition: width 0.15s ease-out; }
+        .player2 .hp-bar-fill { background: linear-gradient(90deg, #f43f5e, #e11d48); }
+        .shield-indicator { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: rgba(234, 179, 8, 0.6); transition: width 0.1s; }
+        .vs-badge { font-size: 20px; font-weight: 900; color: #f59e0b; text-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
         canvas {
             background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
             border: 3px solid #1e293b;
@@ -98,310 +64,312 @@
             width: 100%;
             aspect-ratio: 16 / 9;
         }
-        /* Стили подписи управления */
         .controls-hint {
-            text-align: center;
-            font-size: 13px;
-            color: #64748b;
-            background: rgba(13, 22, 37, 0.4);
-            padding: 8px;
-            border-radius: 10px;
+            text-align: center; font-size: 13px; color: #64748b;
+            background: rgba(13, 22, 37, 0.4); padding: 8px; border-radius: 10px;
             border: 1px solid rgba(30, 41, 59, 0.5);
         }
-        /* Модалка завершения боя */
         .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(2, 6, 23, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 10;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(8px); z-index: 10;
+            justify-content: center; align-items: center;
         }
         .result-card {
-            background: #0d1625;
-            border: 2px solid #1e293b;
-            border-radius: 24px;
-            padding: 40px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            animation: scaleIn 0.3s ease-out;
+            background: #0d1625; border: 2px solid #1e293b; border-radius: 24px;
+            padding: 40px; width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: scaleIn 0.3s ease-out;
         }
-        @keyframes scaleIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .result-title {
-            font-size: 28px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-        .winner-name {
-            font-size: 20px;
-            color: #34d399;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .result-title { font-size: 28px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; }
+        .winner-name { font-size: 20px; color: #34d399; margin-bottom: 25px; font-weight: 600; }
         .btn-menu {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
-            transition: transform 0.1s, opacity 0.2s;
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3); transition: transform 0.1s;
         }
-        .btn-menu:hover {
-            opacity: 0.9;
-        }
-        .btn-menu:active {
-            transform: scale(0.98);
-        }
+        .btn-menu:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
     <div class="arena-container">
-        <!-- Панель статусов игроков -->
         <div class="hud">
             <div class="player-info player1">
-                <div class="username" id="p1-name">Игрок 1</div>
+                <div class="username" id="p1-name">Загрузка...</div>
                 <div class="hp-bar-bg">
                     <div class="hp-bar-fill" id="p1-hp"></div>
+                    <div class="shield-indicator" id="p1-shield"></div>
                 </div>
             </div>
-            <div class="vs-badge">VS</div>
+            <div class="vs-badge" id="game-mode-badge">VS</div>
             <div class="player-info player2">
-                <div class="username" id="p2-name">Противник</div>
+                <div class="username" id="p2-name">Поиск...</div>
                 <div class="hp-bar-bg">
                     <div class="hp-bar-fill" id="p2-hp"></div>
+                    <div class="shield-indicator" id="p2-shield"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Игровой холст -->
         <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-        <!-- Подсказка -->
-        <div class="controls-hint">
-            <strong>Управление:</strong> Игрок 1 (Синий): Лево/Право — <b>A / D</b>, Удар — <b>Space (Пробел)</b> | Игрок 2 (Красный): Лево/Право — <b>Стрелки ← / →</b>, Удар — <b>Enter</b>
+        <div class="controls-hint" id="hint-text">
+            <b>Управление (Бой с ботом):</b> Движение — <b>A / D</b>, Удар — <b>Space (Пробел)</b>, Блок — <b>S</b>
         </div>
     </div>
 
-    <!-- Окно результатов -->
     <div class="overlay" id="result-overlay">
         <div class="result-card">
             <div class="result-title" id="res-title">БОЙ ЗАВЕРШЕН</div>
-            <div class="winner-name" id="res-winner">Победитель определен!</div>
+            <div class="winner-name" id="res-winner">Определяем победителя...</div>
             <button class="btn-menu" onclick="window.location.href='index.html'">В ГЛАВНОЕ МЕНЮ</button>
         </div>
     </div>
 
     <script>
-        // Получаем никнейм из localStorage, установленный в настройках игры
-        const savedNickname = localStorage.getItem('nickname') || 'Flerenk';
-        document.getElementById('p1-name').textContent = savedNickname;
-        
-        // Для демонстрационного локального PvP генерируем имя оппонента, если его нет по сети
-        document.getElementById('p2-name').textContent = 'Соперник';
-
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Кнопки управления
-        const keys = {
-            a: false, d: false, space: false,
-            ArrowLeft: false, ArrowRight: false, Enter: false
-        };
+        // Получаем параметры игры
+        const myName = localStorage.getItem('nickname') || 'Flerenk';
+        document.getElementById('p1-name').textContent = myName;
 
-        // Конфигурация бойцов
-        const player1 = {
-            x: 150,
-            y: 300,
-            width: 50,
-            height: 90,
-            color: '#38bdf8',
-            shadowColor: 'rgba(56, 189, 248, 0.6)',
-            speed: 5,
-            hp: 100,
-            isAttacking: false,
-            attackCooldown: false,
-            facing: 'right'
-        };
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameMode = urlParams.get('mode') || 'bot'; // 'bot' или 'online'
+        const role = urlParams.get('role') || 'host';    // 'host' или 'guest'
+        const roomId = urlParams.get('room') || 'local';
 
-        const player2 = {
-            x: 600,
-            y: 300,
-            width: 50,
-            height: 90,
-            color: '#f43f5e',
-            shadowColor: 'rgba(244, 63, 94, 0.6)',
-            speed: 5,
-            hp: 100,
-            isAttacking: false,
-            attackCooldown: false,
-            facing: 'left'
-        };
+        let isBotMode = gameMode === 'bot';
+        let enemyName = isBotMode ? 'Кибер-Бот СИГМА 🤖' : 'Соперник ⚔️';
+        document.getElementById('p2-name').textContent = enemyName;
+        document.getElementById('game-mode-badge').textContent = isBotMode ? 'ИИ' : 'PVP';
 
+        if(!isBotMode) {
+            document.getElementById('hint-text').innerHTML = `<b>Сетевой бой:</b> Движение — <b>A / D</b>, Атака — <b>Пробел</b>, Блок — <b>S</b>`;
+        }
+
+        // Кнопки ввода
+        const keys = { a: false, d: false, s: false, space: false };
+        let particles = [];
+
+        // Класс системы сочных неоновых частиц при ударе
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y;
+                this.size = Math.random() * 4 + 2;
+                this.speedX = (Math.random() - 0.5) * 8;
+                this.speedY = (Math.random() - 0.5) * 8;
+                this.color = color;
+                this.alpha = 1;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                this.alpha -= 0.03;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createSparkles(x, y, color) {
+            for(let i=0; i<15; i++) particles.push(new Particle(x, y, color));
+        }
+
+        // Параметры игроков
+        const p1 = { x: 150, y: 300, width: 50, height: 90, color: '#38bdf8', sColor: '#0ea5e9', hp: 100, isAttacking: false, isBlocking: false, cd: false, facing: 'right' };
+        const p2 = { x: 600, y: 300, width: 50, height: 90, color: '#f43f5e', sColor: '#e11d48', hp: 100, isAttacking: false, isBlocking: false, cd: false, facing: 'left' };
         let gameOver = false;
 
-        // Отслеживание нажатий
+        // Настройки локального ввода
         window.addEventListener('keydown', (e) => {
             if (gameOver) return;
             if (e.code === 'KeyA') keys.a = true;
             if (e.code === 'KeyD') keys.d = true;
-            if (e.code === 'Space') {
-                keys.space = true;
-                triggerAttack(player1, player2, 'p2-hp');
-            }
-            if (e.code === 'ArrowLeft') keys.ArrowLeft = true;
-            if (e.code === 'ArrowRight') keys.ArrowRight = true;
-            if (e.code === 'Enter') {
-                keys.Enter = true;
-                triggerAttack(player2, player1, 'p1-hp');
+            if (e.code === 'KeyS') { keys.s = true; p1.isBlocking = true; }
+            if (e.code === 'Space' && !p1.cd && !p1.isBlocking) {
+                p1.isAttacking = true; p1.cd = true;
+                checkHit(p1, p2, 'p2-hp');
+                sendNetData();
+                setTimeout(() => p1.isAttacking = false, 120);
+                setTimeout(() => p1.cd = false, 300);
             }
         });
 
         window.addEventListener('keyup', (e) => {
             if (e.code === 'KeyA') keys.a = false;
             if (e.code === 'KeyD') keys.d = false;
-            if (e.code === 'Space') keys.space = false;
-            if (e.code === 'ArrowLeft') keys.ArrowLeft = false;
-            if (e.code === 'ArrowRight') keys.ArrowRight = false;
-            if (e.code === 'Enter') keys.Enter = false;
+            if (e.code === 'KeyS') { keys.s = false; p1.isBlocking = false; }
         });
 
-        // Функция обработки удара
-        function triggerAttack(attacker, target, targetHpBarId) {
-            if (attacker.attackCooldown || gameOver) return;
-
-            attacker.isAttacking = true;
-            attacker.attackCooldown = true;
-
-            // Зона действия атаки зависит от того, куда смотрит персонаж
-            let attackX = attacker.facing === 'right' ? attacker.x + attacker.width : attacker.x - 60;
-            let attackWidth = 60;
-
-            // Проверка попадания по хитбоксу противника
-            if (
-                attackX < target.x + target.width &&
-                attackX + attackWidth > target.x &&
-                attacker.y < target.y + target.height &&
-                attacker.y + attacker.height > target.y
-            ) {
-                // Попадание! Наносим урон
-target.hp = Math.max(0, target.hp - 10);
-document.getElementById(targetHpBarId).style.width = target.hp + '%';
-// Эффект микро-отброса при получении урона
-if (attacker.facing === 'right') target.x = Math.min(canvas.width - target.width, target.x + 15);
-else target.x = Math.max(0, target.x - 15);
-checkMatchEnd();
+        // Функция просчета удара и защиты
+        function checkHit(attacker, target, targetHpId) {
+            let hitX = attacker.facing === 'right' ? attacker.x + attacker.width : attacker.x - 50;
+            if (hitX < target.x + target.width && hitX + 50 > target.x) {
+                if (target.isBlocking) {
+                    createSparkles(target.x + target.width/2, target.y + 30, '#eab308'); // Искры блока
+                    return;
+                }
+                // Нанесение урона
+                target.hp = Math.max(0, target.hp - 8);
+document.getElementById(targetHpId).style.width = target.hp + '%';
+createSparkles(target.x + target.width/2, target.y + 30, target.color); // Искры крови/удара
+// Эффект отбрасывания
+target.x += attacker.facing === 'right' ? 25 : -25;
+target.x = Math.max(0, Math.min(canvas.width - target.width, target.x));
+checkWin();
 }
-// Анимация удара длится 150мс
-setTimeout(() => {
-attacker.isAttacking = false;
-}, 150);
-// Кулдаун между ударами (350мс)
-setTimeout(() => {
-attacker.attackCooldown = false;
-}, 350);
 }
-// Проверка окончания матча
-function checkMatchEnd() {
-if (player1.hp <= 0 || player2.hp <= 0) {
+// Логика Кибер-Бота
+let botActionTimer = 0;
+function updateBot() {
+if (gameOver || !isBotMode) return;
+botActionTimer++;
+let dist = Math.abs(p2.x - p1.x);
+p2.facing = p1.x > p2.x ? 'right' : 'left';
+// Если бот слишком далеко — он бежит к игроку
+if (dist > 70) {
+p2.isBlocking = false;
+if (p1.x > p2.x) p2.x += 3.5;
+else p2.x -= 3.5;
+}
+// Если близко — включает боевой режим
+else {
+if (botActionTimer % 20 === 0) {
+// Рандомный выбор: ударить или заблокировать
+let chance = Math.random();
+if (chance < 0.5 && !p2.cd) { // Атака ботом
+p2.isBlocking = false; p2.isAttacking = true; p2.cd = true;
+checkHit(p2, p1, 'p1-hp');
+setTimeout(() => p2.isAttacking = false, 120);
+setTimeout(() => p2.cd = false, 400);
+} else if (chance < 0.8) { // Ставит блок
+p2.isBlocking = true;
+}
+}
+}
+// Умный отскок: если ХП мало, бот пытается разорвать дистанцию
+if (p2.hp < 30 && botActionTimer % 50 === 0 && dist < 100) {
+p2.x += p2.facing === 'right' ? -60 : 60;
+p2.isBlocking = true;
+}
+p2.x = Math.max(0, Math.min(canvas.width - p2.width, p2.x));
+}
+// ИНТЕГРАЦИЯ СЕТЕВОГО ОНЛАЙН-РЕЖИМА (ЧЕРЕЗ MQTT)
+let client;
+if (!isBotMode) {
+client = mqtt.connect('wss://test.mosquitto.org:8081');
+client.on('connect', () => {
+client.subscribe(fluentarena/${roomId});
+// Отправляем свое имя в комнату
+client.publish(fluentarena/${roomId}/join, JSON.stringify({ name: myName, role: role }));
+});
+client.on('message', (topic, message) => {
+try {
+let data = JSON.parse(message.toString());
+// Обмен именами
+if (topic.endsWith('/join') && data.name !== myName) {
+enemyName = data.name;
+document.getElementById('p2-name').textContent = enemyName;
+}
+// Синхронизация движений противника
+if (topic.endsWith('/move') && data.user !== myName) {
+let targetSync = role === 'host' ? p2 : p1;
+targetSync.x = data.x;
+targetSync.isBlocking = data.isBlocking;
+targetSync.isAttacking = data.isAttacking;
+targetSync.facing = data.facing;
+targetSync.hp = data.hp;
+let hpBarId = role === 'host' ? 'p2-hp' : 'p1-hp';
+document.getElementById(hpBarId).style.width = targetSync.hp + '%';
+if(data.isAttacking) {
+createSparkles(targetSync.x + targetSync.width/2, targetSync.y + 30, targetSync.color);
+}
+checkWin();
+}
+} catch(e){}
+});
+}
+function sendNetData() {
+if (isBotMode || !client) return;
+let myState = role === 'host' ? p1 : p2;
+client.publish(fluentarena/${roomId}/move, JSON.stringify({
+user: myName, x: myState.x, isBlocking: myState.isBlocking,
+isAttacking: myState.isAttacking, facing: myState.facing, hp: myState.hp
+}));
+}
+function checkWin() {
+if (gameOver) return;
+if (p1.hp <= 0 || p2.hp <= 0) {
 gameOver = true;
-let winnerText = '';
-if (player1.hp <= 0 && player2.hp <= 0) {
-winnerText = 'НИЧЬЯ!';
-} else if (player1.hp <= 0) {
-winnerText = ${document.getElementById('p2-name').textContent} ПОБЕДИЛ!;
-} else {
-winnerText = ${document.getElementById('p1-name').textContent} ПОБЕДИЛ!;
-// Салют из конфетти, если выиграл текущий игрок
-confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-}
-document.getElementById('res-winner').textContent = winnerText;
+let text = p1.hp <= 0 ? ${enemyName} ПОБЕДИЛ! : ${myName} ПОБЕДИЛ!;
+if(p1.hp > 0) confetti({ particleCount: 150, spread: 80 });
+document.getElementById('res-winner').textContent = text;
 document.getElementById('result-overlay').style.display = 'flex';
 }
 }
-// Отрисовка персонажа
-function drawFighter(f) {
+// Отрисовка
+function drawPlayer(p) {
 ctx.save();
-ctx.shadowBlur = 15;
-ctx.shadowColor = f.shadowColor;
-ctx.fillStyle = f.color;
-// Тело бойца
+ctx.shadowBlur = p.isBlocking ? 25 : 15;
+ctx.shadowColor = p.isBlocking ? '#eab308' : p.sColor;
+ctx.fillStyle = p.color;
+// Отрисовка бойца
 ctx.beginPath();
-ctx.roundRect(f.x, f.y, f.width, f.height, 8);
+ctx.roundRect(p.x, p.y, p.width, p.height, 10);
 ctx.fill();
-// Отрисовка руки/оружия при атаке
-if (f.isAttacking) {
+// Если в блоке - рисуем неоновый щит
+if (p.isBlocking) {
+ctx.strokeStyle = '#eab308';
+ctx.lineWidth = 4;
+ctx.beginPath();
+if(p.facing === 'right') ctx.arc(p.x + p.width, p.y + p.height/2, 35, -Math.PI/2, Math.PI/2);
+else ctx.arc(p.x, p.y + p.height/2, 35, Math.PI/2, -Math.PI/2);
+ctx.stroke();
+}
+// Оружие / Рука при ударе
+if (p.isAttacking) {
 ctx.fillStyle = '#ffffff';
-ctx.shadowColor = '#ffffff';
-if (f.facing === 'right') {
-ctx.fillRect(f.x + f.width, f.y + 25, 45, 15);
-} else {
-ctx.fillRect(f.x - 45, f.y + 25, 45, 15);
-}
-} else {
-// Обычное положение рук
-ctx.fillStyle = f.color;
-ctx.globalAlpha = 0.6;
-if (f.facing === 'right') {
-ctx.fillRect(f.x + f.width - 10, f.y + 30, 15, 30);
-} else {
-ctx.fillRect(f.x - 5, f.y + 30, 15, 30);
-}
+if (p.facing === 'right') ctx.fillRect(p.x + p.width, p.y + 30, 45, 12);
+else ctx.fillRect(p.x - 45, p.y + 30, 45, 12);
 }
 ctx.restore();
 }
-// Главный игровой цикл (Без бесконечных циклов while, работает плавно)
-function update() {
-// Очистка экрана
+// Главный цикл обновлений
+function gameLoop() {
 ctx.clearRect(0, 0, canvas.width, canvas.height);
-// Линия земли арены
-ctx.strokeStyle = '#1e293b';
-ctx.lineWidth = 4;
-ctx.beginPath();
-ctx.moveTo(0, 390);
-ctx.lineTo(canvas.width, 390);
-ctx.stroke();
+// Отрисовка земли
+ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 4;
+ctx.beginPath(); ctx.moveTo(0, 390); ctx.lineTo(canvas.width, 390); ctx.stroke();
 if (!gameOver) {
-// Движение Игрока 1
-if (keys.a) {
-player1.x = Math.max(0, player1.x - player1.speed);
-player1.facing = 'left';
+// Движение нашего игрока (P1 для хоста, P2 для гостя)
+let activePlayer = role === 'host' ? p1 : p2;
+let oldX = activePlayer.x;
+if (keys.a) { activePlayer.x = Math.max(0, activePlayer.x - 4.5); activePlayer.facing = 'left'; }
+if (keys.d) { activePlayer.x = Math.min(canvas.width - activePlayer.width, activePlayer.x + 4.5); activePlayer.facing = 'right'; }
+if(activePlayer.x !== oldX || keys.s) {
+sendNetData();
 }
-if (keys.d) {
-player1.x = Math.min(canvas.width - player1.width, player1.x + player1.speed);
-player1.facing = 'right';
+updateBot();
 }
-// Движение Игрока 2
-if (keys.ArrowLeft) {
-player2.x = Math.max(0, player2.x - player2.speed);
-player2.facing = 'left';
+// Отрисовка эффектов
+particles.forEach((p, idx) => {
+p.update(); p.draw();
+if(p.alpha <= 0) particles.splice(idx, 1);
+});
+drawPlayer(p1);
+drawPlayer(p2);
+document.getElementById('p1-shield').style.width = p1.isBlocking ? '100%' : '0%';
+document.getElementById('p2-shield').style.width = p2.isBlocking ? '100%' : '0%';
+requestAnimationFrame(gameLoop);
 }
-if (keys.ArrowRight) {
-player2.x = Math.min(canvas.width - player2.width, player2.x + player2.speed);
-player2.facing = 'right';
-}
-}
-// Отрисовка сущностей
-drawFighter(player1);
-drawFighter(player2);
-// Рекурсивный безопасный вызов следующего кадра анимации
-requestAnimationFrame(update);
-}
-// Точка старта игры
-requestAnimationFrame(update);
+requestAnimationFrame(gameLoop);
+
+
