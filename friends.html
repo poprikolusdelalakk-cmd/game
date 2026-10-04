@@ -45,7 +45,7 @@
         </div>
 
         <!-- Поле отображения личного ID профиля -->
-        <div class="id-badge" onclick="copyMyID()">Мой Сигма-ID: <b id="my-id-box" style="color:#38bdf8">------</b> (Клик: Копировать)</div>
+        <div class="id-badge" onclick="copyMyID()">Мой Сигма-ID: <span id="my-id-box" style="color:#38bdf8; font-weight:bold;">000000</span> (Клик: Копировать)</div>
         <div class="status-net">🟢 Система Fluent Сообщества active</div>
         
         <!-- Динамическое окно списков -->
@@ -60,18 +60,29 @@
     </div>
 
     <script>
-        // АВТОНОМНАЯ ГЕНЕРАЦИЯ ID НАПРЯМУЮ ПРИ ЗАГРУЗКЕ СКРИПТА
-        let myId = localStorage.getItem('sigma_id');
-        if (!myId || myId === "------" || myId === "Генерация..." || myId.trim() === "") {
-            myId = Math.floor(100000 + Math.random() * 900000).toString();
-            localStorage.setItem('sigma_id', myId);
+        // Сверхнадёжная генерация ID с защитой от блокировок браузера (Безопасный try-catch)
+        let myId = Math.floor(100000 + Math.random() * 900000).toString();
+        try {
+            let stored = localStorage.getItem('sigma_id');
+            if (stored && stored !== "------" && stored.trim() !== "") {
+                myId = stored;
+            } else {
+                localStorage.setItem('sigma_id', myId);
+            }
+        } catch (e) {
+            console.log("Хранилище localStorage заблокировано браузером. Используем временный ID.");
         }
 
-        const myName = localStorage.getItem('nickname') || 'Flerenk';
+        // Принудительно вставляем ID в элемент прямо на старте выполнения скрипта
+        document.getElementById('my-id-box').textContent = myId;
 
-        // Инициализация баз данных
-        let friends = JSON.parse(localStorage.getItem('fluent_friends')) || [];
-        let requests = JSON.parse(localStorage.getItem('fluent_reqs')) || [];
+        // Безопасная инициализация остальных баз данных
+        let friends = [];
+        let requests = [];
+        try {
+            friends = JSON.parse(localStorage.getItem('fluent_friends')) || [];
+            requests = JSON.parse(localStorage.getItem('fluent_reqs')) || [];
+        } catch(e) {}
 
         let currentTab = 'friends';
 
@@ -105,7 +116,7 @@
         }
 
         function copyMyID() {
-            if(!myId || myId === "") return;
+            if(!myId) return;
             navigator.clipboard.writeText(myId);
             playSound('click');
             alert('Ваш Сигма-ID успешно скопирован в буфер обмена!');
@@ -146,7 +157,7 @@
                 if(requests.some(r => r.id === val)) return alert('Запрос уже есть!');
                 
                 requests.push({ id: val, name: 'Игрок_' + val });
-                localStorage.setItem('fluent_reqs', JSON.stringify(requests));
+                try { localStorage.setItem('fluent_reqs', JSON.stringify(requests)); } catch(e) {}
                 playSound('success');
                 alert(`Запрос для ID ${val} сохранен!\nЗайдите во вкладку "Запросы" на втором устройстве и введите этот же ID, чтобы подтвердить дружбу.`);
             } 
@@ -167,24 +178,22 @@
 
         function acceptFriend(id, name) {
             requests = requests.filter(r => r.id !== id);
-            localStorage.setItem('fluent_reqs', JSON.stringify(requests));
+            try { localStorage.setItem('fluent_reqs', JSON.stringify(requests)); } catch(e) {}
             
             if(!friends.some(f => f.id === id)) {
-                friends.push({ id: id, name: name });
-                localStorage.setItem('fluent_friends', JSON.stringify(friends));
-            }
-            playSound('success');
-            render();
-        }
-
-        function removeRequest(id) {
-            requests = requests.filter(r => r.id !== id);
-            localStorage.setItem('fluent_reqs', JSON.stringify(requests));
-            playSound('click');
-            render();
-        }
-
-        function playWithBot() {
+friends.push({ id: id, name: name });
+try { localStorage.setItem('fluent_friends', JSON.stringify(friends)); } catch(e) {}
+}
+playSound('success');
+render();
+}
+function removeRequest(id) {
+requests = requests.filter(r => r.id !== id);
+try { localStorage.setItem('fluent_reqs', JSON.stringify(requests)); } catch(e) {}
+playSound('click');
+render();
+}
+function playWithBot() {
 playSound('click');
 window.location.href = arena.html?mode=bot;
 }
@@ -195,7 +204,7 @@ if (currentTab === 'friends') {
 if(friends.length === 0) {
 area.innerHTML = <div class="empty">Список друзей пуст.<br>Взаимно добавьте друг друга во вкладке "Запросы"!</div>;
 } else {
-area.innerHTML = friends.map(f => <div class="list-item"> <span class="item-name">👤 ${f.name} (ID: ${f.id})</span> <button class="btn-fight" onclick="document.getElementById('main-input').value='${f.id}'; handleMainAction();">В БОЙ</button> </div>).join('');
+area.innerHTML = friends.map(f => <div class="list-item"> <span class="item-name">👤 Игрок_${f.id} (ID: ${f.id})</span> <button class="btn-fight" onclick="document.getElementById('main-input').value='${f.id}'; handleMainAction();">В БОЙ</button> </div>).join('');
 }
 }
 else if (currentTab === 'requests') {
@@ -209,8 +218,5 @@ else if (currentTab === 'invites') {
 area.innerHTML = <div class="empty"> <b>Как играть по сети без лагов сервера:</b><br> 1. Друг создает бой во вкладке "Друзья" и скидывает вам код комнаты.<br> 2. Вставьте полученный код комнаты в поле ниже и нажмите кнопку войти! </div>;
 }
 }
-// ЖЕСТКИЙ ПРИНУДИТЕЛЬНЫЙ ЗАПУСК ОТРИСОВКИ СРАЗУ ПОСЛЕ ЗАГРУЗКИ HTML
-window.addEventListener('DOMContentLoaded', () => {
-document.getElementById('my-id-box').textContent = myId;
+// Запуск базового рендеринга списков
 render();
-});
