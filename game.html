@@ -193,3 +193,16 @@
         }
 
         function fail() {
+document.getElementById('bubble').innerText = "ЧЗХ... Ты меня победил. Напиши имя этого сигмы, я внесу его в свою базу:";
+document.getElementById('buttons-area').innerHTML = <input type="text" id="new-name" class="input-fail" placeholder="Имя блогера/перса..."> <button class="btn-action" onclick="save()">Запомнить</button>;
+}
+function save() {
+var txt = document.getElementById('new-name').value.trim();
+if (txt) {
+var newTags = {};
+for (var k in log) { if (log[k] !== "хз") newTags[k] = log[k]; }
+db.push({ name: txt, tags: newTags });
+document.getElementById('bubble').innerText = "Данные записаны! Персонаж '" + txt + "' теперь вшит в мой кибер-мозг!";
+document.getElementById('buttons-area').innerHTML = <button class="btn-action" onclick="window.location.href='./index.html'">В меню</button>;
+}
+}
