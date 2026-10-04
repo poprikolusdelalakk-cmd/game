@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Fluent Game - Игровой Процесс</title>
+    <title>Fluent Game - Кибер Джинн</title>
     <style>
         :root {
             --bg-space: #060919;
@@ -18,43 +18,29 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body, html { 
             background: radial-gradient(circle at center, #12183a 0%, var(--bg-space) 100%); 
-            color: var(--text-main); 
-            width: 100%; height: 100%; overflow: hidden; 
+            color: var(--text-main); width: 100%; height: 100%; overflow: hidden; 
             display: flex; align-items: center; justify-content: center;
         }
-        .space-bg {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1;
-            background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
-            background-size: 550px 550px; opacity: 0.2;
-        }
+        .space-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px); background-size: 550px 550px; opacity: 0.2; }
         .wrapper { position: relative; z-index: 10; width: 100%; max-width: 460px; padding: 20px; }
         .game-card {
             background: var(--card-bg); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 24px;
-            padding: 35px 25px; text-align: center; backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            padding: 35px 25px; text-align: center; backdrop-filter: blur(15px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
         .genie-sphere-box { width: 120px; height: 140px; margin: 0 auto 25px auto; }
         .genie-sphere {
             width: 120px; height: 120px; border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, var(--neon-blue) 0%, var(--neon-purple) 70%, #000 100%);
-            box-shadow: 0 0 30px var(--neon-blue), 0 0 50px var(--neon-purple);
-            animation: floatGlow 3s ease-in-out infinite;
+            box-shadow: 0 0 30px var(--neon-blue), 0 0 50px var(--neon-purple); animation: floatGlow 3s ease-in-out infinite;
         }
-        @keyframes floatGlow {
-            0% { transform: translateY(0px); filter: brightness(1); }
-            50% { transform: translateY(-8px); filter: brightness(1.2); }
-            100% { transform: translateY(0px); filter: brightness(1); }
-        }
+        @keyframes floatGlow { 0% { transform: translateY(0px); filter: brightness(1); } 50% { transform: translateY(-8px); filter: brightness(1.2); } 100% { transform: translateY(0px); filter: brightness(1); } }
         .bubble-text { font-size: 1.15rem; font-weight: bold; line-height: 1.5; min-height: 65px; margin-bottom: 30px; color: #fff; }
-        
         .answers-grid { display: flex; flex-direction: column; gap: 10px; }
         .btn-choice {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #fff; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold;
-            cursor: pointer; transition: all 0.2s;
+            color: #fff; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s;
         }
         .btn-choice:hover { background: rgba(0, 242, 254, 0.1); border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 254, 0.2); }
-        
         .input-fail { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 15px; text-align: center; font-size: 1rem; }
         .btn-action { background: var(--neon-blue); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
     </style>
@@ -70,7 +56,7 @@
             </div>
         </div>
     </div>
-    <script translate="no">
+    <script>
         var step = 0;
         var log = {};
 
@@ -79,7 +65,7 @@
             { name: "Компот", tags: { game: "да", blogger: "да", compot: "да", blocks: "да" } },
             { name: "Влад Бумага (А4)", tags: { real: "да", blogger: "да", a4: "да" } },
             { name: "Глент", tags: { real: "да", blogger: "да", glent: "да" } },
-            { name: "Ивангай (EeOneGuy)", tags: { real: "да", blogger: "да", ivangay: "да" } },
+            { name: "Эдисон Перец (EdisonPts)", tags: { game: "да", blogger: "да", edison: "да", blocks: "да" } },
             { name: "Леон (Бравл Старс)", tags: { game: "да", brawl: "да", legend: "да" } },
             { name: "Эдгар (Бравл Старс)", tags: { game: "да", brawl: "да", emo: "да" } },
             { name: "Меллстрой (Mellstroy)", tags: { real: "да", streamer: "да", money: "да" } },
@@ -93,9 +79,9 @@
             { id: "blocks", text: "Он прославился благодаря съёмкам игры Майнкрафт?" },
             { id: "domer", text: "Этот ютубер обожает снимать гриферские шоу, взламывать админки и владеет сервером ReallyWorld?" },
             { id: "compot", text: "Этот майнкрафтер живёт в культовой деревне жителей номер 13?" },
+            { id: "edison", text: "Этот летсплейщик дружит с Жекой, обожает покемонов и у него ник связан с великим изобретателем?" },
             { id: "a4", text: "Это лидер канала А4, у него миллионы подписчиков и фамилия Бумага?" },
             { id: "glent", text: "Этот парень раньше снимался на канале А4, а теперь у него свой канал «Глент Кобяков»?" },
-            { id: "ivangay", text: "Это легендарный олдскульный блогер, который пел «Хаю-хай, с вами Ивангай»?" },
             { id: "brawl", text: "Этот перс из игры Brawl Stars?" },
             { id: "streamer", text: "Он проводит онлайн-трансляции (стримит)?" },
             { id: "meme", text: "Это просто мемный вирусный персонаж?" },
@@ -116,7 +102,7 @@
         function next() {
             var currentMatches = filterCharacters();
             
-            // ИСПРАВЛЕНО: забираем имя конкретного первого элемента из массива
+            // ИСПРАВЛЕНЫ ВСЕ БАГИ: берем объект по индексу, если остался один
             if (currentMatches.length === 1) {
                 showGuess(currentMatches[0].name);
                 return;
@@ -124,10 +110,7 @@
 
             if (step < questions.length && currentMatches.length > 1) {
                 var q = questions[step];
-                
-                var tagExists = currentMatches.some(function(char) {
-                    return char.tags[q.id] !== undefined;
-                });
+                var tagExists = currentMatches.some(function(char) { return char.tags[q.id] !== undefined; });
 
                 if (!tagExists) {
                     step++;
@@ -168,7 +151,7 @@
         function predict() {
             var filtered = filterCharacters();
             if (filtered.length > 0) {
-                // ИСПРАВЛЕНО: извлекаем имя первого совпавшего объекта из массива элементов
+                // ИСПРАВЛЕНО НАМЕРТВО: забираем имя первого объекта [0] из отфильтрованного массива
                 showGuess(filtered[0].name);
             } else {
                 fail();
@@ -190,10 +173,11 @@
             var total = parseInt(localStorage.getItem('fl_total_matches')) || 4329;
             localStorage.setItem('fl_total_matches', total + 1);
             document.getElementById('bubble').innerText = "Изи катка! Джинн Fluent Game уделал тебя! Сыграем ещё раз?";
-            document.getElementById('buttons-area').innerHTML = `<button class="btn-action" onclick="window.location.href='./index.html'">В меню</button>`;
-}
-function fail() {
-document.getElementById('bubble').innerText = "ЧЗХ... Ты меня победил. Напиши имя этого сигмы, я внесу его в свою базу:";
+            document.getElementById('buttons-area').innerHTML = `<button class="btn-action" onclick="window.location.href='index.html'">В меню</button>`;
+        }
+
+        function fail() {
+            document.getElementById('bubble').innerText = "ЧЗХ... Ты меня победил. Напиши имя этого сигмы, я внесу его в свою базу:";
 document.getElementById('buttons-area').innerHTML = <input type="text" id="new-name" class="input-fail" placeholder="Имя блогера/перса..."> <button class="btn-action" onclick="save()">Запомнить</button>;
 }
 function save() {
@@ -203,6 +187,6 @@ var newTags = {};
 for (var k in log) { if (log[k] !== "хз") newTags[k] = log[k]; }
 db.push({ name: txt, tags: newTags });
 document.getElementById('bubble').innerText = "Данные записаны! Персонаж '" + txt + "' теперь вшит в мой кибер-мозг!";
-document.getElementById('buttons-area').innerHTML = <button class="btn-action" onclick="window.location.href='./index.html'">В меню</button>;
+document.getElementById('buttons-area').innerHTML = <button class="btn-action" onclick="window.location.href='index.html'">В меню</button>;
 }
 }
