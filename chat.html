@@ -26,11 +26,10 @@
         
         .sidebar { width: 320px; height: 100%; background-color: var(--side-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-header h2 { color: var(--accent); cursor: pointer; font-size: 1.2rem; font-weight: bold; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .sidebar-header h2:hover { text-decoration: underline; }
+        .sidebar-header h2 { color: var(--accent); font-size: 1.2rem; font-weight: bold; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         .header-actions { display: flex; gap: 10px; align-items: center; }
-        .settings-link-btn { color: var(--text-muted); cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        .settings-link-btn { color: var(--text-muted); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
         .settings-link-btn:hover { color: var(--accent); }
         .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
         
@@ -77,9 +76,9 @@
     <div class="wrapper">
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2 id="my-name-display" onclick="window.location.href='settings.html'">Загрузка...</h2>
+                <h2 id="my-name-display">Загрузка...</h2>
                 <div class="header-actions">
-                    <span class="settings-link-btn" onclick="window.location.href='settings.html'">Настройки</span>
+                    <span class="settings-link-btn" onclick="goToSettings()">Настройки</span>
                     <span class="logout-btn" onclick="logout()">Выйти</span>
                 </div>
             </div>
@@ -119,7 +118,7 @@
         let currentChatUser = null;
 
         if (!myName) {
-            window.location.href = 'index.html';
+            window.location.href = './index.html';
         } else {
             document.getElementById('my-name-display').innerText = myName;
             if (!localStorage.getItem(`fl_contacts_${myName}`)) {
@@ -133,11 +132,16 @@
 
         function logout() {
             localStorage.removeItem('fluent_session');
-            window.location.href = 'index.html';
+            window.location.href = './index.html';
+        }
+
+        function goToSettings() {
+            window.location.href = './settings.html';
         }
 
         function updateContactsList() {
             const list = document.getElementById('chats-list');
+            if (!list) return;
             let contacts = JSON.parse(localStorage.getItem(`fl_contacts_${myName}`)) || [];
             let blacklist = JSON.parse(localStorage.getItem(`fl_blacklist_${myName}`)) || [];
             let html = "";
@@ -248,4 +252,3 @@ box.scrollTop = box.scrollHeight;
 }
 function handleEnter(e) { if (e.key === 'Enter') sendMsg(); }
 function escapeHTML(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
-
