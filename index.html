@@ -4,84 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Fluent Game - Главное Меню</title>
+    <title>Fluent Arena - Арена Бойцов</title>
     <style>
         :root {
             --bg-space: #030511;
-            --card-bg: rgba(10, 15, 35, 0.7);
+            --card-bg: rgba(13, 18, 38, 0.85);
             --neon-blue: #00f2fe;
             --neon-purple: #9d4edd;
-            --text-main: #ffffff;
-            --text-muted: #5c6c8f;
+            --neon-pink: #ff007f;
             --success: #00ff66;
+            --danger: #ff3333;
+            --warning: #ffb703;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body, html { 
             background: radial-gradient(circle at center, #0c112b 0%, var(--bg-space) 100%); 
-            color: var(--text-main); width: 100%; height: 100%; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center;
+            color: #fff; width: 100%; height: 100%; overflow-y: auto;
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
         }
-        .stars {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1;
-            background: radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
-            background-size: 300px 300px; opacity: 0.25; animation: spaceScroll 40s linear infinite;
-        }
-        @keyframes spaceScroll {
-            from { background-position: 0 0; }
-            to { background-position: 300px 600px; }
-        }
-        .wrapper { position: relative; z-index: 10; width: 100%; max-width: 410px; padding: 20px; }
-        .menu-card {
-            background: var(--card-bg); border-radius: 28px; border: 1px solid rgba(0, 242, 254, 0.25);
-            padding: 45px 35px; text-align: center; backdrop-filter: blur(25px);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 242, 254, 0.15);
-        }
-        .brand-logo {
-            font-size: 2.5rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;
-            background: linear-gradient(135deg, #ffffff 30%, var(--neon-blue) 70%, var(--neon-purple));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            margin-bottom: 6px; filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.4));
-        }
-        .brand-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
-        .btn-play {
-            display: block; width: 100%; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            color: #030511; border: none; padding: 20px; border-radius: 16px; 
-            font-size: 1.4rem; font-weight: 900; cursor: pointer; 
-            text-transform: uppercase; text-decoration: none; letter-spacing: 1px;
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4); transition: all 0.3s ease; margin-bottom: 35px; text-align: center;
-        }
-        .btn-play:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 35px var(--neon-blue), 0 0 70px var(--neon-purple); filter: brightness(1.2); }
-        .stats-panel { background-color: rgba(3, 5, 17, 0.6); padding: 20px; border-radius: 16px; border: 1px solid rgba(0, 242, 254, 0.1); display: flex; flex-direction: column; gap: 10px; text-align: left; }
-        .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
-        .stat-label { color: rgba(255,255,255,0.4); }
-        .stat-val { font-weight: 700; font-size: 1.05rem; }
+        .stars { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; background: radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 25px); background-size: 250px 200px; opacity: 0.15; }
+        .container { position: relative; z-index: 10; width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .game-card { background: var(--card-bg); border-radius: 24px; border: 1px solid rgba(0, 242, 254, 0.2); padding: 25px 20px; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
+        .brand-title { font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(135deg, #fff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        
+        /* СЕТКА ВЫБОРА ГЕРОЕВ */
+        .grid-select { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .char-select-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 15px; color: #fff; cursor: pointer; text-align: left; transition: all 0.2s; }
+        .char-select-btn:hover { border-color: var(--neon-blue); background: rgba(0, 242, 254, 0.05); }
+        .char-select-btn h3 { font-size: 1.1rem; color: var(--neon-blue); margin-bottom: 4px; }
+        .char-select-btn p { font-size: 0.75rem; color: #7f91a4; }
+
+        /* ИНТЕРФЕЙС БОЯ */
+        .battle-screen { display: none; flex-direction: column; gap: 15px; }
+        .fighter-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 15px; text-align: left; position: relative; }
+        .fighter-name { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .hp-bar-bg { width: 100%; height: 14px; background: #222; border-radius: 7px; overflow: hidden; }
+        .hp-bar-fill { height: 100%; background: var(--success); width: 100%; transition: width 0.2s; }
+        .hp-text { font-size: 0.8rem; margin-top: 4px; text-align: right; color: #7f91a4; }
+
+        .battle-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-action { background: var(--neon-blue); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 0.95rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-action:hover { background: #fff; box-shadow: 0 0 15px #fff; }
+        .btn-action.ult { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
+
+        .log-box { background: rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; height: 100px; overflow-y: auto; font-size: 0.85rem; color: var(--warning); text-align: left; border: 1px solid rgba(255,255,255,0.02); }
+
+        /* МАГАЗИН ОРУЖИЯ */
+        .shop-box { background: rgba(13, 18, 38, 0.9); border: 1px solid var(--neon-purple); border-radius: 20px; padding: 15px; display: none; flex-direction: column; gap: 10px; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .shop-item-info h4 { color: var(--neon-blue); font-size: 0.95rem; }
+        .shop-item-info p { font-size: 0.75rem; color: #7f91a4; }
+        .btn-buy { background: var(--success); color: #000; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
     </style>
 </head>
 <body>
     <div class="stars"></div>
-    <div class="wrapper">
-        <div class="menu-card">
-            <div class="brand-logo">Fluent Game</div>
-            <div class="brand-subtitle">Кибер-Игровая вселенная</div>
-            <a href="play.html" class="btn-play">ЗАПУСТИТЬ КАТКУ</a>
-            <div class="stats-panel">
-                <div class="stat-row"><span class="stat-label">Сигмы в сети:</span><span class="stat-val" style="color: var(--success);" id="stat-online">42</span></div>
-                <div class="stat-row"><span class="stat-label">Нейро-база Джинна:</span><span class="stat-val" style="color: var(--neon-blue);">600+ персов</span></div>
-                <div class="stat-row"><span class="stat-label">Всего каток сыграно:</span><span class="stat-val" id="total-games" style="color: #fff;">4329</span></div>
+    <div class="container">
+        <div class="game-card" id="main-menu">
+            <div class="brand-title">Fluent Arena</div>
+            <div style="color: #7f91a4; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px;">Королевская Битва Бойцов</div>
+            
+            <div style="margin-top: 20px; font-size: 1.1rem; font-weight: bold;">Выбери своего Сигму-Бойца:</div>
+            <div class="grid-select">
+                <button class="char-select-btn" onclick="selectChar('Nazar')"><h3>Nazar (Овнер)</h3><p>HP: 140 | Урон: 18<br>Пассивка: Крит 20%</p></button>
+                <button class="char-select-btn" onclick="selectChar('Leon')"><h3>Леон (Бравл)</h3><p>HP: 100 | Урон: 24<br>Пассивка: Стелс-хил</p></button>
+                <button class="char-select-btn" onclick="selectChar('Domer')"><h3>Домер (Грифер)</h3><p>HP: 120 | Урон: 20<br>Пассивка: Взлом брони</p></button>
+                <button class="char-select-btn" onclick="selectChar('Mellstroy')"><h3>Меллстрой</h3><p>HP: 110 | Урон: 16<br>Пассивка: Золотой щит</p></button>
             </div>
         </div>
+
+        <!-- ИГРОВОЙ ЭКРАН СРАЖЕНИЯ -->
+        <div class="battle-screen" id="battle-screen">
+            <div class="game-card" style="padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div>Монеты: <span id="gold-val" style="color: var(--warning); font-weight: bold;">0</span> 💰</div>
+                <div style="font-weight: bold; color: var(--neon-pink);">Волна: <span id="wave-val">1</span></div>
+                <button style="background:none; border:1px solid var(--neon-purple); color:#fff; padding:5px 10px; border-radius:6px; cursor:pointer;" onclick="toggleShop()">Магазин 🛒</button>
+            </div>
+
+            <!-- МАГАЗИН ОРУЖИЯ -->
+            <div class="shop-box" id="shop-box">
+                <div style="font-weight: bold; text-align: center; color: var(--neon-purple); margin-bottom: 5px;">ДАРКНЕТ МАГАЗИН</div>
+                <div class="shop-item">
+                    <div class="shop-item-info"><h4>Лопата Мортиса</h4><p>Урон +8 к базовой атаке</p></div>
+                    <button class="btn-buy" onclick="buyWeapon('shovel', 40)">40 💰</button>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-info"><h4>Меч Грифера</h4><p>Урон +14 к базовой атаке</p></div>
+                    <button class="btn-buy" onclick="buyWeapon('sword', 80)">80 💰</button>
+                </div>
+                <div class="shop-item">
+                    <div class="shop-item-info"><h4>Админка ReallyWorld</h4><p>Урон +25 | Здоровье +40</p></div>
+                    <button class="btn-buy" onclick="buyWeapon('admin', 150)">150 💰</button>
+                </div>
+            </div>
+
+            <!-- ТВОЙ БОЕЦ -->
+            <div class="fighter-box" style="border-color: var(--neon-blue);">
+                <div class="fighter-name"><span id="player-name">Твой Боец</span> <span id="weapon-badge" style="font-size:0.75rem; color:var(--warning);">Кулаки</span></div>
+                <div class="hp-bar-bg"><div class="hp-bar-fill" id="player-hp-bar"></div></div>
+                <div class="hp-text"><span id="player-hp-text">100/100</span> HP</div>
+            </div>
+
+            <!-- ВРАГ / БОСС -->
+            <div class="fighter-box" style="border-color: var(--neon-pink);">
+                <div class="fighter-name"><span id="enemy-name">Босс Волна 1</span><span style="color:var(--danger); font-size:0.8rem;">BOSS</span></div>
+                <div class="hp-bar-bg"><div class="hp-bar-fill" id="enemy-hp-bar" style="background:var(--danger);"></div></div>
+                <div class="hp-text"><span id="enemy-hp-text">80/80</span> HP</div>
+            </div>
+
+            <!-- КНОПКИ ДЕЙСТВИЙ -->
+            <div class="battle-actions">
+                <button class="btn-action" onclick="playerAttack('normal')">⚔️ Атака</button>
+                <button class="btn-action ult" id="ult-btn" onclick="playerAttack('ult')">🔥 Ульта (0%)</button>
+            </div>
+
+            <!-- ЛОГ ИГРЫ -->
+            <div class="log-box" id="game-log"></div>
+        </div>
     </div>
-    <script>
-        // Сброс старой поломанной сессии мессенджера, чтобы игра не путалась
-        if(!localStorage.getItem('fl_game_v1_fresh_start')){
-            localStorage.clear();
-            localStorage.setItem('fl_game_v1_fresh_start', 'true');
-        }
-        var matches = parseInt(localStorage.getItem('fl_total_matches')) || 4329;
-        document.getElementById('total-games').innerText = matches;
-        setInterval(function() {
-            document.getElementById('stat-online').innerText = Math.floor(Math.random() * 6) + 38;
-        }, 2000);
-    </script>
-</body>
-</html>
+
+    <script translate="no">
+        var player = { name: "", hp: 100, maxHp: 100, dmg: 10, type: "", weaponDmg: 0, ultCharge: 0 };
+        var enemy = { name: "", hp: 60, maxHp: 60, dmg: 8 };
+        
+        var gold = 0;
+        var wave = 1;
+        var weaponsOwned = [];
+
+        var bossNames = ["Скибиди Туалет", "Аниматроник Фредди", "Крипер-Мутант", "Злой Глент", "Влад А4 Босс", "ЧитерReallyWorld"];
+
+        function selectChar(type) {
+            player.type = type;
+            if (type === 'Nazar') { player.name = "Сигма Nazar"; player.hp = 140; player.maxHp = 140; player.dmg = 18; }
+            if (type === 'Leon') { player.name = "Леон Бравл"; player.hp = 100; player.maxHp = 100; player.dmg = 24; }
+            if (type === 'Domer') { player.name = "Домер Грифер"; player.hp = 120; player.maxHp = 120; player.dmg = 20; }
+            if (type === 'Mellstroy') { player.name = "Меллстрой 💎"; player.hp = 110; player.maxHp = 110; player.dmg = 16; }
+
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('battle-screen').style.display = 'flex';
