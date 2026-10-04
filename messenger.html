@@ -146,7 +146,6 @@
 
 var activeUser = localStorage.getItem('fluent_session') || "Nazar";
 var activeRoom = null;
-// ПРЯМАЯ ДУБОВАЯ КЛИКАБЕЛЬНОСТЬ СТАРЫМ СТАНДАРТОМ (БЕЗ СТРЕЛОК)
 document.getElementById('open-settings-trigger').onclick = function() {
 document.getElementById('set-username').innerText = activeUser;
 document.getElementById('settings-overlay').style.display = 'flex';
@@ -187,7 +186,6 @@ input.value = "";
 };
 function switchRoom(roomName) {
 activeRoom = roomName;
-// Снимаем выделение со всех чатов и выделяем текущий
 var allItems = document.getElementsByClassName('chat-item');
 for(var i = 0; i < allItems.length; i++) {
 allItems[i].classList.remove('selected');
@@ -225,24 +223,19 @@ var storage = [];
 try {
 storage = JSON.parse(localStorage.getItem('fl_storage_packets')) || [];
 } catch(e) { storage = []; }
-// Авто-генерация приветствия бота при первом заходе
 if(activeRoom === "Fluent_Bot" && storage.length === 0) {
 storage.push({ from: "Fluent_Bot", to: activeUser, msg: "Привет! Вас приветствует мессенджер Fluent Messenger!" });
 storage.push({ from: "Fluent_Bot", to: activeUser, msg: "Наш мессенджер топ по 3 причинам:\n\n1. Скорость — сообщения летают мгновенно.\n2. Анонимность — данные лежат только у тебя.\n3. Крутой неоновый дизайн!" });
 localStorage.setItem('fl_storage_packets', JSON.stringify(storage));
 }
 var filtered = [];
-for(var i = 0; i < storage.length; i++) {
-var m = storage[i];
+for(var k = 0; k < storage.length; k++) {
+var m = storage[k];
 if((m.from === activeUser && m.to === activeRoom) || (m.from === activeRoom && m.to === activeUser)) {
 filtered.push(m);
 }
 }
 var html = "";
-for(var j = 0; i < filtered.length; j++) {
-// Если цикл пустой, страхуемся классическим методом
-}
-// Бронебойный вывод сообщений на экран
 filtered.forEach(function(m) {
 var isMine = m.from === activeUser;
 var safeText = m.msg.replace(/</g, "<").replace(/>/g, ">");
