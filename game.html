@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Fluent Game - Игровой Процесс</title>
+    <title>Fluent Game - Кибер Джинн</title>
     <style>
         :root {
             --bg-space: #060919;
@@ -45,7 +45,7 @@
             50% { transform: translateY(-8px); filter: brightness(1.2); }
             100% { transform: translateY(0px); filter: brightness(1); }
         }
-        .bubble-text { font-size: 1.15rem; font-weight: bold; line-height: 1.5; min-height: 65px; margin-bottom: 30px; }
+        .bubble-text { font-size: 1.15rem; font-weight: bold; line-height: 1.5; min-height: 65px; margin-bottom: 30px; color: #fff; }
         
         .answers-grid { display: flex; flex-direction: column; gap: 10px; }
         .btn-choice {
@@ -56,7 +56,7 @@
         .btn-choice:hover { background: rgba(0, 242, 254, 0.1); border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 254, 0.2); }
         
         .input-fail { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 15px; text-align: center; font-size: 1rem; }
-        .btn-action { background: var(--neon-blue); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 1xl; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
+        .btn-action { background: var(--neon-blue); color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
     </style>
 </head>
 <body>
@@ -64,35 +64,48 @@
     <div class="wrapper">
         <div class="game-card">
             <div class="genie-sphere-box"><div class="genie-sphere" id="sphere"></div></div>
-            <div class="bubble-text" id="bubble">Загадайте любого персонажа, а я попробую угадать его за пару шагов!</div>
+            <div class="bubble-text" id="bubble">Загадай любого хайпового персонажа или блогера, а Джинн Fluent Game залезет к тебе в мысли!</div>
             <div id="buttons-area">
-                <button class="btn-action" onclick="initEngine()">Начать отгадывание</button>
+                <button class="btn-action" onclick="initEngine()">Начать катку</button>
             </div>
         </div>
     </div>
-    <script>
+    <script translate="no">
         var step = 0;
         var log = {};
 
+        // ОБНОВЛЕННАЯ БАЗА: Добавил Домера и других топ блогеров
         var db = [
-            { name: "Фредди Фазбер (ФНАФ)", tags: { real: "нет", game: "да", robot: "да" } },
-            { name: "Бонни (ФНАФ)", tags: { real: "нет", game: "да", robot: "да" } },
-            { name: "Влад А4", tags: { real: "да", blogger: "да", video: "да" } },
-            { name: "Мистер Бист (MrBeast)", tags: { real: "да", blogger: "да", video: "да" } },
-            { name: "Человек-Паук", tags: { real: "нет", game: "нет", hero: "да" } },
-            { name: "Наруто Узумаки", tags: { real: "нет", game: "нет", anime: "да" } },
-            { name: "Стив (Майнкрафт)", tags: { real: "нет", game: "да", blocks: "да" } }
+            { name: "Домер (Domer Grief)", tags: { game: "да", blogger: "да", domer: "да", blocks: "да" } },
+            { name: "Компот", tags: { game: "да", blogger: "да", compot: "да", blocks: "да" } },
+            { name: "Влад Бумага (А4)", tags: { real: "да", blogger: "да", a4: "да" } },
+            { name: "Глент", tags: { real: "да", blogger: "да", glent: "да" } },
+            { name: "Ивангай (EeOneGuy)", tags: { real: "да", blogger: "да", ivangay: "да" } },
+            { name: "Леон (Бравл Старс)", tags: { game: "да", brawl: "да", legend: "да" } },
+            { name: "Эдгар (Бравл Старс)", tags: { game: "да", brawl: "да", emo: "да" } },
+            { name: "Меллстрой (Mellstroy)", tags: { real: "да", streamer: "да", money: "да" } },
+            { name: "Бустер (Buster)", tags: { real: "да", streamer: "да", buster: "да" } },
+            { name: "Скибиди Туалет", tags: { meme: "да", series: "да" } }
         ];
 
+        // ВОПРОСЫ ПОД ДОМЕРА И БЛОГЕРОВ
         var questions = [
-            { id: "real", text: "Ваш персонаж реально существует в нашем мире?" },
-            { id: "game", text: "Этот персонаж взят из какой-то видеоигры?" },
-            { id: "robot", text: "Это робот или аниматроник?" },
-            { id: "blogger", text: "Этот человек является известным блогером?" },
-            { id: "video", text: "Он снимает ролики на Ютуб?" },
-            { id: "hero", text: "Это супергерой из комиксов или фильмов?" },
-            { id: "anime", text: "Ваш персонаж из мира японского аниме?" },
-            { id: "blocks", text: "Он как-то связан с кубиками или блоками?" }
+            { id: "game", text: "Этот персонаж/блогер связан с видеоиграми?" },
+            { id: "blogger", text: "Это реальный популярный блогер или ютубер?" },
+            { id: "blocks", text: "Он прославился благодаря съёмкам игры Майнкрафт?" },
+            { id: "domer", text: "О! Этот ютубер обожает снимать гриферские шоу, взламывать админки и владеет сервером ReallyWorld?" },
+            { id: "compot", text: "Этот майнкрафтер живёт в культовой деревне жителей номер 13?" },
+            { id: "a4", text: "Это лидер канала А4, у него миллионы подписчиков и фамилия Бумага?" },
+            { id: "glent", text: "Этот парень раньше снимался на канале А4, а теперь у него свой канал «Глент Кобяков»?" },
+            { id: "ivangay", text: "Это легендарный олдскульный блогер, который пел «Хаю-хай, с вами Ивангай»?" },
+            { id: "brawl", text: "Этот перс из игры Brawl Stars?" },
+            { id: "streamer", text: "Он проводит онлайн-трансляции (стримит)?" },
+            { id: "meme", text: "Это просто мемный вирусный персонаж?" },
+            { id: "legend", text: "Это лега в Бравле со способностью становиться невидимым?" },
+            { id: "emo", text: "Он носит шарф, имеет эмо-прическу и прыгает на врагов с ульты?" },
+            { id: "money", text: "Стример, который даёт безумные миллионные задания другим блогерам?" },
+            { id: "buster", text: "Стример в очках, который кричит «Цезарь» и комментирует CS:GO?" },
+            { id: "series", text: "У него голова торчит из унитаза?" }
         ];
 
         function initEngine() {
@@ -103,14 +116,32 @@
         }
 
         function next() {
-            if (step < questions.length) {
+            var currentMatches = filterCharacters();
+            
+            if (currentMatches.length === 1) {
+                showGuess(currentMatches[0].name);
+                return;
+            }
+
+            if (step < questions.length && currentMatches.length > 1) {
                 var q = questions[step];
+                
+                var tagExists = currentMatches.some(function(char) {
+                    return char.tags[q.id] !== undefined;
+                });
+
+                if (!tagExists) {
+                    step++;
+                    next();
+                    return;
+                }
+
                 document.getElementById('bubble').innerText = q.text;
                 document.getElementById('buttons-area').innerHTML = `
                     <div class="answers-grid">
-                        <button class="btn-choice" onclick="ans('${q.id}', 'да')">Да</button>
-                        <button class="btn-choice" onclick="ans('${q.id}', 'нет')">Нет</button>
-                        <button class="btn-choice" onclick="ans('${q.id}', 'хз')">Не знаю</button>
+                        <button class="btn-choice" onclick="ans('${q.id}', 'да')">Да, 100%</button>
+                        <button class="btn-choice" onclick="ans('${q.id}', 'нет')">Точно нет</button>
+                        <button class="btn-choice" onclick="ans('${q.id}', 'хз')">Не знаю / ХЗ</button>
                     </div>
                 `;
             } else {
@@ -124,8 +155,8 @@
             next();
         }
 
-        function predict() {
-            var filtered = db.filter(function(char) {
+        function filterCharacters() {
+            return db.filter(function(char) {
                 for (var key in log) {
                     if (log[key] !== "хз" && char.tags[key] && char.tags[key] !== log[key]) {
                         return false;
@@ -133,50 +164,46 @@
                 }
                 return true;
             });
+        }
 
+        function predict() {
+            var filtered = filterCharacters();
             if (filtered.length > 0) {
-                // ИСПРАВЛЕНО: Теперь берём имя конкретного объекта из массива, а не undefined
-                var charName = filtered[0].name;
-                document.getElementById('sphere').style.boxShadow = "0 0 30px var(--neon-pink), 0 0 50px var(--neon-purple)";
-                document.getElementById('bubble').innerText = "Я уверен, что это...\n✨ " + charName + " ✨";
-                document.getElementById('buttons-area').innerHTML = `
-                    <div class="answers-grid">
-                        <button class="btn-choice" style="border-color:var(--neon-blue);" onclick="win()">Угадал! 👍</button>
-                        <button class="btn-choice" onclick="fail()">Не угадал 👎</button>
-                    </div>
-                `;
+                showGuess(filtered[0].name);
             } else {
                 fail();
             }
         }
 
+        function showGuess(characterName) {
+            document.getElementById('sphere').style.boxShadow = "0 0 30px var(--neon-pink), 0 0 50px var(--neon-purple)";
+            document.getElementById('bubble').innerText = "Я уверен, что твои мысли заняты этим бро...\n\n✨ " + characterName + " ✨";
+            document.getElementById('buttons-area').innerHTML = `
+                <div class="answers-grid">
+                    <button class="btn-choice" style="border-color:var(--neon-blue);" onclick="win()">УГАДАЛ, ТЫ ЧИТЕР! 👍</button>
+                    <button class="btn-choice" onclick="fail()">МИМО, НЕ ОН 👎</button>
+                </div>
+            `;
+        }
+
         function win() {
             var total = parseInt(localStorage.getItem('fl_total_matches')) || 4329;
             localStorage.setItem('fl_total_matches', total + 1);
-            document.getElementById('bubble').innerText = "Ха-ха! Джинн Fluent Game прочитал твои мысли! Попробуем ещё раз?";
-            // ИСПРАВЛЕНО: Прямая ссылка на относительный индекс папки
+            document.getElementById('bubble').innerText = "Изи катка! Джинн Fluent Game уделал тебя! Сыграем ещё раз?";
             document.getElementById('buttons-area').innerHTML = `<button class="btn-action" onclick="window.location.href='./index.html'">В меню</button>`;
         }
 
         function fail() {
-            document.getElementById('bubble').innerText = "Ого, ты перехитрил меня! Напиши, кого ты загадал, чтобы я добавил его в базу:";
-            document.getElementById('buttons-area').innerHTML = `
-                <input type="text" id="new-name" class="input-fail" placeholder="Имя персонажа...">
-                <button class="btn-action" onclick="save()">Внести в свиток</button>
-            `;
-        }
-
-        function save() {
-            var txt = document.getElementById('new-name').value.trim();
-            if (txt) {
-                var newTags = {};
-                for (var k in log) { if (log[k] !== "хз") newTags[k] = log[k]; }
-                db.push({ name: txt, tags: newTags });
-                document.getElementById('bubble').innerText = "Отлично! Персонаж '" + txt + "' добавлен в мою кибер-память!";
-                // ИСПРАВЛЕНО: Прямая ссылка на относительный индекс папки
-                document.getElementById('buttons-area').innerHTML = `<button class="btn-action" onclick="window.location.href='./index.html'">В меню</button>`;
-            }
-        }
-    </script>
-</body>
-</html>
+document.getElementById('bubble').innerText = "ЧЗХ... Ты меня победил. Напиши имя этого сигмы, я внесу его в свою базу:";
+document.getElementById('buttons-area').innerHTML = <input type="text" id="new-name" class="input-fail" placeholder="Имя блогера/перса..."> <button class="btn-action" onclick="save()">Запомнить</button>;
+}
+function save() {
+var txt = document.getElementById('new-name').value.trim();
+if (txt) {
+var newTags = {};
+for (var k in log) { if (log[k] !== "хз") newTags[k] = log[k]; }
+db.push({ name: txt, tags: newTags });
+document.getElementById('bubble').innerText = "Данные записаны! Персонаж '" + txt + "' теперь вшит в мой кибер-мозг!";
+document.getElementById('buttons-area').innerHTML = <button class="btn-action" onclick="window.location.href='./index.html'">В меню</button>;
+}
+}
