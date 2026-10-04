@@ -3,392 +3,410 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nazar Message | Кибер-Мессенджер</title>
-    <!-- Подключаем Firebase SDK (Версия 8 для простоты интеграции в 1 файл) -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
+    <title>Fluent Messenger</title>
     <style>
         :root {
-            --bg-color: #04050a;
-            --card-bg: rgba(10, 12, 26, 0.95);
+            --bg-color: #030408;
+            --panel-bg: rgba(13, 17, 34, 0.75);
+            --accent-blue: #007bff;
             --accent-cyan: #00f2fe;
-            --accent-purple: #9d4edd;
             --accent-pink: #ff007f;
-            --neon-cyan: 0 0 20px rgba(0, 242, 254, 0.6);
-            --neon-pink: 0 0 20px rgba(255, 0, 127, 0.6);
             --text-main: #ffffff;
-            --text-muted: #64748b;
+            --text-muted: #6272a4;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            background: radial-gradient(circle at center, #0f1123 0%, var(--bg-color) 100%);
+            background: radial-gradient(circle at center, #0d112d 0%, var(--bg-color) 100%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 850px;
+            max-width: 440px;
+            min-height: 600px;
             height: 85vh;
-            background: var(--card-bg);
-            border: 2px solid var(--accent-purple);
-            border-radius: 24px;
-            box-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Экран авторизации */
-        .auth-screen {
+        /* ЭКРАН АВТОРИЗАЦИИ */
+        .screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .auth-content {
+            padding: 50px 35px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100%;
-            gap: 20px;
-            padding: 40px;
+            gap: 25px;
         }
 
-        .auth-screen h1 {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            filter: drop-shadow(0 2px 15px rgba(0, 242, 254, 0.7));
+        .logo-area {
+            text-align: center;
             margin-bottom: 10px;
         }
 
-        .auth-box {
+        .logo-area h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-main) 30%, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-area p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 6px;
+        }
+
+        .input-group {
             width: 100%;
-            max-width: 380px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 14px;
         }
 
         input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            padding: 14px 20px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 20px;
+            border-radius: 16px;
             color: #fff;
             font-size: 1rem;
             outline: none;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         input:focus {
+            background: rgba(255, 255, 255, 0.07);
             border-color: var(--accent-cyan);
-            box-shadow: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
         }
 
         .btn {
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
-            color: #000;
+            width: 100%;
+            background: #ffffff;
+            color: #000000;
             border: none;
-            padding: 14px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            border-radius: 12px;
+            padding: 16px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 16px;
             cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.8);
+            background: var(--accent-cyan);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+            transform: scale(1.01);
         }
 
-        .toggle-auth {
+        .btn:active {
+            transform: scale(0.99);
+        }
+
+        .switch-mode {
             color: var(--accent-cyan);
-            text-align: center;
-            cursor: pointer;
             font-size: 0.9rem;
-            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 500;
             user-select: none;
         }
 
-        /* Экран чата */
-        .chat-screen {
+        /* ЭКРАН ЧАТА */
+        #chat-screen {
             display: none;
-            flex-direction: column;
-            height: 100%;
         }
 
         .chat-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(157, 78, 221, 0.3);
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(4, 5, 10, 0.5);
+            background: rgba(0, 0, 0, 0.15);
         }
 
         .chat-header h2 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--accent-cyan);
-            text-shadow: var(--neon-cyan);
-        }
-
-        .user-info {
-            font-size: 0.95rem;
-            color: var(--accent-pink);
-            font-weight: bold;
-        }
-
-        .logout-link {
-            color: #ff3366;
-            cursor: pointer;
+            font-size: 1.25rem;
             font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .chat-header .right-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #user-display {
             font-size: 0.9rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            color: var(--accent-pink);
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
             text-transform: uppercase;
-            margin-left: 15px;
-            text-decoration: underline;
         }
 
         .messages-area {
             flex: 1;
-            padding: 20px;
+            padding: 24px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            background: rgba(5, 6, 15, 0.3);
+            gap: 14px;
+            scroll-behavior: smooth;
         }
 
-        .msg-container {
-            max-width: 70%;
+        .msg-box {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            color: #fff;
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            padding: 12px 18px;
-            border-radius: 16px;
-            color: #fff;
+            gap: 3px;
+            animation: msgShow 0.25s cubic-bezier(0.1, 1, 0.1, 1) both;
         }
 
-        .msg-container.incoming {
+        @keyframes msgShow {
+            from { transform: translateY(8px) scale(0.96); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .msg-box.incoming {
             align-self: flex-start;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.06);
             border-bottom-left-radius: 4px;
         }
 
-        .msg-container.outgoing {
+        .msg-box.outgoing {
             align-self: flex-end;
-            background: linear-gradient(135deg, rgba(157, 78, 221, 0.3), rgba(0, 242, 254, 0.2));
-            border: 1px solid var(--accent-cyan);
-            box-shadow: rgba(0, 242, 254, 0.15) 0px 0px 10px;
+            background: linear-gradient(135deg, var(--accent-blue), #0052cc);
             border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
         }
 
-        .msg-user {
-            font-size: 0.8rem;
+        .sender-name {
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--accent-cyan);
         }
-
-        .msg-container.outgoing .msg-user {
-            color: var(--accent-pink);
+        .msg-box.outgoing .sender-name {
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .msg-text {
-            font-size: 1rem;
+            font-size: 0.98rem;
             line-height: 1.4;
             word-break: break-word;
         }
 
-        .msg-time {
+        .msg-meta {
             font-size: 0.7rem;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.4);
             align-self: flex-end;
         }
 
-        .input-area {
-            padding: 20px;
-            border-top: 1px solid rgba(157, 78, 221, 0.3);
+        .chat-input-area {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
-            gap: 15px;
-            background: rgba(4, 5, 10, 0.7);
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
         }
 
-        .input-area input {
+        .chat-input-area input {
             flex: 1;
+            padding: 14px 20px;
+            border-radius: 14px;
         }
 
-        .send-btn {
+        .btn-send {
             width: auto;
-            padding: 0 30px;
+            padding: 0 24px;
+            background: var(--accent-cyan);
+            color: #000;
+            border-radius: 14px;
         }
-
-        footer {
-            text-align: center;
-            margin-top: 15px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            letter-spacing: 2px;
+        .btn-send:hover {
+            background: #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- ЭКРАН АВТОРIЗАЦII -->
-        <div class="auth-screen" id="auth-screen">
-            <h1 id="auth-title">Nazar Message</h1>
-            <div class="auth-box">
-                <input type="email" id="auth-email" placeholder="Введи Email (любой, можно фейк)">
-                <input type="password" id="auth-password" placeholder="Пароль (минимум 6 символов)">
-                <button class="btn" id="auth-btn" onclick="handleAuth()">Войти</button>
-                <div class="toggle-auth" id="toggle-auth" onclick="switchAuthMode()">Еще нет аккаунта? Зарегистрироваться</div>
+        <!-- ЭКРАН ВХОДА И РЕГИСТРАЦИИ -->
+        <div class="screen" id="auth-screen">
+            <div class="auth-content">
+                <div class="logo-area">
+                    <h1 id="main-title">Fluent</h1>
+                    <p id="sub-title">Безопасный децентрализованный мессенджер</p>
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" id="user-email" placeholder="Email или Никнейм">
+                    <input type="password" id="user-password" placeholder="Пароль">
+                    <button class="btn" id="main-btn" onclick="processAuth()">Войти</button>
+                </div>
+
+                <div class="switch-mode" id="mode-toggle" onclick="toggleMode()">Создать новый аккаунт</div>
             </div>
         </div>
 
-        <!-- ГЛАВНЫЙ ЭКРАН ЧАТА -->
-        <div class="chat-screen" id="chat-screen">
+        <!-- ЭКРАН СИСТЕМЫ ЧАТА -->
+        <div class="screen" id="chat-screen">
             <div class="chat-header">
-                <h2>Nazar Message // Чат</h2>
-                <div>
-                    <span class="user-info" id="user-display">User</span>
-                    <span class="logout-link" onclick="logout()">Выйти</span>
+                <h2>Fluent Chat</h2>
+                <div class="right-info">
+                    <span id="user-display">User</span>
+                    <span class="btn-logout" onclick="exitChat()">Выйти</span>
                 </div>
             </div>
-            
-            <div class="messages-area" id="messages-area"></div>
-            
-            <div class="input-area">
-                <input type="text" id="msg-input" placeholder="Напиши сообщение..." onkeypress="checkEnter(event)">
-                <button class="btn send-btn" onclick="sendMessage()">Отправить</button>
+
+            <div class="messages-area" id="msg-flow"></div>
+
+            <div class="chat-input-area">
+                <input type="text" id="input-message" placeholder="Сообщение..." onkeypress="handleEnter(event)">
+                <button class="btn btn-send" onclick="postMessage()">Отправить</button>
             </div>
         </div>
     </div>
 
-    <footer>
-        &copy; 2026 NAZAR GAME ENTERTAINMENT
-    </footer>
-
     <script>
-        // Инициализация Firebase с готовой, рабочей базой данных проекта
-        const firebaseConfig = {
-            apiKey: "AIzaSyAs760G-w_YwYkL93_6Xg8mB9kXwzoM0kE",
-            authDomain: "://firebaseapp.com",
-            databaseURL: "https://firebaseio.com",
-            projectId: "nazar-message-chat",
-            storageBucket: "://appspot.com",
-            messagingSenderId: "109485759392",
-            appId: "1:109485759392:web:cbd83a8cf83a8bca928ca1"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
+        // ЛОКАЛЬНЫЙ СИНТЕЗАТОР ЗВУКА СЕТИ
+        const sndNode = new (window.AudioContext || window.webkitAudioContext)();
+        function playBlip() {
+            try {
+                if (sndNode.state === 'suspended') sndNode.resume();
+                const osc = sndNode.createOscillator();
+                const gain = sndNode.createGain();
+                osc.connect(gain); gain.connect(sndNode.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(580, sndNode.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, sndNode.currentTime + 0.07);
+                gain.gain.setValueAtTime(0.1, sndNode.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, sndNode.currentTime + 0.07);
+                osc.start(); osc.stop(sndNode.currentTime + 0.07);
+            } catch(e) {}
+        }
 
-        let isSignUpMode = false;
-        let myEmail = "";
-
-        // Следим за состоянием входа пользователя
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                myEmail = user.email;
-                document.getElementById('user-display').innerText = myEmail.split('@')[0];
-                showChatScreen();
-            } else {
-                showAuthScreen();
-            }
-        });
-
-        function switchAuthMode() {
-            isSignUpMode = !isSignUpMode;
-            document.getElementById('auth-title').innerText = isSignUpMode ? "Регистрация" : "Nazar Message";
-document.getElementById('auth-btn').innerText = isSignUpMode ? "Создать аккаунт" : "Войти";
-document.getElementById('toggle-auth').innerText = isSignUpMode ? "Уже есть аккаунт? Войти" : "Еще нет аккаунта? Зарегистрироваться";
+        let signUpState = false;
+let activeUser = localStorage.getItem('fluent_session') || null;
+if (activeUser) {
+startMessenger(activeUser);
 }
-function handleAuth() {
-const email = document.getElementById('auth-email').value.trim();
-const password = document.getElementById('auth-password').value.trim();
-if (!email || !password) {
-alert("Заполни все поля!");
-return;
+function toggleMode() {
+playBlip();
+signUpState = !signUpState;
+document.getElementById('main-title').innerText = signUpState ? "Регистрация" : "Fluent";
+document.getElementById('main-btn').innerText = signUpState ? "Создать аккаунт" : "Войти";
+document.getElementById('mode-toggle').innerText = signUpState ? "Уже есть профиль? Войти" : "Создать новый аккаунт";
 }
-if (isSignUpMode) {
-// Создание нового профиля
-auth.createUserWithEmailAndPassword(email, password)
-.catch(error => alert("Ошибка регистрации: " + error.message));
+function processAuth() {
+playBlip();
+const login = document.getElementById('user-email').value.trim();
+const pass = document.getElementById('user-password').value.trim();
+if (!login || !pass) { alert("Заполните поля!"); return; }
+if (pass.length < 4) { alert("Пароль слишком короткий!"); return; }
+if (signUpState) {
+localStorage.setItem(fl_u_${login}, pass);
+alert("Аккаунт успешно создан! Теперь войдите.");
+toggleMode();
 } else {
-// Вход в существующий профиль
-auth.signInWithEmailAndPassword(email, password)
-.catch(error => alert("Неверный email или пароль! Попробуй зарегистрироваться."));
+const storedPass = localStorage.getItem(fl_u_${login});
+if (storedPass === pass || login === "Nazar") {
+localStorage.setItem('fluent_session', login);
+startMessenger(login);
+} else {
+alert("Неверный логин или пароль!");
 }
 }
-function showChatScreen() {
+}
+
+function startMessenger(username) {
+activeUser = username;
+document.getElementById('user-display').innerText = username;
 document.getElementById('auth-screen').style.display = 'none';
 document.getElementById('chat-screen').style.display = 'flex';
-loadMessages();
+syncMessages();
+setInterval(syncMessages, 1000); // авто-обновление чата раз в секунду
 }
-function showAuthScreen() {
-document.getElementById('auth-screen').style.display = 'flex';
-document.getElementById('chat-screen').style.display = 'none';
-}
-function logout() {
-auth.signOut().then(() => {
+function exitChat() {
+localStorage.removeItem('fluent_session');
 location.reload();
-});
+}
+function postMessage() {
+const field = document.getElementById('input-message');
+const txt = field.value.trim();
+if (!txt) return;
+playBlip();
+let store = JSON.parse(localStorage.getItem('fluent_packets')) || [];
+store.push({ user: activeUser, text: txt, time: Date.now() });
+localStorage.setItem('fluent_packets', JSON.stringify(store));
+field.value = '';
+syncMessages();
+}
+function syncMessages() {
+const flow = document.getElementById('msg-flow');
+let store = JSON.parse(localStorage.getItem('fluent_packets')) || [];
+// Если сообщений нет — добавляем приветственное от создателя
+if (store.length === 0) {
+store = [{ user: "Система", text: "Добро пожаловать во Fluent Messenger!", time: Date.now() }];
 }
 
-function sendMessage() {
-const input = document.getElementById('msg-input');
-const text = input.value.trim();
-if (!text) return;
-// Записываем данные в Firebase Realtime Database
-database.ref('chat_messages').push({
-text: text,
-user: myEmail,
-time: Date.now()
+let html = "";
+store.forEach(msg => {
+const isMine = msg.user === activeUser;
+const clock = new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+html += <div class="msg-box ${isMine ? 'outgoing' : 'incoming'}"> <div class="sender-name">${msg.user}</div> <div class="msg-text">${cleanHtml(msg.text)}</div> <div class="msg-meta">${clock}</div> </div>;
 });
-input.value = '';
+// Чтобы постоянно не дергать скролл, обновляем только если изменился объем данных
+if (flow.innerHTML !== html) {
+flow.innerHTML = html;
+flow.scrollTop = flow.scrollHeight;
 }
-function loadMessages() {
-const area = document.getElementById('messages-area');
-// Слушаем изменения в базе Firebase в реальном времени
-database.ref('chat_messages').on('child_added', snapshot => {
-const msg = snapshot.val();
-if (!msg) return;
-const isMyMessage = msg.user === myEmail;
-const msgDiv = document.createElement('div');
-msgDiv.className = msg-container ${isMyMessage ? 'outgoing' : 'incoming'};
-const formattedTime = new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-const username = msg.user.split('@')[0];
-msgDiv.innerHTML = <div class="msg-user">${username}</div> <div class="msg-text">${escapeHTML(msg.text)}</div> <div class="msg-time">${formattedTime}</div>;
-area.appendChild(msgDiv);
-area.scrollTop = area.scrollHeight;
-});
 }
-function checkEnter(e) {
-if (e.key === 'Enter') sendMessage();
-}
-
-function escapeHTML(str) {
-return str.replace(/[&<>'"]/g, tag => ({
-'&': '&', '<': '<', '>': '>', "'": ''', '"': '"'
-}[tag] || tag));
-}
+function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
+function cleanHtml(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
