@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAZAR GAME | Кибер Джинн</title>
+    <title>NAZAR GAME | Cyber Genie</title>
     <style>
         :root {
-            --bg-color: #06070d;
-            --card-bg: rgba(15, 18, 36, 0.85);
+            --bg-color: #04050a;
+            --card-bg: rgba(10, 12, 26, 0.9);
             --accent-cyan: #00f2fe;
             --accent-purple: #9d4edd;
             --accent-pink: #ff007f;
-            --neon-glow: 0 0 25px rgba(0, 242, 254, 0.45);
+            --neon-cyan: 0 0 20px rgba(0, 242, 254, 0.6);
+            --neon-pink: 0 0 20px rgba(255, 0, 127, 0.6);
             --text-main: #ffffff;
-            --text-muted: #94a3b8;
+            --text-muted: #64748b;
         }
 
         * {
@@ -24,18 +25,18 @@
         }
 
         body {
-            background: radial-gradient(circle at center, #111428 0%, var(--bg-color) 100%);
+            background: radial-gradient(circle at center, #0f1123 0%, var(--bg-color) 100%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 20px;
+            padding: 40px 20px;
         }
 
         .main-wrapper {
             width: 100%;
-            max-width: 750px;
+            max-width: 650px;
             display: flex;
             flex-direction: column;
             gap: 25px;
@@ -47,20 +48,22 @@
         }
 
         header h1 {
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            filter: drop-shadow(0 2px 20px rgba(0, 242, 254, 0.6));
+            letter-spacing: 5px;
+            filter: drop-shadow(0 2px 25px rgba(0, 242, 254, 0.7));
         }
 
         header p {
-            color: var(--text-muted);
+            color: var(--accent-cyan);
             margin-top: 10px;
             font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-shadow: var(--neon-cyan);
         }
 
         .stats-grid {
@@ -73,87 +76,86 @@
         .stat-card {
             background: var(--card-bg);
             border: 1px solid rgba(0, 242, 254, 0.2);
-            padding: 20px;
-            border-radius: 20px;
+            padding: 15px;
+            border-radius: 16px;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
             border-color: var(--accent-cyan);
+            box-shadow: var(--neon-cyan);
+            transform: translateY(-3px);
         }
 
         .stat-value {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 800;
             color: var(--accent-cyan);
-            text-shadow: var(--neon-glow);
-            margin-bottom: 6px;
+            text-shadow: var(--neon-cyan);
+            margin-bottom: 4px;
         }
 
         .stat-value.online::before {
             content: '';
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background-color: #00ff66;
             border-radius: 50%;
-            margin-right: 10px;
-            box-shadow: 0 0 12px #00ff66;
+            margin-right: 8px;
+            box-shadow: 0 0 10px #00ff66;
             vertical-align: middle;
         }
 
         .stat-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 600;
+            letter-spacing: 1px;
         }
 
         .game-card {
             background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 50px 40px;
+            border: 2px solid var(--accent-purple);
+            border-radius: 24px;
+            padding: 40px 30px;
             text-align: center;
-            box-shadow: 0 30px 70px rgba(0,0,0,0.6);
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
+            position: relative;
         }
 
         .genie-avatar {
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
             border-radius: 50%;
-            margin: 0 auto 30px auto;
-            box-shadow: 0 0 40px rgba(157, 78, 221, 0.6);
+            margin: 0 auto 25px auto;
+            box-shadow: var(--neon-pink);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 3.5rem;
-            animation: float 4s ease-in-out infinite;
-            user-select: none;
+            animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
-            100% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
         .game-text {
-            font-size: 1.4rem;
-            line-height: 1.7;
-            margin-bottom: 40px;
-            min-height: 80px;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            min-height: 70px;
             font-weight: 500;
         }
 
         .btn-group {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             width: 100%;
             justify-content: center;
             flex-wrap: wrap;
@@ -161,116 +163,112 @@
 
         .btn {
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
-            color: #020205;
+            color: #000000;
             border: none;
-            padding: 18px 45px;
+            padding: 16px 40px;
             font-size: 1.2rem;
-            font-weight: 800;
-            border-radius: 16px;
+            font-weight: 900;
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: var(--neon-glow);
+            transition: all 0.25s ease;
+            box-shadow: var(--neon-cyan);
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
         .btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 35px rgba(0, 242, 254, 0.8);
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.9);
         }
 
         .btn-choice {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             color: var(--text-main);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: none;
-            min-width: 150px;
+            min-width: 135px;
         }
 
         .btn-yes:hover {
-            background: linear-gradient(135deg, #00ff66, #00ffcc);
+            background: #00ff66;
             border-color: #00ff66;
-            box-shadow: 0 0 25px rgba(0, 255, 102, 0.6);
+            box-shadow: 0 0 20px #00ff66;
             color: #000;
         }
 
         .btn-no:hover {
-            background: linear-gradient(135deg, #ff0055, #ff00aa);
+            background: #ff0055;
             border-color: #ff0055;
-            box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);
+            box-shadow: 0 0 20px #ff0055;
             color: #fff;
         }
 
         .info-card {
-            background: rgba(10, 11, 22, 0.6);
+            background: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            padding: 35px;
+            border-radius: 20px;
+            padding: 30px;
         }
 
         .info-card h2 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             text-align: center;
-            margin-bottom: 25px;
-            background: linear-gradient(135deg, #fff, var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            color: var(--accent-cyan);
+            text-shadow: var(--neon-cyan);
             font-weight: 800;
         }
 
         .faq-item {
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 15px 0;
+            padding: 14px 0;
         }
 
         .faq-item:last-child { border: none; }
 
         .faq-question {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 600;
             color: #f1f5f9;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            user-select: none;
         }
 
         .faq-question:hover { color: var(--accent-cyan); }
 
         .faq-question::after {
             content: '▼';
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--accent-purple);
             transition: transform 0.3s;
         }
 
         .faq-item.active .faq-question::after {
             transform: rotate(180deg);
-            color: var(--accent-cyan);
         }
 
         .faq-answer {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out, margin 0.3s ease;
-            color: var(--text-muted);
+            transition: max-height 0.3s ease-out;
+            color: #94a3b8;
             font-size: 0.95rem;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .faq-item.active .faq-answer {
             max-height: 200px;
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         footer {
             text-align: center;
-            margin-top: 10px;
-            color: rgba(255, 255, 255, 0.15);
-            font-size: 0.85rem;
+            margin-top: 5px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
             letter-spacing: 2px;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -279,12 +277,12 @@
     <div class="main-wrapper">
         <header>
             <h1>NAZAR GAME</h1>
-            <p>Загадай популярного блогера, а цифровой Джинн его угадает!</p>
+            <p>CYBER GENIE SYSTEM v1.0</p>
         </header>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value online" id="stat-online">1</div>
+                <div class="stat-value online" id="stat-online">15</div>
                 <div class="stat-label">Онлайн</div>
             </div>
             <div class="stat-card">
@@ -300,7 +298,7 @@
         <div class="game-card">
             <div class="genie-avatar" id="genie-icon">🔮</div>
             <div class="game-text" id="game-text">
-                Привет! Я великий цифровой Джинн от NAZAR GAME. Я умею читать мысли через экран. Загадай любого популярного ютубера, нажми кнопку ниже, и проверим мою силу!
+                Привет! Я великий цифровой Джинн от NAZAR GAME. Загадай любого популярного ютубера, нажми кнопку ниже, и проверим мою силу!
             </div>
             <div class="btn-group" id="action-area">
                 <button class="btn" onclick="startGame()">ИГРАТЬ</button>
@@ -308,7 +306,7 @@
         </div>
 
         <div class="info-card">
-            <h2>Информация об игре & FAQ</h2>
+            <h2>ПОМОЩЬ & FAQ</h2>
             
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFaq(this)">Как это работает? Неужели это магия?</div>
@@ -321,17 +319,56 @@
                 <div class="faq-question" onclick="toggleFaq(this)">Кого именно может угадать Джинн?</div>
                 <div class="faq-answer">
                     На данный момент в тестовую базу NAZAR GAME внесены самые популярные блогеры рунета: Влад А4, Куплинов, Мармок, Мистер Макс и Ивангай. База будет постоянно расширяться!
-Что делать, если Джинн не угадал?
+                </div>
+            </div>
 
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Что делать, если Джинн не угадал?</div>
+                <div class="faq-answer">
 Такое бывает, если вы случайно ответили неверно на один из вопросов, либо если вашего блогера ещё нет в нашей цифровой базе данных. Нажмите кнопку «Сыграть еще раз» и проверьте джинна заново!
-
-Безопасны ли мои данные статистики?
-
-Абсолютно! Игра использует технологию LocalStorage вашего браузера. Данные о количестве визитов и побед хранятся локально на вашем устройстве, обеспечивая полную анонимность.
 
 
 © 2026 NAZAR GAME ENTERTAINMENT
 
-// Полный игровой скрипт и логику Джинна вы можете найти в исходном коде выше и в репозитории проекта.
-// Скрипт включает в себя инициализацию аудиоконтекста, звуковые эффекты клика и победы,
-// счетчики визитов и онлайн-статистики через LocalStorage, а также алгоритм угадывания блогеров.
+let audioCtx = null;
+function initAudio() {
+if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playClickSound() {
+try {
+initAudio();
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.connect(gain); gain.connect(audioCtx.destination);
+osc.frequency.setValueAtTime(550, audioCtx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.08);
+gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+} catch(e) {}
+}
+
+Такое бывает, если вы случайно ответили неверно на один из вопросов, либо если вашего блогера ещё нет в нашей цифровой базе данных. Нажмите кнопку «Сыграть еще раз» и проверьте джинна заново!
+
+
+© 2026 NAZAR GAME ENTERTAINMENT
+
+let audioCtx = null;
+function initAudio() {
+if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playClickSound() {
+try {
+initAudio();
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.connect(gain); gain.connect(audioCtx.destination);
+osc.frequency.setValueAtTime(550, audioCtx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.08);
+gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+} catch(e) {}
+}
