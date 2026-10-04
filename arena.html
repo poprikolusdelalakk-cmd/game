@@ -177,3 +177,13 @@
         function endGame() {
             clearInterval(battleTicker);
             localStorage.setItem('fl_is_pvp_mode', 'false'); // Сбрасываем PvP флаг
+document.getElementById('act-zone').innerHTML = <button class="btn" style="background:linear-gradient(135deg, var(--pink), var(--purple)); color:#fff;" onclick="window.location.href='result.html'">Завершить бой 🚩</button>;
+}
+function log(text) {
+var box = document.getElementById('arena-log');
+box.innerHTML += "
+" + text;
+box.scrollTop = box.scrollHeight;
+}
+refresh();
+setTimeout(startLiveCombat, 800);
