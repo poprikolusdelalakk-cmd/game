@@ -45,7 +45,7 @@
         </div>
 
         <!-- Поле отображения личного ID профиля -->
-        <div class="id-badge" onclick="copyMyID()">Мой Сигма-ID: <b id="my-id-box" style="color:#38bdf8">------</b> (Клик: Копировать)</div>
+        <div class="id-badge" onclick="copyMyID()">Мой Сигма-ID: <b id="my-id-box">Генерация...</b> (Клик: Копировать)</div>
         <div class="status-net">🟢 Система Fluent Сообщества active</div>
         
         <!-- Динамическое окно списков -->
@@ -60,15 +60,20 @@
     </div>
 
     <script>
-        // СВЕРХНАДЕЖНЫЙ АВТО-СБРОС И ГЕНЕРАЦИЯ ID
-        let currentStoredId = localStorage.getItem('sigma_id');
-        if (!currentStoredId || currentStoredId === "------" || currentStoredId.trim() === "") {
-            // Генерируем новый честный шестизначный Сигма-ID
-            currentStoredId = Math.floor(100000 + Math.random() * 900000).toString();
-            localStorage.setItem('sigma_id', currentStoredId);
-        }
-        // Форсированно выводим ID в HTML-элемент
-        document.getElementById('my-id-box').textContent = currentStoredId;
+        let myId = "";
+
+        // ЖДЕМ ПОЛНУЮ ЗАГРУЗКУ СТРАНИЦЫ И КРАСИВО ВПИСЫВАЕМ ЦИФРЫ ID
+        window.onload = function() {
+            let currentStoredId = localStorage.getItem('sigma_id');
+            if (!currentStoredId || currentStoredId === "------" || currentStoredId.trim() === "") {
+                currentStoredId = Math.floor(100000 + Math.random() * 900000).toString();
+                localStorage.setItem('sigma_id', currentStoredId);
+            }
+            myId = currentStoredId;
+            document.getElementById('my-id-box').textContent = myId;
+            document.getElementById('my-id-box').style.color = "#38bdf8";
+            render();
+        };
 
         const myName = localStorage.getItem('nickname') || 'Flerenk';
 
@@ -78,7 +83,7 @@
 
         let currentTab = 'friends';
 
-        // Генератор сочных звуков без аудиофайлов
+        // Генератор звуков
         function playSound(type) {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -108,12 +113,13 @@
         }
 
         function copyMyID() {
-            navigator.clipboard.writeText(currentStoredId);
+            if(!myId || myId === "") return;
+            navigator.clipboard.writeText(myId);
             playSound('click');
             alert('Ваш Сигма-ID успешно скопирован в буфер обмена!');
         }
 
-        // Логика динамического переключения вкладок
+        // Переключение вкладок
         function switchView(tab) {
             currentTab = tab;
             playSound('click');
@@ -139,13 +145,12 @@
             render();
         }
 
-        // Логика кнопки главного действия
         function handleMainAction() {
             const val = document.getElementById('main-input').value.trim();
             if(!val) return alert('Поле ввода пустое!');
 
             if (currentTab === 'requests') {
-                if(val === currentStoredId) return alert('Нельзя добавить себя!');
+                if(val === myId) return alert('Нельзя добавить себя!');
                 if(requests.some(r => r.id === val)) return alert('Запрос уже есть!');
                 
                 requests.push({ id: val, name: 'Игрок_' + val });
@@ -154,7 +159,7 @@
                 alert(`Запрос для ID ${val} сохранен!\nЗайдите во вкладку "Запросы" на втором устройстве и введите этот же ID, чтобы подтвердить дружбу.`);
             } 
             else if (currentTab === 'friends') {
-                let generatedRoom = `room_${currentStoredId}_${val}`;
+                let generatedRoom = `room_${myId}_${val}`;
                 navigator.clipboard.writeText(generatedRoom);
                 playSound('fight');
                 alert(`⚔️ Бой создан!\nКод вызова: [ ${generatedRoom} ] скопирован!\n\nОтправьте его другу. Он вставит его во вкладке "Вызовы" и вы начнете дуэль.`);
@@ -176,7 +181,7 @@
                 friends.push({ id: id, name: name });
                 localStorage.setItem('fluent_friends', JSON.stringify(friends));
             }
-            playSound('success');
+playSound('success');
 render();
 }
 function removeRequest(id) {
@@ -189,9 +194,9 @@ function playWithBot() {
 playSound('click');
 window.location.href = arena.html?mode=bot;
 }
-// Отрисовка элементов на экране
 function render() {
 const area = document.getElementById('content-area');
+if(!area) return;
 if (currentTab === 'friends') {
 if(friends.length === 0) {
 area.innerHTML = <div class="empty">Список друзей пуст.<br>Взаимно добавьте друг друга во вкладке "Запросы"!</div>;
@@ -210,5 +215,3 @@ else if (currentTab === 'invites') {
 area.innerHTML = <div class="empty"> <b>Как играть по сети без лагов сервера:</b><br> 1. Друг создает бой во вкладке "Друзья" и скидывает вам код комнаты.<br> 2. Вставьте полученный код комнаты в поле ниже и нажмите кнопку войти! </div>;
 }
 }
-// Запуск первой отрисовки при входе
-render();
