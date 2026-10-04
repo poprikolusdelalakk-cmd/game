@@ -452,7 +452,7 @@ function processAuth() {
 playBlip();
 const login = document.getElementById('user-email').value.trim();
 const pass = document.getElementById('user-password').value.trim();
-if (!login || !pass) { alert("Заполните все поля!"); return; }
+if (!login || !pass) { alert("Заполни все поля!"); return; }
 if (signUpState) {
 localStorage.setItem(fl_u_${login}, pass);
 localStorage.setItem('fluent_session', login);
@@ -529,13 +529,11 @@ localStorage.setItem(fl_friends_${activeUser}, JSON.stringify(friends));
 status.innerHTML = <span style="color:#00ff66;">Чат с ${targetName} успешно создан!</span>;
 setTimeout(() => { openDialog(targetName); input.value = ""; status.innerText = "Введите ник и нажмите кнопку, чтобы создать чат."; }, 1000);
 }
-// ОТКРЫТИЕ ДИАЛОГА ЧАТА
 function openDialog(target) {
 playBlip();
 activeTargetChat = target;
 document.getElementById('dialog-title').innerText = target;
 document.getElementById('dialog-avatar').innerText = target.charAt(0).toUpperCase();
-document.getElementById('active-dialog').style.style.setProperty('display', 'flex', 'important');
 document.getElementById('active-dialog').style.display = 'flex';
 syncMessages();
 }
