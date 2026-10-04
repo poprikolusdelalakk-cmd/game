@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAZAR GAME | Cyber Genie</title>
+    <title>Nazar Message | Кибер-Мессенджер</title>
+    <!-- Подключаем децентрализованную живую базу данных Gun.js -->
+    <script src="https://jsdelivr.net"></script>
+    <script src="https://jsdelivr.net"></script>
     <style>
         :root {
             --bg-color: #04050a;
@@ -31,344 +34,325 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .main-wrapper {
+        .container {
             width: 100%;
-            max-width: 650px;
+            max-width: 850px;
+            height: 85vh;
+            background: var(--card-bg);
+            border: 2px solid var(--accent-purple);
+            border-radius: 24px;
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            overflow: hidden;
         }
 
-        header {
-            text-align: center;
-            padding: 10px 0;
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 20px;
+            padding: 40px;
         }
 
-        header h1 {
-            font-size: 3.8rem;
+        .auth-screen h1 {
+            font-size: 3rem;
             font-weight: 900;
             background: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            letter-spacing: 5px;
-            filter: drop-shadow(0 2px 25px rgba(0, 242, 254, 0.7));
+            letter-spacing: 3px;
+            filter: drop-shadow(0 2px 15px rgba(0, 242, 254, 0.7));
+            margin-bottom: 10px;
         }
 
-        header p {
-            color: var(--accent-cyan);
-            margin-top: 10px;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-            text-shadow: var(--neon-cyan);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+        .auth-box {
             width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            padding: 15px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
             transition: all 0.3s ease;
         }
 
-        .stat-card:hover {
+        input:focus {
             border-color: var(--accent-cyan);
             box-shadow: var(--neon-cyan);
-            transform: translateY(-3px);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--accent-cyan);
-            text-shadow: var(--neon-cyan);
-            margin-bottom: 4px;
-        }
-
-        .stat-value.online::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #00ff66;
-            border-radius: 50%;
-            margin-right: 8px;
-            box-shadow: 0 0 10px #00ff66;
-            vertical-align: middle;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .game-card {
-            background: var(--card-bg);
-            border: 2px solid var(--accent-purple);
-            border-radius: 24px;
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
-            position: relative;
-        }
-
-        .genie-avatar {
-            width: 110px;
-            height: 110px;
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-            border-radius: 50%;
-            margin: 0 auto 25px auto;
-            box-shadow: var(--neon-pink);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3.5rem;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .game-text {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            margin-bottom: 35px;
-            min-height: 70px;
-            font-weight: 500;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
         }
 
         .btn {
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
-            color: #000000;
+            color: #000;
             border: none;
-            padding: 16px 40px;
-            font-size: 1.2rem;
-            font-weight: 900;
-            border-radius: 14px;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: var(--neon-cyan);
-            letter-spacing: 1px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
         }
 
         .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(0, 242, 254, 0.9);
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.8);
         }
 
-        .btn-choice {
-            background: rgba(255, 255, 255, 0.02);
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: none;
-            min-width: 135px;
-        }
-
-        .btn-yes:hover {
-            background: #00ff66;
-            border-color: #00ff66;
-            box-shadow: 0 0 20px #00ff66;
-            color: #000;
-        }
-
-        .btn-no:hover {
-            background: #ff0055;
-            border-color: #ff0055;
-            box-shadow: 0 0 20px #ff0055;
-            color: #fff;
-        }
-
-        .info-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 30px;
-        }
-
-        .info-card h2 {
-            font-size: 1.6rem;
-            text-align: center;
-            margin-bottom: 20px;
+        .toggle-auth {
             color: var(--accent-cyan);
-            text-shadow: var(--neon-cyan);
-            font-weight: 800;
-        }
-
-        .faq-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 14px 0;
-        }
-
-        .faq-item:last-child { border: none; }
-
-        .faq-question {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: #f1f5f9;
+            text-align: center;
             cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+
+        .chat-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.3);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: rgba(4, 5, 10, 0.5);
         }
 
-        .faq-question:hover { color: var(--accent-cyan); }
-
-        .faq-question::after {
-            content: '▼';
-            font-size: 0.75rem;
-            color: var(--accent-purple);
-            transition: transform 0.3s;
+        .chat-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            text-shadow: var(--neon-cyan);
         }
 
-        .faq-item.active .faq-question::after {
-            transform: rotate(180deg);
+        .logout-link {
+            color: var(--accent-pink);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
         }
 
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            color: #94a3b8;
-            font-size: 0.95rem;
-            line-height: 1.5;
+        .messages-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(5, 6, 15, 0.3);
         }
 
-        .faq-item.active .faq-answer {
-            max-height: 200px;
-            margin-top: 10px;
+        .msg-container {
+            max-width: 70%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px 18px;
+            border-radius: 16px;
+            color: #fff;
         }
 
-        footer {
-            text-align: center;
-            margin-top: 5px;
-            color: var(--text-muted);
+        .msg-container.incoming {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-container.outgoing {
+            align-self: flex-end;
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.3), rgba(0, 242, 254, 0.2));
+            border: 1px solid var(--accent-cyan);
+            box-shadow: rgba(0, 242, 254, 0.15) 0px 0px 10px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg-user {
             font-size: 0.8rem;
-            letter-spacing: 2px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+        .msg-container.outgoing .msg-user {
+            color: var(--accent-pink);
+        }
+
+        .msg-text {
+            font-size: 1rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            align-self: flex-end;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid rgba(157, 78, 221, 0.3);
+            display: flex;
+            gap: 15px;
+            background: rgba(4, 5, 10, 0.7);
+        }
+
+        .input-area input {
+            flex: 1;
+        }
+
+        .send-btn {
+            width: auto;
+            padding: 0 30px;
         }
     </style>
 </head>
 <body>
 
-    <div class="main-wrapper">
-        <header>
-            <h1>NAZAR GAME</h1>
-            <p>CYBER GENIE SYSTEM v1.0</p>
-        </header>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value online" id="stat-online">15</div>
-                <div class="stat-label">Онлайн</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-visitors">0</div>
-                <div class="stat-label">Визиты</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-guessed">0</div>
-                <div class="stat-label">Угадано</div>
+    <div class="container">
+        <!-- АВТОРИЗАЦИЯ -->
+        <div class="auth-screen" id="auth-screen">
+            <h1 id="auth-title">Nazar Message</h1>
+            <div class="auth-box">
+                <input type="text" id="auth-username" placeholder="Придумай уникальный Никнейм">
+                <input type="password" id="auth-password" placeholder="Придумай надежный пароль">
+                <button class="btn" id="auth-btn" onclick="handleAuth()">Войти / Создать профиль</button>
             </div>
         </div>
 
-        <div class="game-card">
-            <div class="genie-avatar" id="genie-icon">🔮</div>
-            <div class="game-text" id="game-text">
-                Привет! Я великий цифровой Джинн от NAZAR GAME. Загадай любого популярного ютубера, нажми кнопку ниже, и проверим мою силу!
+        <!-- ЧАТ -->
+        <div class="chat-screen" id="chat-screen">
+            <div class="chat-header">
+                <h2>Nazar Message // Живой чат</h2>
+                <div class="logout-link" onclick="logout()">Выйти</div>
             </div>
-            <div class="btn-group" id="action-area">
-                <button class="btn" onclick="startGame()">ИГРАТЬ</button>
-            </div>
-        </div>
-
-        <div class="info-card">
-            <h2>ПОМОЩЬ & FAQ</h2>
             
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">Как это работает? Неужели это магия?</div>
-                <div class="faq-answer">
-                    Нет, это продвинутая математика и алгоритм фильтрации тегов! Когда вы отвечаете на вопросы, система мгновенно отсекает сотни неподходящих вариантов. В конце остается только тот блогер, которого вы загадали.
-                </div>
+            <div class="messages-area" id="messages-area"></div>
+            
+            <div class="input-area">
+                <input type="text" id="msg-input" placeholder="Напиши сообщение..." onkeypress="checkEnter(event)">
+                <button class="btn send-btn" onclick="sendMessage()">Отправить</button>
             </div>
+        </div>
+    </div>
 
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">Кого именно может угадать Джинн?</div>
-                <div class="faq-answer">
-                    На данный момент в тестовую базу NAZAR GAME внесены самые популярные блогеры рунета: Влад А4, Куплинов, Мармок, Мистер Макс и Ивангай. База будет постоянно расширяться!
-                </div>
-            </div>
+    <script>
+        // Инициализируем бесплатные публичные сервера Gun
+        const gun = Gun(['https://herokuapp.com', 'https://peer.ooo']);
+        const user = gun.user().recall({localStorage: true});
 
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">Что делать, если Джинн не угадал?</div>
-                <div class="faq-answer">
-Такое бывает, если вы случайно ответили неверно на один из вопросов, либо если вашего блогера ещё нет в нашей цифровой базе данных. Нажмите кнопку «Сыграть еще раз» и проверьте джинна заново!
+        let myUsername = "";
 
+        // Проверяем, залогинен ли уже юзер
+        if (user.is) {
+            user.get('profile').get('alias').once(name => {
+                myUsername = name;
+                showChatScreen();
+            });
+        }
 
-© 2026 NAZAR GAME ENTERTAINMENT
+        // Автоматический вход и создание аккаунта в один клик
+        function handleAuth() {
+            const name = document.getElementById('auth-username').value.trim();
+            const pass = document.getElementById('auth-password').value.trim();
 
-let audioCtx = null;
-function initAudio() {
-if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (!name || !pass) {
+                alert("Заполни все поля!");
+                return;
+            }
+
+            // Пытаемся войти
+            user.auth(name, pass, ack => {
+                if (ack.err) {
+                    // Если такого юзера нет — автоматически создаем его
+                    user.create(name, pass, createAck => {
+                        if (createAck.err) {
+                            alert("Ошибка создания профиля: " + createAck.err);
+                        } else {
+                            // Сразу логинимся после регистрации
+                            user.auth(name, pass, loginAck => {
+                                myUsername = name;
+                                user.get('profile').put({alias: name});
+                                showChatScreen();
+                            });
+                        }
+                    });
+                } else {
+                    myUsername = name;
+                    showChatScreen();
+                }
+            });
+        }
+
+        function showChatScreen() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('chat-screen').style.display = 'flex';
+            loadMessages();
+        }
+
+        function logout() {
+            user.leave();
+            location.reload();
+        }
+
+        // ОТПРАВКА СООБЩЕНИЙ
+        function sendMessage() {
+            const input = document.getElementById('msg-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+const msgData = {
+text: text,
+user: myUsername,
+time: Date.now()
+};
+// Публикуем сообщение в глобальную комнату чата 'nazarchat'
+gun.get('nazarchat').set(msgData);
+input.value = '';
 }
-function playClickSound() {
-try {
-initAudio();
-const osc = audioCtx.createOscillator();
-const gain = audioCtx.createGain();
-osc.connect(gain); gain.connect(audioCtx.destination);
-osc.frequency.setValueAtTime(550, audioCtx.currentTime);
-osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.08);
-gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-osc.start(); osc.stop(audioCtx.currentTime + 0.08);
-} catch(e) {}
+// ЗАГРУЗКА И ОБНОВЛЕНИЕ СООБЩЕНИЙ В РЕАЛЬНОМ ВРЕМЕНИ
+function loadMessages() {
+const area = document.getElementById('messages-area');
+const renderedIds = new Set(); // чтобы сообщения не дублировались
+gun.get('nazarchat').map().once((msg, id) => {
+if (!msg || !msg.text || renderedIds.has(id)) return;
+renderedIds.add(id);
+const isMyMessage = msg.user === myUsername;
+const msgDiv = document.createElement('div');
+msgDiv.className = msg-container ${isMyMessage ? 'outgoing' : 'incoming'};
+const formattedTime = new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+msgDiv.innerHTML = <div class="msg-user">${msg.user}</div> <div class="msg-text">${escapeHTML(msg.text)}</div> <div class="msg-time">${formattedTime}</div>;
+area.appendChild(msgDiv);
+area.scrollTop = area.scrollHeight;
+});
 }
-
-Такое бывает, если вы случайно ответили неверно на один из вопросов, либо если вашего блогера ещё нет в нашей цифровой базе данных. Нажмите кнопку «Сыграть еще раз» и проверьте джинна заново!
-
-
-© 2026 NAZAR GAME ENTERTAINMENT
-
-let audioCtx = null;
-function initAudio() {
-if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-if (audioCtx.state === 'suspended') audioCtx.resume();
+function checkEnter(e) {
+if (e.key === 'Enter') sendMessage();
 }
-function playClickSound() {
-try {
-initAudio();
-const osc = audioCtx.createOscillator();
-const gain = audioCtx.createGain();
-osc.connect(gain); gain.connect(audioCtx.destination);
-osc.frequency.setValueAtTime(550, audioCtx.currentTime);
-osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.08);
-gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-osc.start(); osc.stop(audioCtx.currentTime + 0.08);
-} catch(e) {}
+function escapeHTML(str) {
+return str.replace(/[&<>'"]/g, tag => ({
+'&': '&', '<': '<', '>': '>', "'": ''', '"': '"'
+}[tag] || tag));
 }
