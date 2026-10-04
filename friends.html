@@ -45,7 +45,7 @@
         </div>
 
         <!-- Поле отображения личного ID профиля -->
-        <div class="id-badge" onclick="copyMyID()">Мой Сигма-ID: <b id="my-id-box">Генерация...</b> (Клик: Копировать)</div>
+        <div class="id-badge" onclick="copyMyID()">Мой Сигма-ID: <b id="my-id-box" style="color:#38bdf8">------</b> (Клик: Копировать)</div>
         <div class="status-net">🟢 Система Fluent Сообщества active</div>
         
         <!-- Динамическое окно списков -->
@@ -60,20 +60,12 @@
     </div>
 
     <script>
-        let myId = "";
-
-        // ЖДЕМ ПОЛНУЮ ЗАГРУЗКУ СТРАНИЦЫ И КРАСИВО ВПИСЫВАЕМ ЦИФРЫ ID
-        window.onload = function() {
-            let currentStoredId = localStorage.getItem('sigma_id');
-            if (!currentStoredId || currentStoredId === "------" || currentStoredId.trim() === "") {
-                currentStoredId = Math.floor(100000 + Math.random() * 900000).toString();
-                localStorage.setItem('sigma_id', currentStoredId);
-            }
-            myId = currentStoredId;
-            document.getElementById('my-id-box').textContent = myId;
-            document.getElementById('my-id-box').style.color = "#38bdf8";
-            render();
-        };
+        // АВТОНОМНАЯ ГЕНЕРАЦИЯ ID НАПРЯМУЮ ПРИ ЗАГРУЗКЕ СКРИПТА
+        let myId = localStorage.getItem('sigma_id');
+        if (!myId || myId === "------" || myId === "Генерация..." || myId.trim() === "") {
+            myId = Math.floor(100000 + Math.random() * 900000).toString();
+            localStorage.setItem('sigma_id', myId);
+        }
 
         const myName = localStorage.getItem('nickname') || 'Flerenk';
 
@@ -181,16 +173,18 @@
                 friends.push({ id: id, name: name });
                 localStorage.setItem('fluent_friends', JSON.stringify(friends));
             }
-playSound('success');
-render();
-}
-function removeRequest(id) {
-requests = requests.filter(r => r.id !== id);
-localStorage.setItem('fluent_reqs', JSON.stringify(requests));
-playSound('click');
-render();
-}
-function playWithBot() {
+            playSound('success');
+            render();
+        }
+
+        function removeRequest(id) {
+            requests = requests.filter(r => r.id !== id);
+            localStorage.setItem('fluent_reqs', JSON.stringify(requests));
+            playSound('click');
+            render();
+        }
+
+        function playWithBot() {
 playSound('click');
 window.location.href = arena.html?mode=bot;
 }
@@ -215,3 +209,8 @@ else if (currentTab === 'invites') {
 area.innerHTML = <div class="empty"> <b>Как играть по сети без лагов сервера:</b><br> 1. Друг создает бой во вкладке "Друзья" и скидывает вам код комнаты.<br> 2. Вставьте полученный код комнаты в поле ниже и нажмите кнопку войти! </div>;
 }
 }
+// ЖЕСТКИЙ ПРИНУДИТЕЛЬНЫЙ ЗАПУСК ОТРИСОВКИ СРАЗУ ПОСЛЕ ЗАГРУЗКИ HTML
+window.addEventListener('DOMContentLoaded', () => {
+document.getElementById('my-id-box').textContent = myId;
+render();
+});
