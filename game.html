@@ -74,7 +74,6 @@
         var step = 0;
         var log = {};
 
-        // ОБНОВЛЕННАЯ БАЗА: Добавил Домера и других топ блогеров
         var db = [
             { name: "Домер (Domer Grief)", tags: { game: "да", blogger: "да", domer: "да", blocks: "да" } },
             { name: "Компот", tags: { game: "да", blogger: "да", compot: "да", blocks: "да" } },
@@ -88,12 +87,11 @@
             { name: "Скибиди Туалет", tags: { meme: "да", series: "да" } }
         ];
 
-        // ВОПРОСЫ ПОД ДОМЕРА И БЛОГЕРОВ
         var questions = [
             { id: "game", text: "Этот персонаж/блогер связан с видеоиграми?" },
             { id: "blogger", text: "Это реальный популярный блогер или ютубер?" },
             { id: "blocks", text: "Он прославился благодаря съёмкам игры Майнкрафт?" },
-            { id: "domer", text: "О! Этот ютубер обожает снимать гриферские шоу, взламывать админки и владеет сервером ReallyWorld?" },
+            { id: "domer", text: "Этот ютубер обожает снимать гриферские шоу, взламывать админки и владеет сервером ReallyWorld?" },
             { id: "compot", text: "Этот майнкрафтер живёт в культовой деревне жителей номер 13?" },
             { id: "a4", text: "Это лидер канала А4, у него миллионы подписчиков и фамилия Бумага?" },
             { id: "glent", text: "Этот парень раньше снимался на канале А4, а теперь у него свой канал «Глент Кобяков»?" },
@@ -169,6 +167,7 @@
         function predict() {
             var filtered = filterCharacters();
             if (filtered.length > 0) {
+                // ИСПРАВЛЕНО НАМЕРТВО: забираем имя первого подходящего объекта из массива элементов
                 showGuess(filtered[0].name);
             } else {
                 fail();
@@ -194,16 +193,3 @@
         }
 
         function fail() {
-document.getElementById('bubble').innerText = "ЧЗХ... Ты меня победил. Напиши имя этого сигмы, я внесу его в свою базу:";
-document.getElementById('buttons-area').innerHTML = <input type="text" id="new-name" class="input-fail" placeholder="Имя блогера/перса..."> <button class="btn-action" onclick="save()">Запомнить</button>;
-}
-function save() {
-var txt = document.getElementById('new-name').value.trim();
-if (txt) {
-var newTags = {};
-for (var k in log) { if (log[k] !== "хз") newTags[k] = log[k]; }
-db.push({ name: txt, tags: newTags });
-document.getElementById('bubble').innerText = "Данные записаны! Персонаж '" + txt + "' теперь вшит в мой кибер-мозг!";
-document.getElementById('buttons-area').innerHTML = <button class="btn-action" onclick="window.location.href='./index.html'">В меню</button>;
-}
-}
