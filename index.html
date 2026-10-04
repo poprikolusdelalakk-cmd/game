@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluent Messenger - Вход</title>
+    <title>Fluent Messenger - Авторизация</title>
     <style>
         :root {
             --bg-dark: #0e1621;
@@ -31,10 +31,7 @@
     <div class="auth-box">
         <h1 id="auth-title">Вход</h1>
         <p id="auth-subtitle">Fluent Messenger Клиент</p>
-        
-        <div id="inputs-area">
-            <!-- Сюда вставляются поля -->
-        </div>
+        <div id="inputs-area"></div>
     </div>
 
     <script>
@@ -79,7 +76,7 @@
             localStorage.setItem(`fl_name_by_phone_${phone}`, name);
 
             localStorage.setItem('fluent_session', name);
-            window.location.href = 'chat.html';
+            window.location.href = './chat.html';
         }
 
         function processLogin() {
@@ -89,21 +86,23 @@
 
             let resolvedName = idInput;
             if (idInput.startsWith('+') || !isNaN(idInput)) {
-                resolvedName = localStorage.getItem(`fl_name_by_phone_${idInput}`) || null;
-                if (!resolvedName) { alert("Аккаунт с таким номером не найден!"); return; }
+                resolvedName = localStorage.getItem(`fl_u_phone_${idInput}`) || localStorage.getItem(`fl_name_by_phone_${idInput}`) || idInput;
             }
 
             const storedPass = localStorage.getItem(`fl_pass_by_name_${resolvedName}`);
             if (storedPass === pass || resolvedName === "Nazar") {
                 localStorage.setItem('fluent_session', resolvedName);
-                window.location.href = 'chat.html';
+                window.location.href = './chat.html';
             } else {
-                alert("Неверный логин или пароль!");
+                // Авторегистрация если профиля нет
+                localStorage.setItem(`fl_pass_by_name_${resolvedName}`, pass);
+                localStorage.setItem('fluent_session', resolvedName);
+                window.location.href = './chat.html';
             }
         }
 
         if (localStorage.getItem('fluent_session')) {
-            window.location.href = 'chat.html';
+            window.location.href = './chat.html';
         } else {
             renderFields();
         }
