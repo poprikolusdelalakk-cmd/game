@@ -1,170 +1,54 @@
 <!DOCTYPE html>
-<html lang="ru" translate="no" class="notranslate">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate">
-    <title>Настройки Профиля и Музыки</title>
+    <title>Настройки</title>
     <style>
-        :root { 
-            --bg: #02040a; 
-            --card: rgba(14, 22, 47, 0.85); 
-            --blue: #00f2fe; 
-            --purple: #9d4edd; 
-            --success: #00ff66; 
-            --danger: #e53935; 
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .box { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 24px; padding: 30px; max-width: 420px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-        
-        input { width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 15px; outline: none; text-align: center; font-size: 1rem; }
-        input:focus { border-color: var(--blue); }
-        
-        .music-btn { width: 100%; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 20px; transition: 0.2s; }
-        .music-off { background: var(--danger); color: #fff; }
-        .music-on { background: var(--success); color: #000; box-shadow: 0 0 15px var(--success); }
-        
-        .btn-save { width: 100%; background: var(--blue); color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; }
+        body { background: #02040a; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .box { background: rgba(14,22,47,0.85); border: 1px solid rgba(0,242,254,0.2); border-radius: 24px; padding: 30px; max-width: 400px; width: 100%; text-align: center; }
+        input { width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 10px; color: #fff; margin-bottom: 15px; outline: none; text-align: center; font-size: 1rem; }
+        .music-btn { width: 100%; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; }
+        .music-off { background: #e53935; color: #fff; }
+        .music-on { background: #00ff66; color: #000; box-shadow: 0 0 15px #00ff66; }
+        .btn-save { width: 100%; background: #00f2fe; color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; }
         .btn-menu { display: block; width: 100%; background: #fff; color: #000; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; text-align: center; }
-        
-        /* ТАБЛИЦА АНАЛИЗА УСТРОЙСТВ */
-        .monitor-panel { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; text-align: left; }
-        .monitor-title { font-size: 0.8rem; color: var(--purple); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; text-align: center; }
-        .device-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px; }
-        .device-label { color: #8fa0b5; }
-        .device-count { font-weight: bold; color: #fff; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2 style="margin-bottom:20px; text-transform: uppercase; text-align: center; font-weight: 900; letter-spacing: 0.5px;">⚙️ Настройки Сигмы</h2>
+        <h2 style="margin-bottom:20px; text-transform: uppercase;">⚙️ Настройки Саунда</h2>
         
-        <div style="text-align:left; font-size:0.85rem; color:#8fa0b5; margin-bottom:6px; font-weight:bold;">ТВОЙ НИКНЕЙМ:</div>
-        <input type="text" id="nick-input" placeholder="Введи новый ник...">
-        <button class="btn-save" onclick="saveNick()">Сохранить ник</button>
+        <input type="text" id="nick-input" placeholder="Никнейм...">
+        <button class="btn-save" onclick="save()">Сохранить изменения</button>
 
-        <div style="text-align:left; font-size:0.85rem; color:#8fa0b5; margin-bottom:8px; font-weight:bold;">КИБЕР-САУНДТРЕК ИГРЫ:</div>
-        <button class="music-btn music-off" id="music-trigger" onclick="toggleCyberMusic()">🎵 Саундтрек: ВЫКЛЮЧЕН</button>
-
-        <!-- ЧЕСТНЫЙ ОНЛАЙН МОНИТОР ЖЕЛЕЗА -->
-        <div class="monitor-panel">
-            <div class="monitor-title">📊 Монитор подключений (Честный ИИ)</div>
-            <div class="device-row">
-                <span class="device-label">💻 Персональные компьютеры (ПК):</span>
-                <span class="device-count" id="count-pc">0</span>
-            </div>
-            <div class="device-row">
-                <span class="device-label">🍏 Ноутбуки и Макбуки:</span>
-                <span class="device-count" id="count-mac">0</span>
-            </div>
-            <div class="device-row">
-                <span class="device-label">📱 Смартфоны (iOS / Android):</span>
-                <span class="device-count" id="count-mobile">0</span>
-            </div>
-            <div style="border-top:1px solid rgba(255,255,255,0.05); margin-top:8px; padding-top:6px; display:flex; justify-content:space-between; font-size:0.9rem; font-weight:bold;">
-                <span style="color:var(--blue);">Твоё устройство:</span>
-                <span id="my-device-detect" style="color:var(--success);">-</span>
-            </div>
-        </div>
-
-        <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:left; border:1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
-            <p style="color:#8fa0b5; font-size: 0.75rem;">Твой уникальный вечный аккаунт-код:</p>
-            <p style="font-size:1.4rem; font-weight:bold; color:var(--blue); letter-spacing:1px;" id="set-id-val">------</p>
-        </div>
-
-        <a href="index.html" class="btn-menu">В главное меню</a>
+        <button class="music-btn music-off" id="music-trigger" onclick="toggle()">🎵 Саундтрек: ВЫКЛЮЧЕН</button>
+        <a href="index.html" class="btn-menu">В меню</a>
     </div>
-
-    <script translate="no">
-        // 1. ЖЕСТКАЯ СИСТЕМНАЯ ПРОВЕРКА И ПРИВЯЗКА ID
-        if (!localStorage.getItem('fl_user_id')) {
-            var randId = Math.floor(100000 + Math.random() * 900000);
-            localStorage.setItem('fl_user_id', randId);
-        }
-        document.getElementById('set-id-val').innerText = localStorage.getItem('fl_user_id');
+    <script>
         document.getElementById('nick-input').value = localStorage.getItem('fl_user_nick') || "Nazar";
-
-        function saveNick() {
-            var input = document.getElementById('nick-input').value.trim();
-            if(!input) { alert("Ник не может быть пустым!"); return; }
-            localStorage.setItem('fl_user_nick', input);
-            alert("Никнейм изменен на '" + input + "'!");
+        var btn = document.getElementById('music-trigger');
+        
+        if (localStorage.getItem('fl_music_enabled') === 'true') {
+            btn.className = "music-btn music-on";
+            btn.innerText = "🎵 Саундтрек: ВКЛЮЧЕН ВЕЗДЕ 🔥";
         }
 
-        // 2. ЧЕСТНЫЙ СКАНИРУЮЩИЙ МОНИТОР УСТРОЙСТВ
-        function detectAndRenderDevices() {
-            var ua = navigator.userAgent.toLowerCase();
-            var myDevice = "ПК (Windows/Linux)";
-            
-            if (ua.includes("macintosh") && !ua.includes("iphone") && !ua.includes("ipad")) {
-                myDevice = "Macbook (Apple)";
-            } else if (ua.includes("iphone") || ua.includes("android") || ua.includes("ipad") || ua.includes("windows phone")) {
-                myDevice = "Смартфон";
-            }
-            document.getElementById('my-device-detect').innerText = myDevice;
-
-            // Генерируем реальное распределение живого онлайна на основе твоей посещаемости
-            var basePC = Math.floor(Math.random() * 4) + 12;
-            var baseMac = Math.floor(Math.random() * 3) + 6;
-            var baseMobile = Math.floor(Math.random() * 8) + 24;
-
-            // Плюсуем текущее устройство игрока в нужную графу
-            if (myDevice === "Macbook (Apple)") baseMac++;
-            else if (myDevice === "Смартфон") baseMobile++;
-            else basePC++;
-
-            document.getElementById('count-pc').innerText = basePC;
-            document.getElementById('count-mac').innerText = baseMac;
-            document.getElementById('count-mobile').innerText = baseMobile;
+        function save() {
+            var txt = document.getElementById('nick-input').value.trim();
+            if(txt) localStorage.setItem('fl_user_nick', txt);
+            alert("Никнейм изменен!");
         }
-        detectAndRenderDevices();
-        setInterval(detectAndRenderDevices, 4000);
 
-        // 3. ПОЛНОСТЬЮ ИСПРАВЛЕННЫЙ НЕУБИВАЕМЫЙ АУДИО-СИНТЕЗАТОР БЕЗ БАГОВ
-        var audioCtx = null;
-        var musicInterval = null;
-        var isMusicPlaying = false;
-
-        function toggleCyberMusic() {
-            var btn = document.getElementById('music-trigger');
-            if (!isMusicPlaying) {
-                isMusicPlaying = true;
-                btn.className = "music-btn music-on";
-                btn.innerText = "🎵 Саундтрек: ИГРАЕТ 🔥";
-                playMelody();
-            } else {
-                isMusicPlaying = false;
+        function toggle() {
+            if (localStorage.getItem('fl_music_enabled') === 'true') {
+                localStorage.setItem('fl_music_enabled', 'false');
                 btn.className = "music-btn music-off";
                 btn.innerText = "🎵 Саундтрек: ВЫКЛЮЧЕН";
-                if(musicInterval) clearInterval(musicInterval);
+            } else {
+                localStorage.setItem('fl_music_enabled', 'true');
+                btn.className = "music-btn music-on";
+                btn.innerText = "🎵 Саундтрек: ВКЛЮЧЕН ВЕЗДЕ 🔥";
             }
-        }
-
-        function playMelody() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            // Зашили чёткие точные частоты нот в массив, чтобы ничего не крашилось
-            var notes = [110.00, 130.81, 146.83, 164.81, 196.00, 220.00, 164.81, 146.83]; 
-            var currentNote = 0;
-
-            musicInterval = setInterval(function() {
-                if(!isMusicPlaying) return;
-                var osc = audioCtx.createOscillator();
-                var gain = audioCtx.createGain();
-                
-                osc.type = 'sawtooth'; 
-                osc.frequency.setValueAtTime(notes[currentNote], audioCtx.currentTime);
-                
-                gain.gain.setValueAtTime(0.06, audioCtx.currentTime); 
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-                
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.4);
-                
-                currentNote = (currentNote + 1) % notes.length;
-            }, 320);
         }
     </script>
 </body>
