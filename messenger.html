@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>Fluent Messenger</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             --bg-dark: #0e1621;
@@ -17,6 +19,8 @@
             --msg-out: #2b5278;
             --border-color: #101921;
             --danger: #e53935;
+            --success: #00ff66;
+            --warning: #ff9800;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body, html { background-color: var(--bg-dark); color: var(--text-color); width: 100%; height: 100%; overflow: hidden; }
@@ -64,6 +68,7 @@
         .settings-modal { background-color: var(--side-bg); padding: 30px; border-radius: 24px; border: 1px solid rgba(36, 129, 204, 0.3); width: 100%; max-width: 380px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); text-align: center; }
         .settings-modal h3 { font-size: 1.5rem; margin-bottom: 15px; color: var(--accent); font-weight: 800; }
         .info-card { background-color: var(--bg-dark); padding: 14px; border-radius: 12px; text-align: left; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .info-card { background-color: var(--bg-dark); padding: 14px; border-radius: 12px; text-align: left; margin-bottom: 15px; border: 1px solid var(--border-color); }
         .info-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
         .info-line span:first-child { color: var(--text-muted); }
         
@@ -87,14 +92,14 @@
             <div class="sidebar-header">
                 <h2>FLUENT</h2>
                 <div class="header-actions">
-                    <span class="settings-link-btn" onclick="openSettingsModal()">Настройки</span>
-                    <span class="logout-btn" onclick="logoutSystem()">Выйти</span>
+                    <span class="settings-link-btn" onclick="window.openSettingsModal()">Настройки</span>
+                    <span class="logout-btn" onclick="window.logoutSystem()">Выйти</span>
                 </div>
             </div>
             <div class="add-friend-box">
                 <div class="add-friend-inputs">
                     <input type="text" id="friend-search-input" placeholder="Ник друга...">
-                    <button onclick="addContact()">+</button>
+                    <button onclick="window.addContact()">+</button>
                 </div>
             </div>
             <div class="chats-list" id="chats-list"></div>
@@ -110,8 +115,8 @@
                 </div>
                 <div class="messages-box" id="messages-box"></div>
                 <div class="input-box">
-                    <input type="text" id="message-input" placeholder="Напишите сообщение..." onkeypress="handleEnter(event)">
-                    <button class="btn-send-click" onclick="postMessage()">Отправить</button>
+                    <input type="text" id="message-input" placeholder="Напишите сообщение..." onkeypress="window.handleEnter(event)">
+                    <button class="btn-send-click" onclick="window.postMessage()">Отправить</button>
                 </div>
             </div>
         </div>
@@ -127,106 +132,103 @@
                 <div class="download-section">
                     <div class="download-title">Скачать мессенджер</div>
                     <div class="download-buttons">
-                        <a href="https://yandex.ru" target="_blank" class="dl-btn">🤖 Android <span>Скачать .APK</span></a>
-                        <a href="https://yandex.ru" target="_blank" class="dl-btn">💻 Windows <span>Скачать .EXE</span></a>
-                    </div>
-                </div>
+🤖 Android Скачать .APK
+💻 Windows Скачать .EXE
 
-                <button class="modal-btn close" onclick="closeSettingsModal()">Закрыть настройки</button>
+Закрыть настройки
 Сбросить всё
 
 
-// Абсолютно независимая и монолитная инициализация
-let myName = localStorage.getItem('fluent_session') || "Nazar";
-let currentChatUser = null;
-let defaultContacts = ["Fluent_Bot", "Support_Bot"];
-// Намертво прописываем приветствие бота в память устройства
+// Привязываем все функции ЖЕСТКО к глобальному объекту window
+window.myName = localStorage.getItem('fluent_session') || "Nazar";
+window.currentChatUser = null;
+window.defaultContacts = ["Fluent_Bot", "Support_Bot"];
 localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
 localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
 if (!localStorage.getItem('fluent_msg_storage')) {
 let welcomePackets = [
-{ from: "Fluent_Bot", to: myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
-{ from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. 100% Скорость — сообщения летают за миллисекунды.\n2. Полная анонимность — все данные лежат только на твоем девайсе.\n3. Крутой неоновый дизайн в стиле Telegram Web К!" }
+{ from: "Fluent_Bot", to: window.myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
+{ from: "Fluent_Bot", to: window.myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. 100% Скорость — сообщения летают за миллисекунды.\n2. Полная анонимность — все данные лежат только на твоем девайсе.\n3. Крутой неоновый дизайн в стиле Telegram Web К!" }
 ];
 localStorage.setItem('fluent_msg_storage', JSON.stringify(welcomePackets));
 }
-// Запуск интерфейса
-updateContactsList();
-setInterval(updateMessagesBox, 1000);
-function openSettingsModal() {
-document.getElementById('set-username').innerText = myName;
-let phone = localStorage.getItem('fl_phone_by_name_' + myName) || "+7 (999) 777-77-77";
+window.openSettingsModal = function() {
+document.getElementById('set-username').innerText = window.myName;
+let phone = localStorage.getItem('fl_phone_by_name_' + window.myName) || "+7 (999) 777-77-77";
 document.getElementById('set-phone').innerText = phone;
 document.getElementById('settings-overlay').style.display = 'flex';
-}
-function closeSettingsModal() {
+};
+window.closeSettingsModal = function() {
 document.getElementById('settings-overlay').style.display = 'none';
-}
-function logoutSystem() {
+};
+window.logoutSystem = function() {
 localStorage.removeItem('fluent_session');
 window.location.href = 'index.html';
-}
-function resetDatabase() {
+};
+window.resetDatabase = function() {
 if(confirm("Полностью сбросить историю сообщений и выйти?")) {
 localStorage.clear();
 window.location.href = 'index.html';
 }
-}
-function updateContactsList() {
+};
+window.updateContactsList = function() {
 const list = document.getElementById('chats-list');
 if(!list) return;
 let html = "";
-defaultContacts.forEach(c => {
-let isSelected = c === currentChatUser;
-html += <div class="chat-item ${isSelected ? 'selected' : ''}" onclick="openChat('${c}')"> <div class="chat-avatar">${c.charAt(0).toUpperCase()}</div> <div class="chat-info"><div class="chat-name">${c}</div></div> </div>;
+window.defaultContacts.forEach(c => {
+let isSelected = c === window.currentChatUser;
+html += <div class="chat-item ${isSelected ? 'selected' : ''}" onclick="window.openChat('${c}')"> <div class="chat-avatar">${c.charAt(0).toUpperCase()}</div> <div class="chat-info"><div class="chat-name">${c}</div></div> </div>;
 });
 list.innerHTML = html;
-}
-function addContact() {
+};
+window.addContact = function() {
 const input = document.getElementById('friend-search-input');
 const searchValue = input.value.trim();
-if (!searchValue || searchValue === myName) return;
-if (!defaultContacts.includes(searchValue)) {
-defaultContacts.push(searchValue);
+if (!searchValue || searchValue === window.myName) return;
+if (!window.defaultContacts.includes(searchValue)) {
+window.defaultContacts.push(searchValue);
 }
-openChat(searchValue);
+window.openChat(searchValue);
 input.value = "";
-}
-function openChat(username) {
-currentChatUser = username;
+};
+window.openChat = function(username) {
+window.currentChatUser = username;
 document.getElementById('no-chat-placeholder').style.display = 'none';
 document.getElementById('chat-area').style.display = 'flex';
 document.getElementById('chat-title').innerText = username;
-updateContactsList();
-updateMessagesBox();
-}
-function postMessage() {
+window.updateContactsList();
+window.updateMessagesBox();
+};
+window.postMessage = function() {
 const input = document.getElementById('message-input');
 const text = input.value.trim();
-if (!text || !currentChatUser) return;
+if (!text || !window.currentChatUser) return;
 let allMsgs = [];
 try {
 allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
 } catch(e) { allMsgs = []; }
-allMsgs.push({ from: myName, to: currentChatUser, txt: text });
+allMsgs.push({ from: window.myName, to: window.currentChatUser, txt: text });
 localStorage.setItem('fluent_msg_storage', JSON.stringify(allMsgs));
 input.value = '';
-updateMessagesBox();
-}
-function updateMessagesBox() {
-if (!currentChatUser || document.getElementById('chat-area').style.display !== 'flex') return;
+window.updateMessagesBox();
+};
+window.updateMessagesBox = function() {
+if (!window.currentChatUser || document.getElementById('chat-area').style.display !== 'flex') return;
 const box = document.getElementById('messages-box');
 let allMsgs = [];
 try {
 allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
 } catch(e) { allMsgs = []; }
-let activeMsgs = allMsgs.filter(m => (m.from === myName && m.to === currentChatUser) || (m.from === currentChatUser && m.to === myName));
+let activeMsgs = allMsgs.filter(m => (m.from === window.myName && m.to === window.currentChatUser) || (m.from === window.currentChatUser && m.to === window.myName));
 let html = "";
 activeMsgs.forEach(m => {
-let isMine = m.from === myName;
+let isMine = m.from === window.myName;
 html += <div class="bubble ${isMine ? 'outgoing' : 'incoming'}"><div>${escapeHTML(m.txt)}</div></div>;
 });
 box.innerHTML = html;
-}
-function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
+};
+window.handleEnter = function(e) { if (e.key === 'Enter') window.postMessage(); };
 function escapeHTML(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
+// Стартовый вызов
+window.updateContactsList();
+setInterval(window.updateMessagesBox, 1000);
