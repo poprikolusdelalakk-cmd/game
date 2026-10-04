@@ -146,3 +146,90 @@
         }
 
         function spawnEnemy() {
+var nameIndex = (wave - 1) % bossNames.length;
+enemy.name = bossNames[nameIndex] + " [Ур." + wave + "]";
+enemy.maxHp = 50 + (wave * 25);
+enemy.hp = enemy.maxHp;
+enemy.dmg = 6 + (wave * 3);
+updateStats();
+}
+function updateStats() {
+document.getElementById('gold-val').innerText = gold;
+document.getElementById('wave-val').innerText = wave;
+document.getElementById('player-hp-text').innerText = player.hp + "/" + player.maxHp;
+document.getElementById('player-hp-bar').style.width = (player.hp / player.maxHp * 100) + "%";
+document.getElementById('enemy-name').innerText = enemy.name;
+document.getElementById('enemy-hp-text').innerText = enemy.hp + "/" + enemy.maxHp;
+document.getElementById('enemy-hp-bar').style.width = (enemy.hp / enemy.maxHp * 100) + "%";
+document.getElementById('ult-btn').innerText = "🔥 Ульта (" + player.ultCharge + "%)";
+}
+function playerAttack(mode) {
+if (player.hp <= 0 || enemy.hp <= 0) return;
+var finalDmg = player.dmg + player.weaponDmg;
+if (mode === 'ult') {
+if (player.ultCharge < 100) { addLog("❌ Ульта ещё не заряжена!"); return; }
+finalDmg = Math.floor(finalDmg * 2.5);
+player.ultCharge = 0;
+addLog("🔥 " + player.name + " ИСПОЛЬЗОВАЛ УЛЬТУ НА " + finalDmg + " УРОНА!");
+} else {
+if (player.type === 'Nazar' && Math.random() < 0.25) {
+finalDmg = Math.floor(finalDmg * 1.8);
+addLog("⚡ КРИТИЧЕСКИЙ УДАР от Назара: " + finalDmg + " урона!");
+} else {
+addLog("⚔️ Ты нанёс " + finalDmg + " урона боссу " + enemy.name);
+}
+if (player.ultCharge < 100) player.ultCharge = Math.min(100, player.ultCharge + 25);
+}
+enemy.hp = Math.max(0, enemy.hp - finalDmg);
+updateStats();
+if (enemy.hp <= 0) {
+var reward = 15 + (wave * 10);
+gold += reward;
+addLog("💀 БОСС ПОВЕРЖЕН! Ты получил +" + reward + " золота!");
+wave++;
+if (player.type === 'Leon') {
+player.hp = Math.min(player.maxHp, player.hp + 30);
+addLog("🦎 Пассивка Леона: Стелс-регенерация (+30 HP)");
+}
+setTimeout(spawnEnemy, 1500);
+return;
+}
+setTimeout(enemyAttack, 500);
+}
+function enemyAttack() {
+if (enemy.hp <= 0) return;
+var edmg = enemy.dmg;
+if (player.type === 'Mellstroy' && Math.random() < 0.25) {
+edmg = Math.floor(edmg * 0.3);
+addLog("💎 Меллстрой врубил Золотой Щит! Заблокировано 70% урона.");
+}
+player.hp = Math.max(0, player.hp - edmg);
+addLog("💥 " + enemy.name + " врезал тебе на -" + edmg + " HP!");
+updateStats();
+if (player.hp <= 0) {
+addLog("💀 ТЫ ПОГИБ НА " + wave + " ВОЛНЕ! Игра окончена.");
+document.getElementById('buttons-area').innerHTML = <button class="btn-action" style="background:var(--danger); color:#fff;" onclick="location.reload()">Начать заново</button>;
+}
+}
+function toggleShop() {
+var shop = document.getElementById('shop-box');
+shop.style.display = (shop.style.display === 'none' || shop.style.display === '') ? 'flex' : 'none';
+}
+function buyWeapon(wType, cost) {
+if (gold < cost) { alert("Мало золота, иди дерись на арене!"); return; }
+if (weaponsOwned.includes(wType)) { alert("Это оружие уже у тебя в руках!"); return; }
+gold -= cost;
+weaponsOwned.push(wType);
+if (wType === 'shovel') { player.weaponDmg = 8; document.getElementById('weapon-badge').innerText = "Лопата Мортиса 🛠️"; }
+if (wType === 'sword') { player.weaponDmg = 14; document.getElementById('weapon-badge').innerText = "Меч Грифера ⚔️"; }
+if (wType === 'admin') { player.weaponDmg = 25; player.maxHp += 40; player.hp += 40; document.getElementById('weapon-badge').innerText = "Админка ReallyWorld 👑"; }
+addLog("💰 Ты успешно купил улучшение оружия!");
+toggleShop();
+updateStats();
+}
+function addLog(text) {
+var box = document.getElementById('game-log');
+box.innerHTML += text + "
+";
+box.scrollTop = box.scrollHeight;
+}
