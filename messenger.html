@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru" translate="no" class="notranslate">
-<!DOCTYPE html>
-<html lang="ru" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,16 +19,16 @@
             --msg-out: #2b5278;
             --border-color: #101921;
             --danger: #e53935;
+            --success: #00ff66;
+            --warning: #ff9800;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body, html { background-color: var(--bg-dark); color: var(--text-color); width: 100%; height: 100%; overflow: hidden; }
-        .wrapper { width: 100vw; height: 100vh; display: flex; }
+        .wrapper { width: 100vw; height: 100vh; display: flex; position: relative; }
         
         .sidebar { width: 320px; height: 100%; background-color: var(--side-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        
-        /* КРАСИВОЕ НАЗВАНИЕ МЕССЕНДЖЕРА ВЗАМЕН НИКА */
-        .sidebar-header h2 { color: var(--accent); font-size: 1.4rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 10px rgba(36, 129, 204, 0.4); }
+        .sidebar-header h2 { color: var(--accent); font-size: 1.2rem; font-weight: bold; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .settings-link-btn { color: var(--text-muted); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
@@ -49,6 +47,7 @@
         .chat-item.selected .chat-avatar { background-color: #fff; color: #2481cc; }
         .chat-info { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
         .chat-name { font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-phone-sub { font-size: 0.75rem; color: var(--text-muted); }
 
         .main-chat { flex: 1; height: 100%; background-color: var(--chat-bg); display: flex; flex-direction: column; overflow: hidden; }
         .no-chat { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1rem; }
@@ -59,32 +58,43 @@
 
         .messages-box { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; width: 100%; }
         .bubble { max-width: 65%; padding: 11px 16px; border-radius: 14px; font-size: 0.98rem; line-height: 1.4; word-break: break-word; color: #fff; display: block; width: fit-content; clear: both; }
-        .bubble.incoming { align-self: flex-start; background-color: var(--msg-in); border: 1px solid rgba(255,255,255,0.02); }
-        .bubble.outgoing { align-self: flex-end; background-color: var(--msg-out); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .bubble.incoming { align-self: flex-start; background-color: var(--msg-in); }
+        .bubble.outgoing { align-self: flex-end; background-color: var(--msg-out); }
 
         .input-box { padding: 16px 24px; background-color: var(--side-bg); border-top: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
         .input-box input { flex: 1; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 14px 18px; border-radius: 10px; color: #fff; outline: none; font-size: 1rem; }
         .btn-send-click { background-color: var(--accent); border: none; color: #fff; padding: 14px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
+        /* ОБНОВЛЕННОЕ ОКНО НАСТРОЕК С ДАУНЛОАД-ЦЕНТРОМ */
         .settings-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(14,22,33,0.85); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .settings-modal { background-color: var(--side-bg); padding: 35px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); width: 100%; max-width: 360px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); text-align: center; }
-        .settings-modal h3 { font-size: 1.5rem; margin-bottom: 20px; color: var(--accent); }
-        .info-card { background-color: var(--bg-dark); padding: 14px; border-radius: 12px; text-align: left; margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .settings-modal { background-color: var(--side-bg); padding: 30px; border-radius: 24px; border: 1px solid rgba(36, 129, 204, 0.3); width: 100%; max-width: 380px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); text-align: center; }
+        .settings-modal h3 { font-size: 1.5rem; margin-bottom: 15px; color: var(--accent); font-weight: 800; }
+        .info-card { background-color: var(--bg-dark); padding: 14px; border-radius: 12px; text-align: left; margin-bottom: 15px; border: 1px solid var(--border-color); }
         .info-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
         .info-line span:first-child { color: var(--text-muted); }
-        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; }
+        
+        /* Блок скачивания */
+        .download-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.08); text-align: left; }
+        .download-title { font-size: 0.95rem; font-weight: bold; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; text-align: center; }
+        .download-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        
+        .dl-btn { background-color: #2b394a; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; }
+        .dl-btn span { font-size: 0.7rem; color: var(--text-muted); font-weight: normal; }
+        .dl-btn:hover { background-color: var(--accent); border-color: var(--accent); transform: translateY(-1px); }
+        
+        .modal-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; font-size: 0.95rem; }
         .modal-btn.close { background-color: var(--accent); color: #fff; }
+        .modal-btn.close:hover { background-color: var(--accent-hover); }
         .modal-btn.reset { background-color: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        .modal-btn.reset:hover { background-color: var(--danger); color: #fff; }
     </style>
 </head>
 <body>
 
     <div class="wrapper">
-        <!-- БОКОВАЯ ПАНЕЛЬ -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <!-- ВЫВЕЛИ НАЗВАНИЕ МЕССЕНДЖЕРА НАПРЯМУЮ -->
-                <h2>FLUENT</h2>
+                <h2 id="my-name-display">Загрузка...</h2>
                 <div class="header-actions">
                     <span class="settings-link-btn" onclick="openSettingsModal()">Настройки</span>
                     <span class="logout-btn" onclick="window.location.href='logout.html'">Выйти</span>
@@ -92,17 +102,16 @@
             </div>
             <div class="add-friend-box">
                 <div class="add-friend-inputs">
-                    <input type="text" id="friend-search-input" placeholder="Ник друга...">
+                    <input type="text" id="friend-search-input" placeholder="Ник или номер друга...">
                     <button onclick="addContact()">+</button>
                 </div>
             </div>
             <div class="chats-list" id="chats-list"></div>
         </div>
 
-        <!-- ОКНО ЧАТА -->
         <div class="main-chat">
             <div class="no-chat" id="no-chat-placeholder">
-                <span>Выберите контакт слева для начала общения</span>
+                <span>Выбери контакт слева для начала общения</span>
             </div>
             <div class="chat-area" id="chat-area">
                 <div class="chat-header">
@@ -110,55 +119,52 @@
                 </div>
                 <div class="messages-box" id="messages-box"></div>
                 <div class="input-box">
-                    <input type="text" id="message-input" placeholder="Напишите сообщение..." onkeypress="handleEnter(event)">
+                    <input type="text" id="message-input" placeholder="Напиши сообщение..." onkeypress="handleEnter(event)">
                     <button class="btn-send-click" onclick="postMessage()">Отправить</button>
                 </div>
             </div>
         </div>
 
-        <!-- МОДАЛКА НАСТРОЕК -->
+        <!-- ОКНО НАСТРОЕК С СЫЛКАМИ НА СКАЧИВАНИЕ ПРИЛОЖЕНИЙ -->
         <div class="settings-overlay" id="settings-overlay">
             <div class="settings-modal">
-                <h3>Твой Профиль</h3>
+                <h3>Профиль Fluent</h3>
                 <div class="info-card">
                     <div class="info-line"><span>Никнейм:</span><span id="set-username" style="font-weight: bold;">-</span></div>
                     <div class="info-line"><span>Телефон:</span><span id="set-phone" style="font-weight: bold;">-</span></div>
                 </div>
-                <button class="modal-btn close" onclick="closeSettingsModal()">Закрыть</button>
-                <button class="modal-btn reset" onclick="resetDatabase()">Сбросить всё</button>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        // Принудительно очищаем старый битый кэш контактов один раз для полной работоспособности
-        if (!localStorage.getItem('fl_db_v5_cleared')) {
-            localStorage.removeItem('fluent_msg_storage');
-            localStorage.setItem('fl_db_v5_cleared', 'true');
-        }
+                <div class="download-section">
+Скачать мессенджер
+🤖 Android Скачать .APK
+💻 Windows Скачать .EXE
 
-        let myName = localStorage.getItem('fluent_session') || "Nazar";
-        let currentChatUser = null;
+Закрыть настройки
+Сбросить всё
 
-        // БРОНЕБОЙНЫЙ СПИСОК ЧАТОВ ПО УМОЛЧАНИЮ
-        let defaultContacts = ["Fluent_Bot", "Support_Bot"];
-        localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
-        localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
 
-        // Если в истории нет сообщений бота — зашиваем приветствие прямо намертво
-        if (!localStorage.getItem('fluent_msg_storage')) {
-            let welcomePackets = [
-                { from: "Fluent_Bot", to: myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
-{ from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. 100% Скорость — отправка сообщений летают за миллисекунды.\n2. Полная анонимность — все данные лежат только на твоем девайсе.\n3. Крутой неоновый дизайн в стиле Telegram Web К!" }
+let myName = localStorage.getItem('fluent_session') || "Nazar";
+document.getElementById('my-name-display').innerText = myName;
+if (!localStorage.getItem('fl_contacts_' + myName)) {
+localStorage.setItem('fl_contacts_' + myName, JSON.stringify(["Fluent_Bot", "Support_Bot"]));
+localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
+localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
+let initialBotMsgs = [
+{ from: "Fluent_Bot", to: myName, txt: "Привет! Вас приветствует мессенджер Fluent Messenger!" },
+{ from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. Максимальная скорость — отправка данных занимает доли секунды.\n2. Полная анонимность — все данные лежат только на твоем устройстве.\n3. Ультра-стильный неоновый кибер-дизайн!" }
 ];
-localStorage.setItem('fluent_msg_storage', JSON.stringify(welcomePackets));
+localStorage.setItem('fluent_msg_storage', JSON.stringify(initialBotMsgs));
 }
+let currentChatUser = null;
 updateContactsList();
 setInterval(updateMessagesBox, 1000);
 function openSettingsModal() {
 document.getElementById('set-username').innerText = myName;
 let phone = localStorage.getItem('fl_phone_by_name_' + myName) || "+7 (999) 777-77-77";
 document.getElementById('set-phone').innerText = phone;
+// ТВОИ ССЫЛКИ НА СКАЧИВАНИЕ: Замени текст в кавычках на реальные ссылки с облака!
+document.getElementById('dl-apk').href = "yandex.ru";
+document.getElementById('dl-exe').href = "yandex.ru";
 document.getElementById('settings-overlay').style.display = 'flex';
 }
 function closeSettingsModal() {
@@ -173,18 +179,9 @@ window.location.href = 'index.html';
 function updateContactsList() {
 const list = document.getElementById('chats-list');
 if(!list) return;
-// Забираем пользовательские контакты из памяти, если они есть
-let userContacts = [];
-try {
-userContacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
-} catch(e) { userContacts = []; }
-// Объединяем ботов и контакты пользователя
-let finalContacts = [...defaultContacts];
-userContacts.forEach(c => {
-if(!finalContacts.includes(c)) finalContacts.push(c);
-});
+let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || ["Fluent_Bot", "Support_Bot"];
 let html = "";
-finalContacts.forEach(c => {
+contacts.forEach(c => {
 let isSelected = c === currentChatUser;
 html += <div class="chat-item ${isSelected ? 'selected' : ''}" onclick="openChat('${c}')"> <div class="chat-avatar">${c.charAt(0).toUpperCase()}</div> <div class="chat-info"><div class="chat-name">${c}</div></div> </div>;
 });
@@ -194,20 +191,12 @@ function addContact() {
 const input = document.getElementById('friend-search-input');
 const searchValue = input.value.trim();
 if (!searchValue || searchValue === myName) return;
-let targetName = searchValue;
-if (searchValue.startsWith('+') || !isNaN(searchValue)) {
-let foundName = localStorage.getItem('fl_name_by_phone_' + searchValue);
-if (foundName) targetName = foundName;
+let contacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || ["Fluent_Bot", "Support_Bot"];
+if (!contacts.includes(searchValue)) {
+contacts.push(searchValue);
+localStorage.setItem('fl_contacts_' + myName, JSON.stringify(contacts));
 }
-let userContacts = [];
-try {
-userContacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
-} catch(e) { userContacts = []; }
-if (!userContacts.includes(targetName)) {
-userContacts.push(targetName);
-localStorage.setItem('fl_contacts_' + myName, JSON.stringify(userContacts));
-}
-openChat(targetName);
+openChat(searchValue);
 input.value = "";
 }
 function openChat(username) {
@@ -222,10 +211,7 @@ function postMessage() {
 const input = document.getElementById('message-input');
 const text = input.value.trim();
 if (!text || !currentChatUser) return;
-let allMsgs = [];
-try {
-allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
-} catch(e) { allMsgs = []; }
+let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
 allMsgs.push({ from: myName, to: currentChatUser, txt: text });
 localStorage.setItem('fluent_msg_storage', JSON.stringify(allMsgs));
 input.value = '';
@@ -234,10 +220,7 @@ updateMessagesBox();
 function updateMessagesBox() {
 if (!currentChatUser || document.getElementById('chat-area').style.display !== 'flex') return;
 const box = document.getElementById('messages-box');
-let allMsgs = [];
-try {
-allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
-} catch(e) { allMsgs = []; }
+let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
 let activeMsgs = allMsgs.filter(m => (m.from === myName && m.to === currentChatUser) || (m.from === currentChatUser && m.to === myName));
 let html = "";
 activeMsgs.forEach(m => {
@@ -248,3 +231,6 @@ if (box.innerHTML !== html) { box.innerHTML = html; box.scrollTop = box.scrollHe
 }
 function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
 function escapeHTML(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('sw.js').catch(() => {});
+}
