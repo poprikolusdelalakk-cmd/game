@@ -137,17 +137,13 @@
 Сбросить всё
 
 
-// БРОНЕБОЙНЫЙ АВТОСБРОС СТАРЫХ ГЛЮКОВ ХОСТИНГА НАПРЯМУЮ
-if (!localStorage.getItem('fl_db_final_wipe_v1')) {
-localStorage.clear();
-localStorage.setItem('fl_db_final_wipe_v1', 'true');
-}
+// Имя пользователя и контакты по умолчанию
 let myName = localStorage.getItem('fluent_session') || "Nazar";
-localStorage.setItem('fluent_session', myName);
-// Инициализируем чистую базу чатов
+let currentChatUser = null;
 let defaultContacts = ["Fluent_Bot", "Support_Bot"];
 localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
 localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
+// Если истории нет — создаем приветствие бота
 if (!localStorage.getItem('fluent_msg_storage')) {
 let welcomePackets = [
 { from: "Fluent_Bot", to: myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
@@ -155,7 +151,6 @@ let welcomePackets = [
 ];
 localStorage.setItem('fluent_msg_storage', JSON.stringify(welcomePackets));
 }
-let currentChatUser = null;
 updateContactsList();
 setInterval(updateMessagesBox, 1000);
 function openSettingsModal() {
