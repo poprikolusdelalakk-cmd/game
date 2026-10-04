@@ -3,76 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate">
     <title>Fluent Arena - Главное Меню</title>
     <style>
-        :root {
-            --bg-space: #02040a;
-            --card-bg: rgba(6, 11, 28, 0.75);
-            --neon-blue: #00f2fe;
-            --neon-purple: #9d4edd;
-            --success: #00ff66;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body, html { 
-            background: radial-gradient(circle at center, #0b112c 0%, var(--bg-space) 100%); 
-            color: #fff; width: 100%; height: 100%; overflow: hidden; 
-            display: flex; align-items: center; justify-content: center;
-        }
-        .stars {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1;
-            background: radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
-            background-size: 250px 250px; opacity: 0.3; animation: spaceScroll 30s linear infinite;
-        }
-        @keyframes spaceScroll {
-            from { background-position: 0 0; }
-            to { background-position: 250px 500px; }
-        }
-        .wrapper { position: relative; z-index: 10; width: 100%; max-width: 420px; padding: 20px; }
-        .menu-card {
-            background: var(--card-bg); border-radius: 32px; border: 1px solid rgba(0, 242, 254, 0.3);
-            padding: 50px 35px; text-align: center; backdrop-filter: blur(20px);
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 242, 254, 0.15);
-        }
-        .brand-logo {
-            font-size: 2.8rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;
-            background: linear-gradient(135deg, #ffffff, var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            margin-bottom: 8px; filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.5));
-        }
-        .brand-subtitle { font-size: 0.85rem; color: #5c6c8f; text-transform: uppercase; letter-spacing: 3px; font-weight: 800; margin-bottom: 45px; }
-        .btn-play {
-            display: block; width: 100%; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
-            color: #02040a; border: none; padding: 22px; border-radius: 18px; 
-            font-size: 1.5rem; font-weight: 900; cursor: pointer; 
-            text-transform: uppercase; text-decoration: none; letter-spacing: 1.5px;
-            box-shadow: 0 0 30px rgba(0, 242, 254, 0.5), 0 0 60px rgba(157, 78, 221, 0.3); 
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: 35px; text-align: center;
-        }
-        .btn-play:hover { transform: scale(1.04) translateY(-3px); filter: brightness(1.25); box-shadow: 0 0 45px var(--neon-blue), 0 0 90px var(--neon-purple); }
-        .stats-panel { background-color: rgba(2, 4, 10, 0.6); padding: 22px; border-radius: 18px; border: 1px solid rgba(0, 242, 254, 0.15); display: flex; flex-direction: column; gap: 12px; text-align: left; }
-        .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
-        .stat-label { color: #5c6c8f; font-weight: 600; }
-        .stat-val { font-weight: 800; font-size: 1.1rem; }
+        :root { --bg: #02040a; --card: rgba(6, 11, 28, 0.8); --blue: #00f2fe; --purple: #9d4edd; --success: #00ff66; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: radial-gradient(circle at center, #0b112c 0%, var(--bg) 100%); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .wrapper { width: 100%; max-width: 420px; padding: 20px; }
+        .menu-card { background: var(--card); border-radius: 32px; border: 1px solid rgba(0, 242, 254, 0.3); padding: 40px 30px; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 30px 70px rgba(0,0,0,0.8); }
+        .logo { font-size: 2.6rem; font-weight: 900; background: linear-gradient(135deg, #fff, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; filter: drop-shadow(0 0 15px var(--blue)); text-transform: uppercase; }
+        .id-badge { font-size: 0.9rem; color: var(--blue); margin-bottom: 25px; font-weight: bold; background: rgba(0,242,254,0.1); display: inline-block; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(0,242,254,0.2); }
+        .tabs-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
+        .btn { display: block; width: 100%; padding: 16px; border-radius: 14px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; text-decoration: none; text-align: center; transition: all 0.2s; }
+        .btn-main { background: linear-gradient(135deg, var(--blue), var(--purple)); color: #02040a; font-weight: 900; font-size: 1.3rem; box-shadow: 0 0 20px rgba(0,242,254,0.3); }
+        .btn-main:hover { transform: scale(1.03); box-shadow: 0 0 30px var(--blue); }
+        .btn-sub { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+        .btn-sub:hover { border-color: var(--blue); background: rgba(0,242,254,0.05); }
     </style>
 </head>
 <body>
-    <div class="stars"></div>
     <div class="wrapper">
         <div class="menu-card">
-            <div class="brand-logo">Fluent Arena</div>
-            <div class="brand-subtitle">Cyber Arena PvP v3.0</div>
-            <a href="fighters.html" class="btn-play">Начать Бой</a>
-            <div class="stats-panel">
-                <div class="stat-row"><span class="stat-label">Сигмы в сети:</span><span class="stat-val" style="color: var(--success);" id="stat-online">1,482</span></div>
-                <div class="stat-row"><span class="stat-label">Твой статус:</span><span class="stat-val" style="color: var(--neon-blue);">Грандмастер</span></div>
+            <div class="logo">Fluent Arena</div>
+            <div class="id-badge">Твой Сигма-ID: <span id="my-id-val">------</span></div>
+            
+            <div class="tabs-grid">
+                <a href="fighters.html" class="btn btn-main">⚔️ Найти матч PvP</a>
+                <a href="inventory.html" class="btn btn-sub">📦 Мой Инвентарь</a>
+                <a href="friends.html" class="btn btn-sub">👥 Список Друзей</a>
+                <a href="settings.html" class="btn btn-sub">⚙️ Настройки Профиля</a>
             </div>
         </div>
     </div>
     <script>
-        setInterval(function() {
-            document.getElementById('stat-online').innerText = (1450 + Math.floor(Math.random() * 45)).toLocaleString();
-        }, 2000);
+        // Генерация рандомного ID
+        if (!localStorage.getItem('fl_user_id')) {
+            var randId = Math.floor(100000 + Math.random() * 900000);
+            localStorage.setItem('fl_user_id', randId);
+        }
+        document.getElementById('my-id-val').innerText = localStorage.getItem('fl_user_id');
     </script>
 </body>
 </html>
