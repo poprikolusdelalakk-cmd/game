@@ -4,29 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nazar Message | Кибер-Мессенджер</title>
-    <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
+    <!-- Подключаем Firebase SDK (Версия 8 для простоты интеграции в 1 файл) -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     <style>
         :root {
             --bg-color: #04050a;
-            --card-bg: rgba(10, 12, 26, 0.9);
+            --card-bg: rgba(10, 12, 26, 0.95);
             --accent-cyan: #00f2fe;
             --accent-purple: #9d4edd;
             --accent-pink: #ff007f;
             --neon-cyan: 0 0 20px rgba(0, 242, 254, 0.6);
+            --neon-pink: 0 0 20px rgba(255, 0, 127, 0.6);
             --text-main: #ffffff;
             --text-muted: #64748b;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
         body {
             background: radial-gradient(circle at center, #0f1123 0%, var(--bg-color) 100%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
+
         .container {
             width: 100%;
             max-width: 850px;
@@ -39,6 +51,8 @@
             flex-direction: column;
             overflow: hidden;
         }
+
+        /* Экран авторизации */
         .auth-screen {
             display: flex;
             flex-direction: column;
@@ -48,6 +62,7 @@
             gap: 20px;
             padding: 40px;
         }
+
         .auth-screen h1 {
             font-size: 3rem;
             font-weight: 900;
@@ -56,8 +71,18 @@
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
             letter-spacing: 3px;
+            filter: drop-shadow(0 2px 15px rgba(0, 242, 254, 0.7));
+            margin-bottom: 10px;
         }
-        .auth-box { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 15px; }
+
+        .auth-box {
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
         input {
             width: 100%;
             background: rgba(255, 255, 255, 0.03);
@@ -67,8 +92,14 @@
             color: #fff;
             font-size: 1rem;
             outline: none;
+            transition: all 0.3s ease;
         }
-        input:focus { border-color: var(--accent-cyan); box-shadow: var(--neon-cyan); }
+
+        input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: var(--neon-cyan);
+        }
+
         .btn {
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
             color: #000;
@@ -79,8 +110,31 @@
             border-radius: 12px;
             cursor: pointer;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
         }
-        .chat-screen { display: none; flex-direction: column; height: 100%; }
+
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.8);
+        }
+
+        .toggle-auth {
+            color: var(--accent-cyan);
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+            user-select: none;
+        }
+
+        /* Экран чата */
+        .chat-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
         .chat-header {
             padding: 20px;
             border-bottom: 1px solid rgba(157, 78, 221, 0.3);
@@ -89,8 +143,30 @@
             align-items: center;
             background: rgba(4, 5, 10, 0.5);
         }
-        .chat-header h2 { color: var(--accent-cyan); text-shadow: var(--neon-cyan); }
-        .logout-link { color: var(--accent-pink); cursor: pointer; font-weight: 700; }
+
+        .chat-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            text-shadow: var(--neon-cyan);
+        }
+
+        .user-info {
+            font-size: 0.95rem;
+            color: var(--accent-pink);
+            font-weight: bold;
+        }
+
+        .logout-link {
+            color: #ff3366;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-left: 15px;
+            text-decoration: underline;
+        }
+
         .messages-area {
             flex: 1;
             padding: 20px;
@@ -100,95 +176,219 @@
             gap: 15px;
             background: rgba(5, 6, 15, 0.3);
         }
-        .msg-container { max-width: 70%; display: flex; flex-direction: column; gap: 4px; padding: 12px 18px; border-radius: 16px; color: #fff; }
-        .msg-container.incoming { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .msg-container.outgoing { align-self: flex-end; background: linear-gradient(135deg, rgba(157, 78, 221, 0.3), rgba(0, 242, 254, 0.2)); border: 1px solid var(--accent-cyan); }
-        .msg-user { font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); }
-        .msg-text { font-size: 1rem; line-height: 1.4; word-break: break-word; }
-        .msg-time { font-size: 0.7rem; color: var(--text-muted); align-self: flex-end; }
-        .input-area { padding: 20px; border-top: 1px solid rgba(157, 78, 221, 0.3); display: flex; gap: 15px; background: rgba(4, 5, 10, 0.7); }
-        .input-area input { flex: 1; }
+
+        .msg-container {
+            max-width: 70%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px 18px;
+            border-radius: 16px;
+            color: #fff;
+        }
+
+        .msg-container.incoming {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-container.outgoing {
+            align-self: flex-end;
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.3), rgba(0, 242, 254, 0.2));
+            border: 1px solid var(--accent-cyan);
+            box-shadow: rgba(0, 242, 254, 0.15) 0px 0px 10px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg-user {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .msg-container.outgoing .msg-user {
+            color: var(--accent-pink);
+        }
+
+        .msg-text {
+            font-size: 1rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            align-self: flex-end;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid rgba(157, 78, 221, 0.3);
+            display: flex;
+            gap: 15px;
+            background: rgba(4, 5, 10, 0.7);
+        }
+
+        .input-area input {
+            flex: 1;
+        }
+
+        .send-btn {
+            width: auto;
+            padding: 0 30px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
+
     <div class="container">
+        <!-- ЭКРАН АВТОРIЗАЦII -->
         <div class="auth-screen" id="auth-screen">
-            <h1>Nazar Message</h1>
+            <h1 id="auth-title">Nazar Message</h1>
             <div class="auth-box">
-                <input type="text" id="auth-username" placeholder="Придумай Никнейм">
-                <input type="password" id="auth-password" placeholder="Придумай пароль">
-                <button class="btn" onclick="handleAuth()">Войти / Создать профиль</button>
+                <input type="email" id="auth-email" placeholder="Введи Email (любой, можно фейк)">
+                <input type="password" id="auth-password" placeholder="Пароль (минимум 6 символов)">
+                <button class="btn" id="auth-btn" onclick="handleAuth()">Войти</button>
+                <div class="toggle-auth" id="toggle-auth" onclick="switchAuthMode()">Еще нет аккаунта? Зарегистрироваться</div>
             </div>
         </div>
+
+        <!-- ГЛАВНЫЙ ЭКРАН ЧАТА -->
         <div class="chat-screen" id="chat-screen">
             <div class="chat-header">
                 <h2>Nazar Message // Чат</h2>
-                <div class="logout-link" onclick="logout()">Выйти</div>
+                <div>
+                    <span class="user-info" id="user-display">User</span>
+                    <span class="logout-link" onclick="logout()">Выйти</span>
+                </div>
             </div>
+            
             <div class="messages-area" id="messages-area"></div>
+            
             <div class="input-area">
                 <input type="text" id="msg-input" placeholder="Напиши сообщение..." onkeypress="checkEnter(event)">
-                <button class="btn" onclick="sendMessage()">Отправить</button>
+                <button class="btn send-btn" onclick="sendMessage()">Отправить</button>
             </div>
         </div>
     </div>
+
+    <footer>
+        &copy; 2026 NAZAR GAME ENTERTAINMENT
+    </footer>
+
     <script>
-        const gun = Gun(['https://herokuapp.com', 'https://peer.ooo']);
-        const user = gun.user().recall({localStorage: true});
-        let myUsername = "";
+        // Инициализация Firebase с готовой, рабочей базой данных проекта
+        const firebaseConfig = {
+            apiKey: "AIzaSyAs760G-w_YwYkL93_6Xg8mB9kXwzoM0kE",
+            authDomain: "://firebaseapp.com",
+            databaseURL: "https://firebaseio.com",
+            projectId: "nazar-message-chat",
+            storageBucket: "://appspot.com",
+            messagingSenderId: "109485759392",
+            appId: "1:109485759392:web:cbd83a8cf83a8bca928ca1"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
 
-        if (user.is) {
-            user.get('profile').get('alias').once(name => { myUsername = name; showChatScreen(); });
-        }
+        let isSignUpMode = false;
+        let myEmail = "";
 
-        function handleAuth() {
-            const name = document.getElementById('auth-username').value.trim();
-            const pass = document.getElementById('auth-password').value.trim();
-            if (!name || !pass) { alert("Заполни все поля!"); return; }
-            user.auth(name, pass, ack => {
-                if (ack.err) {
-                    user.create(name, pass, createAck => {
-                        if (createAck.err) { alert("Ошибка: " + createAck.err); } 
-                        else { user.auth(name, pass, () => { myUsername = name; user.get('profile').put({alias: name}); showChatScreen(); }); }
-                    });
-                } else { myUsername = name; showChatScreen(); }
-            });
-        }
+        // Следим за состоянием входа пользователя
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                myEmail = user.email;
+                document.getElementById('user-display').innerText = myEmail.split('@')[0];
+                showChatScreen();
+            } else {
+                showAuthScreen();
+            }
+        });
 
-        function showChatScreen() {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('chat-screen').style.display = 'flex';
-            loadMessages();
-        }
+        function switchAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('auth-title').innerText = isSignUpMode ? "Регистрация" : "Nazar Message";
+document.getElementById('auth-btn').innerText = isSignUpMode ? "Создать аккаунт" : "Войти";
+document.getElementById('toggle-auth').innerText = isSignUpMode ? "Уже есть аккаунт? Войти" : "Еще нет аккаунта? Зарегистрироваться";
+}
+function handleAuth() {
+const email = document.getElementById('auth-email').value.trim();
+const password = document.getElementById('auth-password').value.trim();
+if (!email || !password) {
+alert("Заполни все поля!");
+return;
+}
+if (isSignUpMode) {
+// Создание нового профиля
+auth.createUserWithEmailAndPassword(email, password)
+.catch(error => alert("Ошибка регистрации: " + error.message));
+} else {
+// Вход в существующий профиль
+auth.signInWithEmailAndPassword(email, password)
+.catch(error => alert("Неверный email или пароль! Попробуй зарегистрироваться."));
+}
+}
+function showChatScreen() {
+document.getElementById('auth-screen').style.display = 'none';
+document.getElementById('chat-screen').style.display = 'flex';
+loadMessages();
+}
+function showAuthScreen() {
+document.getElementById('auth-screen').style.display = 'flex';
+document.getElementById('chat-screen').style.display = 'none';
+}
+function logout() {
+auth.signOut().then(() => {
+location.reload();
+});
+}
 
-        function logout() { user.leave(); location.reload(); }
+function sendMessage() {
+const input = document.getElementById('msg-input');
+const text = input.value.trim();
+if (!text) return;
+// Записываем данные в Firebase Realtime Database
+database.ref('chat_messages').push({
+text: text,
+user: myEmail,
+time: Date.now()
+});
+input.value = '';
+}
+function loadMessages() {
+const area = document.getElementById('messages-area');
+// Слушаем изменения в базе Firebase в реальном времени
+database.ref('chat_messages').on('child_added', snapshot => {
+const msg = snapshot.val();
+if (!msg) return;
+const isMyMessage = msg.user === myEmail;
+const msgDiv = document.createElement('div');
+msgDiv.className = msg-container ${isMyMessage ? 'outgoing' : 'incoming'};
+const formattedTime = new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+const username = msg.user.split('@')[0];
+msgDiv.innerHTML = <div class="msg-user">${username}</div> <div class="msg-text">${escapeHTML(msg.text)}</div> <div class="msg-time">${formattedTime}</div>;
+area.appendChild(msgDiv);
+area.scrollTop = area.scrollHeight;
+});
+}
+function checkEnter(e) {
+if (e.key === 'Enter') sendMessage();
+}
 
-        function sendMessage() {
-            const input = document.getElementById('msg-input');
-            const text = input.value.trim();
-            if (!text) return;
-            gun.get('nazarchat').set({ text: text, user: myUsername, time: Date.now() });
-            input.value = '';
-        }
-
-        function loadMessages() {
-            const area = document.getElementById('messages-area');
-            const renderedIds = new Set();
-            gun.get('nazarchat').map().once((msg, id) => {
-                if (!msg || !msg.text || renderedIds.has(id)) return;
-                renderedIds.add(id);
-                const isMyMessage = msg.user === myUsername;
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `msg-container ${isMyMessage ? 'outgoing' : 'incoming'}`;
-                const formattedTime = new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                msgDiv.innerHTML = `<div class="msg-user">${msg.user}</div><div class="msg-text">${escapeHTML(msg.text)}</div><div class="msg-time">${formattedTime}</div>`;
-                area.appendChild(msgDiv);
-                area.scrollTop = area.scrollHeight;
-            });
-        }
-
-        function checkEnter(e) { if (e.key === 'Enter') sendMessage(); }
-        function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
-    </script>
-</body>
-</html>
+function escapeHTML(str) {
+return str.replace(/[&<>'"]/g, tag => ({
+'&': '&', '<': '<', '>': '>', "'": ''', '"': '"'
+}[tag] || tag));
+}
