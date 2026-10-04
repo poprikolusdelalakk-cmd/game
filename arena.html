@@ -2,43 +2,61 @@
 <html lang="ru" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
-    <title>Fluent Arena - Бой</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluent Arena - Сбалансированный PvP</title>
     <style>
-        :root { --blue: #00f2fe; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
+        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --purple: #9d4edd; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: #02040a; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
         .container { max-width: 460px; width: 100%; display: flex; flex-direction: column; gap: 15px; }
-        .card { background: rgba(14,22,47,0.85); border: 1px solid rgba(0,242,254,0.2); border-radius: 20px; padding: 20px; text-align: center; }
-        .fighter { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 15px; }
-        .hp-bg { width: 100%; height: 12px; background: #222; border-radius: 6px; overflow: hidden; margin-top: 8px; }
-        .hp-fill { height: 100%; background: var(--success); width: 100%; transition: width 0.2s; }
-        .btn { width: 100%; background: var(--blue); color: #000; border: none; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .log { background: rgba(0,0,0,0.7); border-radius: 12px; padding: 12px; height: 100px; overflow-y: auto; font-size: 0.85rem; color: #ffb703; text-align: left; }
+        .card { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 20px; padding: 15px; text-align: center; }
+        
+        .battlefield { display: flex; flex-direction: column; gap: 12px; margin: 10px 0; }
+        .fighter { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 15px; transition: transform 0.1s ease; }
+        
+        /* Аккуратные анимации обмена ударами */
+        .fighter.hit-p { animation: swingL 0.15s ease-in-out; }
+        .fighter.hit-e { animation: swingR 0.15s ease-in-out; }
+        .fighter.shake { animation: shakeFrame 0.15s ease-in-out; border-color: var(--danger); }
+        
+        @keyframes swingL { 0% { transform: translateX(0); } 50% { transform: translateX(20px); } 100% { transform: translateX(0); } }
+        @keyframes swingR { 0% { transform: translateX(0); } 50% { transform: translateX(-20px); } 100% { transform: translateX(0); } }
+        @keyframes shakeFrame { 0% { transform: translateX(0); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
+
+        .hp-bg { width: 100%; height: 16px; background: #111; border-radius: 8px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .hp-fill { height: 100%; background: linear-gradient(90deg, #00ff66, #11ff88); width: 100%; transition: width 0.15s linear; }
+        .hp-txt { font-size: 0.8rem; text-align: right; margin-top: 4px; color: #8fa0b5; font-weight: bold; }
+        
+        .btn { width: 100%; background: var(--blue); color: #000; border: none; padding: 16px; border-radius: 14px; font-size: 1.1rem; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 5px; box-shadow: 0 4px 15px rgba(0,242,254,0.3); }
+        .btn.ult-ready { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; box-shadow: 0 0 20px var(--pink); }
+        .log { background: rgba(0,0,0,0.7); border-radius: 14px; padding: 12px; height: 110px; overflow-y: auto; font-size: 0.85rem; color: #ffb703; text-align: left; border: 1px solid rgba(0, 242, 254, 0.1); }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card" style="color:var(--blue); font-weight:900; letter-spacing:1px;">⚔️ ХАРДКОР PvP АРЕНА (СИГМА VS СИГМА) ⚔️</div>
+        <div class="card" id="battle-headline" style="color:var(--blue); font-weight:900; letter-spacing:1px; text-transform:uppercase;">⚡ ЖИВОЙ СБАЛАНСИРОВАННЫЙ PvP БОЙ ⚡</div>
 
-        <!-- ИГРОК -->
-        <div class="fighter" style="border-left: 4px solid var(--blue);">
-            <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p-name">Загрузка...</span> <span id="p-weap" style="color:#ffb703; font-size:0.8rem;">Кулаки</span></div>
-            <div class="hp-bg"><div class="hp-fill" id="p-bar"></div></div>
-            <div style="text-align:right; font-size:0.75rem; color:#8fa0b5; margin-top:4px;" id="p-txt">100/100 HP</div>
+        <div class="battlefield">
+            <!-- ТВОЙ СИГМА -->
+            <div class="fighter" id="p-card" style="border-left: 5px solid var(--blue);">
+                <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p-name">Загрузка...</span> <span id="p-weap" style="color:#ffb703; font-size:0.8rem;">Кулаки</span></div>
+                <div class="hp-bg"><div class="hp-fill" id="p-bar"></div></div>
+                <div class="hp-txt" id="p-txt">100/100 HP</div>
+            </div>
+
+            <!-- СОПЕРНИК С ТАКИМИ ЖЕ СИЛАМИ -->
+            <div class="fighter" id="e-card" style="border-left: 5px solid var(--pink);">
+                <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="e-name">Поиск Сигмы...</span> <span id="e-weap" style="color:#ffb703; font-size:0.8rem;">Кулаки</span></div>
+                <div class="hp-bg"><div class="hp-fill" id="e-bar" style="background: linear-gradient(90deg, var(--pink), var(--danger));"></div></div>
+                <div class="hp-txt" id="e-txt">100/100 HP</div>
+            </div>
         </div>
 
-        <!-- БОТ-СИГМА -->
-        <div class="fighter" style="border-left: 4px solid var(--pink);">
-            <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="e-name">Поиск Сигмы...</span> <span id="e-weap" style="color:#ffb703; font-size:0.8rem;">Оружие ИИ</span></div>
-            <div class="hp-bg"><div class="hp-fill" id="e-bar" style="background:var(--danger)"></div></div>
-            <div style="text-align:right; font-size:0.75rem; color:#8fa0b5; margin-top:4px;" id="e-txt">100/100 HP</div>
+        <div id="act-zone">
+            <button class="btn" id="ult-btn" onclick="useUlt()" style="background:#1b1f2e; color:#5c6c8f; cursor:not-allowed;">🔥 УЛЬТА НАБИРАЕТСЯ (0%)</button>
         </div>
 
-        <div class="actions" id="act-zone">
-            <button class="btn" onclick="attack()">⚔️ Нанести тактический удар</button>
-        </div>
-
-        <div class="log" id="arena-log">🔥 Вражеский Сигма готов к бою. Сражайся жестко!</div>
+        <div class="log" id="arena-log">🚀 Бойцы вышли на арену! Честный размен ударами... БЭМ!</div>
     </div>
 
     <script>
@@ -49,82 +67,113 @@
         var bonusDmg = parseInt(localStorage.getItem('fl_bonus_dmg')) || 0;
         var wName = localStorage.getItem('fl_active_weapon_name') || "Кулаки";
 
-        // Сигма-Бот с равными или превосходящими силами!
-        var sigmas = ["Сигма Мурад", "Сигма Макс", "Кибер Сигма 228", "Сигма Грифер Киллер"];
-        var eName = sigmas[Math.floor(Math.random() * sigmas.length)];
-        var eHp = pMax + Math.floor(Math.random() * 25); // ХП бота зависит от твоего, чтобы было сложно
-        var eMax = eHp;
-        var eDmg = pDmg + Math.floor(Math.random() * 5);
-        var eBonus = Math.floor(Math.random() * 15);
+        // ЧЕСТНЫЙ БАЛАНС: Бот полностью копирует твоё максимальное здоровье и урон, чтобы бой шел на равных!
+        var isPvP = localStorage.getItem('fl_is_pvp_mode') === 'true';
+        var eName = isPvP ? "Сигма-Игрок Дуэли" : "Зеркальный Сигма";
+        
+        var eHp = pMax; // Идеально равные ХП
+        var eMax = pMax;
+        var eDmg = pDmg + bonusDmg; // Идеально равный урон, никакой халявы!
+
+        var ultCharge = 0;
+        var battleTicker = null;
 
         document.getElementById('p-name').innerText = pName;
         document.getElementById('e-name').innerText = eName;
         document.getElementById('p-weap').innerText = wName;
-        document.getElementById('e-weap').innerText = "🔥 Снаряжение +" + eBonus + " Атк";
+        document.getElementById('e-weap').innerText = isPvP ? "Оружие соперника" : "Зеркальный обвес";
+
+        if(isPvP) {
+            document.getElementById('battle-headline').innerText = "⚔️ ТОПОВАЯ ДУЭЛЬ ПО ИНВАЙТУ ⚔️";
+            document.getElementById('battle-headline').style.color = "var(--pink)";
+        }
 
         function refresh() {
             document.getElementById('p-txt').innerText = pHp + "/" + pMax + " HP";
             document.getElementById('p-bar').style.width = (pHp / pMax * 100) + "%";
             document.getElementById('e-txt').innerText = eHp + "/" + eMax + " HP";
             document.getElementById('e-bar').style.width = (eHp / eMax * 100) + "%";
+            
+            var uBtn = document.getElementById('ult-btn');
+            if (ultCharge >= 100) {
+                uBtn.className = "btn ult-ready";
+                uBtn.removeAttribute("disabled");
+                uBtn.style.cursor = "pointer";
+                uBtn.innerText = "🔥 СУПЕР-УЛЬТА ЗАРЯЖЕНА! КЛИКАЙ! 🔥";
+            } else {
+                uBtn.innerText = "🔥 УЛЬТА НАБИРАЕТСЯ (" + ultCharge + "%)";
+            }
         }
 
-        function attack() {
-            if (pHp <= 0 || eHp <= 0) return;
+        // АВТО-БОЙ (БЭМ-БЭМ): ХП сносится понемножку и аккуратно у обоих бойцов!
+        function startLiveCombat() {
+            battleTicker = setInterval(function() {
+                if (pHp <= 0 || eHp <= 0) { clearInterval(battleTicker); return; }
 
-            // Твой ход
-            var fd = pDmg + bonusDmg;
-            if (pName === "Nazar" && Math.random() < 0.3) {
-                fd = Math.floor(fd * 2);
-                log("⚡ КРИТИЧЕСКИЙ СУПЕР-УДАР НАЗАРА: Нанесено -" + fd + " HP врагу!");
-            } else {
-                log("⚔️ Ты атаковал Сигму " + eName + " на -" + fd + " HP!");
-            }
-            eHp = Math.max(0, eHp - fd);
-            refresh();
-
-            if (eHp <= 0) {
-                log("🏆 КРАСАВЧИК! Ты разнёс Сигму-соперника!");
-                localStorage.setItem('battle_res', 'win');
-                end();
-                return;
-            }
-
-            // Ход Сложного Сигма-Бота
-            document.getElementById('act-zone').innerHTML = `<button class="btn" style="background:#222; color:#555; cursor:not-allowed;">Враг контратакует...</button>`;
-            setTimeout(function() {
-                if(eHp <= 0) return;
-                var ed = eDmg + eBonus;
-                if(Math.random() < 0.25) { // Бот тоже может наносить КРИТЫ!
-                    ed = Math.floor(ed * 1.8);
-                    log("💥 КРИТ ОТ ВРАЖЕСКОГО СИГМЫ! Снято -" + ed + " HP!");
-                } else {
-                    log("💥 Сигма " + eName + " врубил комбо и снёс тебе -" + ed + " HP!");
-                }
+                var pCard = document.getElementById('p-card');
+                var eCard = document.getElementById('e-card');
                 
-                pHp = Math.max(0, pHp - ed);
+                // 1. Твой аккуратный удар
+                pCard.classList.add('hit-p');
+                setTimeout(function() { pCard.classList.remove('hit-p'); }, 150);
+
+                var myHit = Math.floor((pDmg + bonusDmg) * (0.9 + Math.random() * 0.2)); // Разброс урона всего +-10%
+                log("⚔️ Ты нанёс Сигме аккуратный удар на -" + myHit + " HP!");
+
+                eCard.classList.add('shake');
+                setTimeout(function() { eCard.classList.remove('shake'); }, 150);
+
+                eHp = Math.max(0, eHp - myHit);
+                if (ultCharge < 100) ultCharge = Math.min(100, ultCharge + 25);
                 refresh();
 
-                if (pHp <= 0) {
-                    log("💀 ТЕБЯ УДЕЛАЛИ! Этот Сигма оказался сильнее.");
-                    localStorage.setItem('battle_res', 'fail');
-                    end();
-                } else {
-                    document.getElementById('act-zone').innerHTML = `<button class="btn" onclick="attack()">⚔️ Нанести тактический удар</button>`;
+                if (eHp <= 0) {
+                    log("🏆 ОФИГЕТЬ! Ты выиграл эту жесткую дуэль!");
+                    localStorage.setItem('battle_res', 'win');
+                    endGame();
+                    return;
                 }
-            }, 600);
+
+                // 2. Равный и такой же аккуратный ответ соперника через небольшую паузу
+                setTimeout(function() {
+                    if (pHp <= 0 || eHp <= 0) return;
+
+                    eCard.classList.add('hit-e');
+                    setTimeout(function() { eCard.classList.remove('hit-e'); }, 150);
+
+                    var enemyHit = Math.floor(eDmg * (0.9 + Math.random() * 0.2)); // Точно такой же аккуратный урон
+                    log("💥 " + eName + " бьёт в ответ и сносит тебе аккуратные -" + enemyHit + " HP!");
+
+                    pCard.classList.add('shake');
+                    setTimeout(function() { pCard.classList.remove('shake'); }, 150);
+
+                    pHp = Math.max(0, pHp - enemyHit);
+                    refresh();
+
+                    if (pHp <= 0) {
+                        log("💀 Ты проиграл! Соперник оказался точнее на этот раз.");
+                        localStorage.setItem('battle_res', 'fail');
+                        endGame();
+                    }
+                }, 400);
+
+            }, 1200); // Чуть увеличил интервал, чтобы ты успевал следить за красивым боем
         }
 
-        function end() {
-            document.getElementById('act-zone').innerHTML = `<button class="btn" style="background:var(--pink); color:#fff;" onclick="window.location.href='result.html'">Завершить бой 🚩</button>`;
+        function useUlt() {
+            if (ultCharge < 100 || eHp <= 0 || pHp <= 0) return;
+            var ultDmg = Math.floor((pDmg + bonusDmg) * 2.2);
+            log("🔥 ТАКТИЧЕСКАЯ УЛЬТА! Ты обрушил комбо на -" + ultDmg + " HP!");
+            eHp = Math.max(0, eHp - ultDmg);
+            ultCharge = 0;
+            refresh();
+            if (eHp <= 0) {
+                log("🏆 ПОБЕДА УЛЬТОЙ! Сражение красиво завершено!");
+                localStorage.setItem('battle_res', 'win');
+                endGame();
+            }
         }
 
-        function log(t) {
-            var box = document.getElementById('arena-log');
-            box.innerHTML += "<br>" + t;
-            box.scrollTop = box.scrollHeight;
-        }
-        refresh();
-    </script>
-</body>
-</html>
+        function endGame() {
+            clearInterval(battleTicker);
+            localStorage.setItem('fl_is_pvp_mode', 'false'); // Сбрасываем PvP флаг
