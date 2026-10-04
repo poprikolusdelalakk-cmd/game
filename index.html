@@ -13,11 +13,13 @@
         .menu-card { background: var(--card); border-radius: 32px; border: 1px solid rgba(0, 242, 254, 0.3); padding: 40px 30px; text-align: center; box-shadow: 0 30px 70px rgba(0,0,0,0.8); }
         .logo { font-size: 2.6rem; font-weight: 900; background: linear-gradient(135deg, #fff, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-transform: uppercase; }
         .welcome { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; color: #fff; }
-        .id-badge { font-size: 0.85rem; color: var(--blue); margin-bottom: 30px; font-weight: bold; background: rgba(0,242,254,0.1); display: inline-block; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(0,242,254,0.2); }
+        .id-badge { font-size: 1rem; color: var(--blue); margin-bottom: 25px; font-weight: 900; background: rgba(0,242,254,0.15); display: inline-block; padding: 8px 18px; border-radius: 20px; border: 2px solid var(--blue); text-shadow: 0 0 10px rgba(0, 242, 254, 0.5); }
         .grid { display: flex; flex-direction: column; gap: 12px; }
         .btn { display: block; width: 100%; padding: 16px; border-radius: 14px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; text-decoration: none; text-align: center; transition: 0.2s; }
         .btn-main { background: linear-gradient(135deg, var(--blue), var(--purple)); color: #02040a; font-weight: 900; font-size: 1.25rem; box-shadow: 0 0 20px rgba(0,242,254,0.2); }
         .btn-main:hover { transform: scale(1.02); }
+        .btn-voice { background: linear-gradient(135deg, #ff007f, #9d4edd); color: #fff; font-weight: 900; box-shadow: 0 0 15px rgba(255, 0, 127, 0.3); }
+        .btn-voice:hover { transform: scale(1.02); box-shadow: 0 0 25px #ff007f; }
         .btn-sub { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
         .btn-sub:hover { border-color: var(--blue); }
     </style>
@@ -26,52 +28,26 @@
     <div class="wrapper">
         <div class="menu-card">
             <div class="logo">Fluent Arena</div>
-            <!-- ЧИСТОЕ ПРИВЕТСТВИЕ И НИК -->
-            <div class="welcome">Привет, <span id="user-nick-label" style="color: var(--blue);">Nazar</span>!</div>
-            <div class="id-badge">Твой Сигма-ID: <span id="my-id-display">------</span></div>
+            <div class="welcome">Привет, <span id="user-nick-label" style="color: var(--blue);">-</span>!</div>
+            <!-- ID ТЕПЕРЬ ОТКРЫТ И ПОДСВЕЧЕН НАМЕРТВО -->
+            <div class="id-badge">ТВОЙ СИГМА-ID: <span id="my-id-display">------</span></div>
             
             <div class="grid">
                 <a href="friends.html" class="btn btn-main">⚔️ Онлайн Дуэль по ID</a>
+                <a href="voice.html" class="btn btn-voice">🎙️ Голосовой чат (Voice)</a>
                 <a href="inventory.html" class="btn btn-sub">📦 Мой Инвентарь</a>
-                <a href="settings.html" class="btn btn-sub">⚙️ Настройки и Кайф Музыка</a>
+                <a href="settings.html" class="btn btn-sub">⚙️ Настройки и Музыка</a>
             </div>
         </div>
     </div>
 
-    <script translate="no">
-        // Инициализация профиля
+    <script>
         if (!localStorage.getItem('fl_user_id')) {
             localStorage.setItem('fl_user_id', Math.floor(100000 + Math.random() * 900000));
         }
         var currentNick = localStorage.getItem('fl_user_nick') || "Nazar";
         document.getElementById('user-nick-label').innerText = currentNick;
         document.getElementById('my-id-display').innerText = localStorage.getItem('fl_user_id');
-
-        // Фоновый бесшовный музыкальный плеер для всех вкладок
-        window.onload = function() {
-            if (localStorage.getItem('fl_music_enabled') === 'true') {
-                startBackgroundBeat();
-            }
-        };
-
-        var audioCtx = null;
-        function startBackgroundBeat() {
-            window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var melody =; // Кайфовый синтвейв бас-лайн
-            var step = 0;
-            setInterval(function() {
-                if(localStorage.getItem('fl_music_enabled') !== 'true') return;
-                var osc = window.audioCtx.createOscillator();
-                var gain = window.audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(melody[step], window.audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, window.audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.3);
-                osc.connect(gain); gain.connect(window.audioCtx.destination);
-                osc.start(); osc.stop(window.audioCtx.currentTime + 0.35);
-                step = (step + 1) % melody.length;
-            }, 280);
-        }
     </script>
 </body>
 </html>
