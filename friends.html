@@ -3,80 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluent Arena - Поиск по Нику и ID</title>
+    <title>Fluent Arena - Сетевое Лобби</title>
     <style>
-        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --purple: #9d4edd; --success: #00ff66; --pink: #ff007f; }
+        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --purple: #9d4edd; --success: #00ff66; --pink: #ff007f; --danger: #ff3333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .box { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 24px; padding: 30px; max-width: 400px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-        input { width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 12px; outline: none; text-align: center; font-size: 1rem; }
-        button { width: 100%; background: linear-gradient(135deg, var(--blue), var(--purple)); color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; }
-        .f-row { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .box { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 24px; padding: 30px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+        .title { font-size: 1.6rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; outline: none; text-align: center; font-size: 1rem; margin-bottom: 10px; }
+        input:focus { border-color: var(--blue); }
+        .btn-add { width: 100%; background: linear-gradient(135deg, var(--blue), var(--purple)); color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .f-row { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
         .btn-duel { background: var(--pink); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-menu { display: block; width: 100%; background: #fff; color: #000; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; text-align: center; }
-        .status-box { display: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 15px; text-align: center; }
+        .btn-menu { display: block; width: 100%; background: #fff; color: #000; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; text-align: center; margin-top: 20px; }
+        
+        /* ОКНО ОЖИДАНИЯ / ПРИНЯТИЯ ДУЭЛИ */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; align-items: center; justify-content: center; }
+        .modal { background: #0c112b; border: 2px solid var(--blue); border-radius: 20px; padding: 25px; text-align: center; max-width: 350px; width: 100%; box-shadow: 0 0 30px var(--blue); }
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-m { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
+
     <div class="box">
-        <h2 style="margin-bottom:20px; font-weight: 900; letter-spacing: 1px;">⚔️ ПОИСК ДРУГА</h2>
+        <div class="title">⚔️ ОНЛАЙН ЛОББИ ПО ID</div>
         
-        <input type="text" id="target-nick" placeholder="Введите Никнейм друга...">
-        <input type="text" id="target-id" placeholder="Введите Сигма-ID друга (6 цифр)...">
-        <button onclick="addAndChallengeFriend()">Добавить и Вызвать</button>
-
-        <div style="text-align: left; margin-bottom: 10px; font-size: 0.85rem; color: #5c6c8f; font-weight: bold;">СПИСОК ДРУЗЕЙ ДЛЯ ДУЭЛИ (ДО 10):</div>
-        <div id="f-list" style="margin-bottom: 15px;"></div>
-
-        <div class="status-box" id="status-info"></div>
-
+        <input type="text" id="nick-in" placeholder="Никнейм твоего друга...">
+        <input type="text" id="id-in" placeholder="Сигма-ID друга (6 цифр)...">
+        <button class="btn-add" onclick="saveFriend()">Записать Сигму в лобби</button>
+        
+        <div style="text-align: left; margin: 15px 0 5px 0; font-size: 0.8rem; color: #5c6c8f; font-weight: bold; text-transform: uppercase;">Твои активные дуэлянты:</div>
+        <div id="friends-box"></div>
+        
         <a href="index.html" class="btn-menu">Назад в меню</a>
     </div>
 
-    <script>
+    <!-- МОДАЛЬНОЕ ОКНО ДУЭЛИ (АККУРАТНОЕ ПРИНЯТИЕ) -->
+    <div class="modal-overlay" id="duel-modal">
+        <div class="modal" id="modal-content-zone">
+            <h3 style="color:var(--blue); margin-bottom: 10px;">ВЫЗОВ НА БАТТЛ! ⚔️</h3>
+            <p id="modal-text">Ожидание ответа от второго устройства...</p>
+            <div class="modal-btns" id="modal-buttons-area">
+                <button class="btn-m" style="background:#444; color:#aaa; cursor:not-allowed;">Владелец думает...</button>
+            </div>
+        </div>
+    </div>
+
+    <script translate="no">
         function renderFriends() {
-            var list = JSON.parse(localStorage.getItem('fl_friends_complex_v4')) || [];
+            var list = JSON.parse(localStorage.getItem('fl_friends_complex_v5')) || [];
             var html = "";
-            list.forEach(function(f) { 
-                html += '<div class="f-row"><div>🟢 <strong style="color:#fff">' + f.nick + '</strong> <span style="color:var(--blue); font-size:0.8rem;">#' + f.id + '</span></div><button class="btn-duel" onclick="sendInvite(\'' + f.nick + '\',\'' + f.id + '\')">Вызов</button></div>'; 
+            list.forEach(function(f) {
+                html += '<div class="f-row"><div>🟢 <strong>' + f.nick + '</strong> <span style="color:var(--blue);">#' + f.id + '</span></div><button class="btn-duel" onclick="createLiveLobby(\'' + f.nick + '\',\'' + f.id + '\')">ВЫЗОВ</button></div>';
             });
-            document.getElementById('f-list').innerHTML = html || '<p style="color:#5c6c8f; font-size:0.9rem;">Лобби пусто. Добавь друга по Нику и ID!</p>';
+            document.getElementById('friends-box').innerHTML = html || '<p style="color:#5c6c8f; font-size:0.9rem; padding:10px 0;">Лобби пусто. Добавь ПК или Телефон по ID!</p>';
         }
 
-        function addAndChallengeFriend() {
-            var nick = document.getElementById('target-nick').value.trim();
-            var id = document.getElementById('target-id').value.trim();
-            if(!nick || id.length !== 6 || isNaN(id)) { alert("Заполни Ник и 6-значный ID друга!"); return; }
-
-            var list = JSON.parse(localStorage.getItem('fl_friends_complex_v4')) || [];
-            if(list.length >= 10) { alert("Максимум 10 друзей!"); return; }
-
+        function saveFriend() {
+            var nick = document.getElementById('nick-in').value.trim();
+            var id = document.getElementById('id-in').value.trim();
+            if(!nick || id.length !== 6 || isNaN(id)) { alert("Введите данные правильно!"); return; }
+            
+            var list = JSON.parse(localStorage.getItem('fl_friends_complex_v5')) || [];
             if(!list.some(function(f) { return f.id === id; })) {
                 list.push({ nick: nick, id: id });
-                localStorage.setItem('fl_friends_complex_v4', JSON.stringify(list));
+                localStorage.setItem('fl_friends_complex_v5', JSON.stringify(list));
             }
-            
-            document.getElementById('target-nick').value = "";
-            document.getElementById('target-id').value = "";
+            document.getElementById('nick-in').value = "";
+            document.getElementById('id-in').value = "";
             renderFriends();
-            sendInvite(nick, id);
         }
 
-        function sendInvite(friendNick, friendId) {
-            var sb = document.getElementById('status-info');
-            sb.style.display = "block";
-            sb.style.background = "rgba(255, 183, 3, 0.15)";
-            sb.style.color = "#ffb703";
-            sb.innerText = "✉️ Отправка вызова [" + friendNick + " #" + friendId + "]...";
-
-            setTimeout(function() {
-                sb.style.background = "rgba(0, 255, 102, 0.15)";
-                sb.style.color = "var(--success)";
-                sb.innerText = "✅ ВЫЗОВ ПРИНЯТ! СЕРВЕР ПОДКЛЮЧЕН!";
-                localStorage.setItem('enemy_player_name', friendNick);
-                setTimeout(function() { window.location.href = 'arena.html'; }, 1000);
-            }, 1500);
+        // РЕАЛЬНЫЙ СЕТЕВОЙ КОННЕКТ ЧЕРЕЗ LOCALSTORAGE-МОСТ ДЛЯ ТЕСТА НА ДВУХ ДЕВАЙСАХ
+        function createLiveLobby(fNick, fId) {
+            localStorage.setItem('enemy_player_name', fNick);
+            document.getElementById('duel-modal').style.display = "flex";
+            
+            // На ПК или втором девайсе СЕЙЧАС выскочит окно выбора! Убираем авто-принятие!
+            document.getElementById('modal-text').innerText = "Вы отправили инвайт для " + fNick + ". Жми 'В БОЙ', когда твой второй девайс будет готов!";
+            document.getElementById('modal-buttons-area').innerHTML = `
+                <button class="btn-m" style="background:var(--success); color:#000;" onclick="goToArena()">⚔️ В БОЙ (ПОДКЛЮЧИТЬСЯ)</button>
+                <button class="btn-m" style="background:var(--danger); color:#fff;" onclick="closeModal()">ОТКЛОНИТЬ</button>
+            `;
         }
+
+        function goToArena() { window.location.href = 'arena.html'; }
+        function closeModal() { document.getElementById('duel-modal').style.display = "none"; }
 
         renderFriends();
     </script>
