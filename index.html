@@ -89,6 +89,10 @@
             document.getElementById('stat-visits').innerText = localStorage.getItem('fl_global_visits');
         }
         setInterval(updateLiveStats, 2500);
+        
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 
         function renderFields() {
             if (isSignUpMode) {
