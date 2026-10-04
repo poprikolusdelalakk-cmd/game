@@ -3,47 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FLUENT ARENA - ДРУЗЬЯ</title>
-    <script src="https://unpkg.com"></script>
+    <title>FLUENT ARENA - СОЦИАЛЬНЫЙ ЦЕНТР</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body { background-color: #060b13; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
-        .card { background: #0d1625; border: 2px solid #1e293b; border-radius: 20px; padding: 25px; width: 100%; max-width: 420px; }
+        .card { background: #0d1625; border: 2px solid #1e293b; border-radius: 20px; padding: 25px; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         h2 { text-align: center; margin-bottom: 10px; color: #38bdf8; text-transform: uppercase; }
+        
         .nav-menu { display: flex; gap: 5px; margin-bottom: 20px; background: #111827; padding: 5px; border-radius: 10px; }
-        .nav-btn { flex: 1; padding: 8px; background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: bold; cursor: pointer; border-radius: 6px; }
+        .nav-btn { flex: 1; padding: 8px; background: transparent; border: none; color: #64748b; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 6px; text-transform: uppercase; }
         .nav-btn.active { color: white; background: #1e293b; }
-        .id-badge { text-align: center; font-size: 13px; color: #94a3b8; background: rgba(56,189,248,0.05); padding: 8px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed #38bdf8; }
-        input { width: 100%; padding: 12px; background: #111827; border: 2px solid #1e293b; border-radius: 10px; color: white; text-align: center; margin-bottom: 12px; outline: none; }
+        
+        .id-badge { text-align: center; font-size: 14px; color: #94a3b8; background: rgba(56,189,248,0.05); padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed #38bdf8; cursor: pointer; }
+        .id-badge:hover { background: rgba(56,189,248,0.1); }
+        
+        input { width: 100%; padding: 12px; background: #111827; border: 2px solid #1e293b; border-radius: 10px; color: white; text-align: center; margin-bottom: 12px; outline: none; font-size: 14px; }
         input:focus { border-color: #a855f7; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; margin-bottom: 8px; }
+        
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; margin-bottom: 8px; font-size: 14px; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.98); }
         .btn-primary { background: linear-gradient(135deg, #a855f7, #ec4899); }
+        .btn-bot { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
         .btn-secondary { background: #1e293b; }
+        
         .list-item { display: flex; justify-content: space-between; align-items: center; background: #111827; padding: 10px 15px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #1e293b; }
-        .item-name { font-weight: bold; font-size: 14px; }
-        .btn-fight { padding: 6px 12px; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
-        .empty { text-align: center; color: #475569; font-size: 13px; padding: 30px 0; }
-        .status-net { font-size: 11px; text-align: center; color: #f59e0b; margin-top: -5px; margin-bottom: 10px; }
+        .item-name { font-weight: bold; font-size: 13px; }
+        .btn-fight { padding: 6px 12px; background: #f59e0b; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .empty { text-align: center; color: #475569; font-size: 13px; padding: 20px 0; line-height: 1.4; }
+        .status-net { font-size: 12px; text-align: center; color: #34d399; margin-top: -5px; margin-bottom: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>👥 Мои Друзья</h2>
         
+        <!-- Навигация по вкладкам -->
         <div class="nav-menu">
-            <button class="nav-btn active">Друзья</button>
-            <button class="nav-btn" onclick="window.location.href='requests.html'">Запросы (Сообщения)</button>
-            <button class="nav-btn" onclick="window.location.href='invites.html'">Вызовы ⚔️</button>
+            <button class="nav-btn active" onclick="switchView('friends')">Друзья</button>
+            <button class="nav-btn" onclick="switchView('requests')">Запросы</button>
+            <button class="nav-btn" onclick="switchView('invites')">Вызовы ⚔️</button>
         </div>
 
-        <div class="id-badge">Мой Сигма-ID: <b id="my-id-box" style="color:#38bdf8">------</b></div>
-        <div class="status-net" id="net-status">🌐 Подключение к серверу...</div>
+        <!-- Клик по баджу копирует ID -->
+        <div class="id-badge" onclick="copyMyID()">Мой Сигма-ID: <b id="my-id-box" style="color:#38bdf8">------</b> (Клик: Копировать)</div>
+        <div class="status-net">🟢 Система Fluent Сообщества активна</div>
         
-        <div id="friends-list-box"></div>
+        <!-- ДИНАМИЧЕСКИЕ ОКНА ВКЛАДОК -->
+        <div id="content-area">
+            <!-- Тут рендерится контент в зависимости от вкладки -->
+        </div>
 
-        <input type="text" id="search-id" placeholder="Введите ID чтобы добавить в друзья...">
-        <button class="btn btn-primary" onclick="sendFriendRequest()">ОТПРАВИТЬ ЗАПРОС</button>
-        <button class="btn btn-secondary" onclick="window.location.href='index.html'">В МЕНЮ</button>
+        <div style="margin-top: 15px;">
+            <input type="text" id="main-input" placeholder="Введите ID друга...">
+            <button class="btn btn-primary" id="action-btn" onclick="handleMainAction()">ДОБАВИТЬ В ДРУЗЬЯ</button>
+            <button class="btn btn-bot" onclick="playWithBot()">🤖 ОДИНОЧНАЯ ИГРА С БОТОМ</button>
+            <button class="btn btn-secondary" onclick="window.location.href='index.html'">В ГЛАВНОЕ МЕНЮ</button>
+        </div>
     </div>
 
     <script>
@@ -52,69 +67,147 @@
         localStorage.setItem('sigma_id', myId);
         document.getElementById('my-id-box').textContent = myId;
 
-        let friendsList = JSON.parse(localStorage.getItem('fluent_friends')) || [];
-        const box = document.getElementById('friends-list-box');
+        // Инициализация баз данных в памяти браузера
+        let friends = JSON.parse(localStorage.getItem('fluent_friends')) || [];
+        let requests = JSON.parse(localStorage.getItem('fluent_reqs')) || [];
+        let invites = JSON.parse(localStorage.getItem('fluent_invs')) || [];
 
-        function renderFriends() {
-            if(friendsList.length === 0) {
-                box.innerHTML = `<div class="empty">У вас пока нет друзей.<br>Отправьте запрос по ID ниже!</div>`;
-            } else {
-                box.innerHTML = friendsList.map(f => `
-                    <div class="list-item">
-                        <span class="item-name">👤 ${f.name} (ID: ${f.id})</span>
-                        <button class="btn-fight" onclick="challengeFriend('${f.id}')">В БОЙ</button>
-                    </div>
-                `).join('');
-            }
-        }
-        renderFriends();
+        let currentTab = 'friends';
 
-        // Подключаемся к надежному брокеру с альтернативным портом 443 (который никогда не блочится)
-        let isConnected = false;
-        const client = mqtt.connect('wss://://hivemq.com');
-
-        client.on('connect', () => {
-            isConnected = true;
-            document.getElementById('net-status').textContent = "🟢 Сеть Fluent Arena активна!";
-            document.getElementById('net-status').style.color = "#34d399";
-        });
-
-        client.on('error', () => {
-            document.getElementById('net-status').textContent = "🔴 Ошибка сети. Проверьте интернет";
-            document.getElementById('net-status').style.color = "#f43f5e";
-        });
-
-        function sendFriendRequest() {
-            let targetId = document.getElementById('search-id').value.trim();
-            if(!targetId) return alert('Введите ID!');
-            if(targetId === myId) return alert('Нельзя добавить себя!');
-            
-            let packet = { type: 'friend_request', fromId: myId, fromName: myName };
-
-            // Если брокер не успел подключиться, сохраняем локально для симуляции, чтобы ничего не зависало
-            if(!isConnected) {
-                alert('⚠️ Сервер занят, но запрос отправлен в буфер обмена! Передайте этот ID другу.');
-                return;
-            }
-
-            client.publish(`fluentarena/user/${targetId}`, JSON.stringify(packet), { qos: 1 }, (err) => {
-                if(!err) {
-                    alert(`Успешно! Запрос для ID ${targetId} отправлен в облако.`);
-                    document.getElementById('search-id').value = '';
-                } else {
-                    alert('Ошибка отправки пакета!');
+        // Электронный генератор звуков (работает без аудиофайлов)
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                if (type === 'click') {
+                    osc.frequency.setValueAtTime(600, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.05);
+                } else if (type === 'success') {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // До
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08); // Ми
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.16); // Соль
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.3);
+                } else if (type === 'fight') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(250, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.4);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.4);
                 }
-            });
+            } catch(e) {}
         }
 
-        function challengeFriend(friendId) {
-            let roomName = `room_${myId}_${friendId}`;
-            client.publish(`fluentarena/user/${friendId}`, JSON.stringify({
-                type: 'duel_invite', fromId: myId, fromName: myName, room: roomName
-            }));
-            alert('Вызов отправлен! Переходим на Арену...');
-            window.location.href = `arena.html?mode=online&role=host&room=${roomName}`;
+        function copyMyID() {
+            navigator.clipboard.writeText(myId);
+            playSound('click');
+            alert('Ваш Сигма-ID успешно скопирован в буфер обмена!');
         }
-    </script>
-</body>
-</html>
+
+        // Переключение между вкладками (файлами) без лагов сети
+        function switchView(tab) {
+            currentTab = tab;
+            playSound('click');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const input = document.getElementById('main-input');
+            const btn = document.getElementById('action-btn');
+
+            if (tab === 'friends') {
+                input.placeholder = "Введите ID друга для создания боя...";
+                btn.textContent = "⚔️ СОЗДАТЬ СЕТЕВОЙ ВЫЗОВ";
+            } else if (tab === 'requests') {
+                input.placeholder = "Введите ID для отправки запроса...";
+                btn.textContent = "👤 ОТПРАВИТЬ ЗАПРОС В ДРУЗЬЯ";
+            } else {
+                input.placeholder = "Вставьте код вызова от друга...";
+                btn.textContent = "🎯 ВОЙТИ В КЛАНОВЫЙ БОЙ";
+            }
+            render();
+        }
+
+        // Логика главных кнопок действий
+        function handleMainAction() {
+            const val = document.getElementById('main-input').value.trim();
+            if(!val) return alert('Поле ввода пустое!');
+
+            if (currentTab === 'requests') {
+                if(val === myId) return alert('Нельзя добавить себя!');
+                if(requests.some(r => r.id === val)) return alert('Запрос уже есть!');
+                
+                requests.push({ id: val, name: 'Игрок_' + val });
+                localStorage.setItem('fluent_reqs', JSON.stringify(requests));
+                playSound('success');
+                alert(`Запрос для ID ${val} сохранен! Зайдите во вкладку "Запросы" на втором устройстве и введите этот же ID, чтобы подтвердить дружбу.`);
+            } 
+            else if (currentTab === 'friends') {
+                // Генерация кода комнаты для отправки другу
+                let generatedRoom = `room_${myId}_${val}`;
+                navigator.clipboard.writeText(generatedRoom);
+                playSound('fight');
+                alert(`⚔️ Бой создан!\nКод вызова: [ ${generatedRoom} ] автоматически скопирован!\n\nОтправьте его другу. Он вставит его во вкладке "Вызовы" и вы начнете дуэль.`);
+                window.location.href = `arena.html?mode=online&role=host&room=${generatedRoom}`;
+            } 
+            else if (currentTab === 'invites') {
+                // Вход по коду друга
+                playSound('fight');
+                window.location.href = `arena.html?mode=online&role=guest&room=${val}`;
+            }
+            document.getElementById('main-input').value = '';
+            render();
+        }
+
+        // Функции кнопок списков (Принять/Удалить)
+        function acceptFriend(id, name) {
+            requests = requests.filter(r => r.id !== id);
+            localStorage.setItem('fluent_reqs', JSON.stringify(requests));
+            
+            if(!friends.some(f => f.id === id)) {
+                friends.push({ id: id, name: name });
+                localStorage.setItem('fluent_friends', JSON.stringify(friends));
+            }
+            playSound('success');
+            render();
+        }
+
+        function removeRequest(id) {
+            requests = requests.filter(r => r.id !== id);
+            localStorage.setItem('fluent_reqs', JSON.stringify(requests));
+            playSound('click');
+            render();
+        }
+
+        function playWithBot() {
+            playSound('click');
+window.location.href = arena.html?mode=bot;
+}
+// Отрисовка списков на экране
+function render() {
+const area = document.getElementById('content-area');
+if (currentTab === 'friends') {
+if(friends.length === 0) {
+area.innerHTML = <div class="empty">Список друзей пуст.<br>Взаимно добавьте друг друга во вкладке "Запросы"!</div>;
+} else {
+area.innerHTML = friends.map(f => <div class="list-item"> <span class="item-name">👤 ${f.name} (ID: ${f.id})</span> <button class="btn-fight" onclick="document.getElementById('main-input').value='${f.id}'; handleMainAction();">В БОЙ</button> </div>).join('');
+}
+}
+else if (currentTab === 'requests') {
+if(requests.length === 0) {
+area.innerHTML = <div class="empty">Нет входящих сообщений или запросов.</div>;
+} else {
+area.innerHTML = requests.map(r => <div class="list-item"> <div style="display:flex; flex-direction:column"> <span class="item-name">📩 Заявка от: ${r.id}</span> </div> <div style="display:flex; gap:5px"> <button class="btn-fight" style="background:#10b981" onclick="acceptFriend('${r.id}', '${r.name}')">✓</button> <button class="btn-fight" style="background:#f43f5e" onclick="removeRequest('${r.id}')">✕</button> </div> </div>).join('');
+}
+}
+else if (currentTab === 'invites') {
+area.innerHTML = <div class="empty"> <b>Как играть по сети без лагов сервера:</b><br> 1. Друг создает бой во вкладке "Друзья" и скидывает вам код.<br> 2. Вставьте полученный код в поле ниже и нажмите кнопку войти! </div>;
+}
+}
+// Первый запуск
+switchView('friends');
+
