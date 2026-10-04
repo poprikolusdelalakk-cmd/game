@@ -1,157 +1,407 @@
 <!DOCTYPE html>
-<html lang="ru" translate="no" class="notranslate">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluent Arena - Дуэль</title>
+    <title>FLUENT ARENA - БОЙ</title>
+    <script src="https://jsdelivr.net"></script>
     <style>
-        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
-        .container { max-width: 460px; width: 100%; display: flex; flex-direction: column; gap: 15px; position: relative; }
-        .card { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 20px; padding: 20px; text-align: center; position: relative; }
-        
-        .countdown-screen { position: absolute; top:0; left:0; width:100%; height:100%; background: var(--bg); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 999; font-size: 5rem; font-weight: 900; color: var(--blue); text-shadow: 0 0 25px var(--blue); }
-        .battlefield { display: flex; flex-direction: column; gap: 12px; }
-        .fighter { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 15px; text-align: left; }
-        .hp-bg { width: 100%; height: 16px; background: #111; border-radius: 8px; overflow: hidden; margin-top: 8px; }
-        .hp-fill { height: 100%; background: linear-gradient(90deg, #00ff66, #11ff88); width: 100%; transition: width 0.15s ease; }
-        .hp-txt { font-size: 0.8rem; text-align: right; margin-top: 4px; color: #8fa0b5; font-weight: bold; }
-        .btn-hit { width: 100%; background: var(--blue); color: #000; border: none; padding: 18px; border-radius: 14px; font-size: 1.2rem; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
-        .btn-hit:disabled { background: #151926 !important; color: #5c6c8f !important; cursor: not-allowed; }
-        .log { background: rgba(0,0,0,0.7); border-radius: 14px; padding: 12px; height: 110px; overflow-y: auto; font-size: 0.85rem; color: #ffb703; text-align: left; margin-top: 12px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body {
+            background-color: #060b13;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .arena-container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        /* Панель здоровья игроков */
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 22, 37, 0.8);
+            border: 2px solid #1e293b;
+            border-radius: 16px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+        }
+        .player-info {
+            width: 42%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .player-info.player2 {
+            align-items: flex-end;
+        }
+        .username {
+            font-size: 16px;
+            font-weight: 700;
+            color: #38bdf8;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        .player2 .username {
+            color: #f43f5e;
+            text-shadow: 0 0 8px rgba(244, 63, 94, 0.4);
+        }
+        .hp-bar-bg {
+            width: 100%;
+            height: 16px;
+            background: #111827;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #374151;
+        }
+        .hp-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+            transition: width 0.1s ease-out;
+        }
+        .player2 .hp-bar-fill {
+            background: linear-gradient(90deg, #f43f5e, #e11d48);
+        }
+        .vs-badge {
+            font-size: 20px;
+            font-weight: 900;
+            color: #f59e0b;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+            padding: 0 10px;
+        }
+        /* Игровое поле */
+        canvas {
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            border: 3px solid #1e293b;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+        /* Стили подписи управления */
+        .controls-hint {
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+            background: rgba(13, 22, 37, 0.4);
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(30, 41, 59, 0.5);
+        }
+        /* Модалка завершения боя */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+        }
+        .result-card {
+            background: #0d1625;
+            border: 2px solid #1e293b;
+            border-radius: 24px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            animation: scaleIn 0.3s ease-out;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .result-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .winner-name {
+            font-size: 20px;
+            color: #34d399;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .btn-menu {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .btn-menu:hover {
+            opacity: 0.9;
+        }
+        .btn-menu:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <!-- ОТСЧЕТ 3... 2... 1 -->
-            <div class="countdown-screen" id="cd-overlay">3</div>
-            <div style="color:var(--blue); font-weight:900; text-transform:uppercase; margin-bottom:12px;">⚡ РЕАЛЬНАЯ PvP АРЕНА ОНЛАЙН ⚡</div>
-            
-            <div class="battlefield">
-                <div class="fighter" style="border-left: 5px solid var(--blue);">
-                    <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p1-name">Nazar</span> <span id="p1-weap" style="color:#ffb703; font-size:0.85rem;">Кулаки</span></div>
-                    <div class="hp-bg"><div class="hp-fill" id="p1-bar"></div></div>
-                    <div class="hp-txt"><span id="p1-txt">80/80 HP</span></div>
-                </div>
-                <div class="fighter" style="border-left: 5px solid var(--pink);">
-                    <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p2-name">Друг</span> <span style="color:var(--pink); font-size:0.8rem;">ONLINE</span></div>
-                    <div class="hp-bg"><div class="hp-fill" id="p2-bar" style="background: linear-gradient(90deg, var(--pink), var(--danger));"></div></div>
-                    <div class="hp-txt"><span id="p2-txt">80/80 HP</span></div>
-                </div>
-            </div>
 
-            <div id="btn-zone" style="display:none;">
-                <button class="btn-hit" id="action-btn" onclick="triggerStrike()">⚔️ НАНЕСТИ УДАР (ТВОЙ ХОД)</button>
+    <div class="arena-container">
+        <!-- Панель статусов игроков -->
+        <div class="hud">
+            <div class="player-info player1">
+                <div class="username" id="p1-name">Игрок 1</div>
+                <div class="hp-bar-bg">
+                    <div class="hp-bar-fill" id="p1-hp"></div>
+                </div>
             </div>
-            <div class="log" id="arena-log">Подключение к арене...</div>
+            <div class="vs-badge">VS</div>
+            <div class="player-info player2">
+                <div class="username" id="p2-name">Противник</div>
+                <div class="hp-bar-bg">
+                    <div class="hp-bar-fill" id="p2-hp"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Игровой холст -->
+        <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+        <!-- Подсказка -->
+        <div class="controls-hint">
+            <strong>Управление:</strong> Игрок 1 (Синий): Лево/Право — <b>A / D</b>, Удар — <b>Space (Пробел)</b> | Игрок 2 (Красный): Лево/Право — <b>Стрелки ← / →</b>, Удар — <b>Enter</b>
         </div>
     </div>
 
-    <script translate="no">
-        var p1Name = localStorage.getItem('fl_user_nick') || "Nazar";
-        var p2Name = localStorage.getItem('enemy_player_name') || "Друг";
+    <!-- Окно результатов -->
+    <div class="overlay" id="result-overlay">
+        <div class="result-card">
+            <div class="result-title" id="res-title">БОЙ ЗАВЕРШЕН</div>
+            <div class="winner-name" id="res-winner">Победитель определен!</div>
+            <button class="btn-menu" onclick="window.location.href='index.html'">В ГЛАВНОЕ МЕНЮ</button>
+        </div>
+    </div>
 
-        var p1Hp = 80, p1Max = 80, p1Dmg = 9;
-        var p2Hp = 80, p2Max = 80, p2Dmg = 9;
+    <script>
+        // Получаем никнейм из localStorage, установленный в настройках игры
+        const savedNickname = localStorage.getItem('nickname') || 'Flerenk';
+        document.getElementById('p1-name').textContent = savedNickname;
+        
+        // Для демонстрационного локального PvP генерируем имя оппонента, если его нет по сети
+        document.getElementById('p2-name').textContent = 'Соперник';
 
-        var bonus = parseInt(localStorage.getItem('fl_bonus_dmg')) || 0;
-        var activeW = localStorage.getItem('fl_active_weapon_name') || "Кулаки";
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-        document.getElementById('p1-name').innerText = p1Name;
-        document.getElementById('p2-name').innerText = p2Name;
-        document.getElementById('p1-weap').innerText = activeW;
+        // Кнопки управления
+        const keys = {
+            a: false, d: false, space: false,
+            ArrowLeft: false, ArrowRight: false, Enter: false
+        };
 
-        function refresh() {
-            document.getElementById('p1-txt').innerText = p1Hp + "/" + p1Max + " HP";
-            document.getElementById('p1-bar').style.width = (p1Hp / p1Max * 100) + "%";
-            document.getElementById('p2-txt').innerText = p2Hp + "/" + p2Max + " HP";
-            document.getElementById('p2-bar').style.width = (p2Hp / p2Max * 100) + "%";
-        }
+        // Конфигурация бойцов
+        const player1 = {
+            x: 150,
+            y: 300,
+            width: 50,
+            height: 90,
+            color: '#38bdf8',
+            shadowColor: 'rgba(56, 189, 248, 0.6)',
+            speed: 5,
+            hp: 100,
+            isAttacking: false,
+            attackCooldown: false,
+            facing: 'right'
+        };
 
-        // БРОНЕБОЙНЫЙ ИСПРАВЛЕННЫЙ ТАЙМЕР ОТСЧЕТА
-        var num = 3;
-        var arenaTimer = setInterval(function() {
-            num--;
-            if(num === 2) document.getElementById('cd-overlay').innerText = "2";
-            if(num === 1) document.getElementById('cd-overlay').innerText = "1";
-            if(num === 0) {
-                document.getElementById('cd-overlay').innerText = "БОЙ! 🔥";
-                document.getElementById('cd-overlay').style.color = "var(--success)";
+        const player2 = {
+            x: 600,
+            y: 300,
+            width: 50,
+            height: 90,
+            color: '#f43f5e',
+            shadowColor: 'rgba(244, 63, 94, 0.6)',
+            speed: 5,
+            hp: 100,
+            isAttacking: false,
+            attackCooldown: false,
+            facing: 'left'
+        };
+
+        let gameOver = false;
+
+        // Отслеживание нажатий
+        window.addEventListener('keydown', (e) => {
+            if (gameOver) return;
+            if (e.code === 'KeyA') keys.a = true;
+            if (e.code === 'KeyD') keys.d = true;
+            if (e.code === 'Space') {
+                keys.space = true;
+                triggerAttack(player1, player2, 'p2-hp');
             }
-            if(num < 0) {
-                clearInterval(arenaTimer);
-                document.getElementById('cd-overlay').style.display = "none";
-                document.getElementById('btn-zone').style.display = "block";
-                log("⚔️ Раунд начался! Твой ход, " + p1Name + "!");
-                startLiveMusic();
+            if (e.code === 'ArrowLeft') keys.ArrowLeft = true;
+            if (e.code === 'ArrowRight') keys.ArrowRight = true;
+            if (e.code === 'Enter') {
+                keys.Enter = true;
+                triggerAttack(player2, player1, 'p1-hp');
             }
-        }, 850);
+        });
 
-        function triggerStrike() {
-            if(p1Hp <= 0 || p2Hp <= 0) return;
-            var dmg = p1Dmg + bonus + Math.floor(Math.random() * 3);
-            p2Hp = Math.max(0, p2Hp - dmg);
-            log("⚔️ Ты провёл удар по другу " + p2Name + " на -" + dmg + " HP!");
-            refresh();
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'KeyA') keys.a = false;
+            if (e.code === 'KeyD') keys.d = false;
+            if (e.code === 'Space') keys.space = false;
+            if (e.code === 'ArrowLeft') keys.ArrowLeft = false;
+            if (e.code === 'ArrowRight') keys.ArrowRight = false;
+            if (e.code === 'Enter') keys.Enter = false;
+        });
 
-            if(p2Hp <= 0) {
-                log("🏆 ПОБЕДА! Катка выиграна!");
-                localStorage.setItem('battle_res', 'win');
-                stopBattle();
-                return;
-            }
+        // Функция обработки удара
+        function triggerAttack(attacker, target, targetHpBarId) {
+            if (attacker.attackCooldown || gameOver) return;
 
-            var b = document.getElementById('action-btn');
-            b.setAttribute('disabled', 'true');
-            b.innerText = "⏳ ОЖИДАНИЕ ХОДА СОПЕРНИКА...";
+            attacker.isAttacking = true;
+            attacker.attackCooldown = true;
 
-            setTimeout(function() {
-                if(p2Hp <= 0) return;
-                var ed = p2Dmg + Math.floor(Math.random() * 3);
-                p1Hp = Math.max(0, p1Hp - ed);
-                log("💥 Игрок [" + p2Name + "] нанёс ответный удар на -" + ed + " HP!");
-                refresh();
+            // Зона действия атаки зависит от того, куда смотрит персонаж
+            let attackX = attacker.facing === 'right' ? attacker.x + attacker.width : attacker.x - 60;
+            let attackWidth = 60;
 
-                if(p1Hp <= 0) {
-                    log("💀 Ты проиграл дуэль!");
-                    localStorage.setItem('battle_res', 'fail');
-                    stopBattle();
-                } else {
-                    b.removeAttribute('disabled');
-                    b.innerText = "⚔️ НАНЕСТИ УДАР (ТВОЙ ХОД)";
-                }
-            }, 900);
-        }
-
-        function stopBattle() {
-            if(window.gameMusicInterval) clearInterval(window.gameMusicInterval);
-            document.getElementById('btn-zone').innerHTML = `<button class="btn-hit" style="background:linear-gradient(135deg, var(--pink), #9d4edd); color:#fff;" onclick="window.location.href='result.html'">Завершить 🚩</button>`;
-        }
-
-        function log(t) {
-            var box = document.getElementById('arena-log');
-            box.innerHTML += "<br>" + t;
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function startLiveMusic() {
-            if(localStorage.getItem('fl_music_enabled') !== 'true') return;
-            window.gameAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var melody = [110.00, 110.00, 130.81, 146.83, 98.00, 98.00, 110.00, 164.81];
-            var step = 0;
-            window.gameMusicInterval = setInterval(function() {
-                var osc = window.gameAudioCtx.createOscillator(); var gain = window.gameAudioCtx.createGain();
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(melody[step], window.gameAudioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, window.gameAudioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, window.gameAudioCtx.currentTime + 0.3);
-                osc.connect(gain); gain.connect(window.gameAudioCtx.destination);
-                osc.start(); osc.stop(window.gameAudioCtx.currentTime + 0.35);
-                step = (step + 1) % melody.length;
-            }, 280);
-        }
-        refresh();
-    </script>
-</body>
-</html>
+            // Проверка попадания по хитбоксу противника
+            if (
+                attackX < target.x + target.width &&
+                attackX + attackWidth > target.x &&
+                attacker.y < target.y + target.height &&
+                attacker.y + attacker.height > target.y
+            ) {
+                // Попадание! Наносим урон
+target.hp = Math.max(0, target.hp - 10);
+document.getElementById(targetHpBarId).style.width = target.hp + '%';
+// Эффект микро-отброса при получении урона
+if (attacker.facing === 'right') target.x = Math.min(canvas.width - target.width, target.x + 15);
+else target.x = Math.max(0, target.x - 15);
+checkMatchEnd();
+}
+// Анимация удара длится 150мс
+setTimeout(() => {
+attacker.isAttacking = false;
+}, 150);
+// Кулдаун между ударами (350мс)
+setTimeout(() => {
+attacker.attackCooldown = false;
+}, 350);
+}
+// Проверка окончания матча
+function checkMatchEnd() {
+if (player1.hp <= 0 || player2.hp <= 0) {
+gameOver = true;
+let winnerText = '';
+if (player1.hp <= 0 && player2.hp <= 0) {
+winnerText = 'НИЧЬЯ!';
+} else if (player1.hp <= 0) {
+winnerText = ${document.getElementById('p2-name').textContent} ПОБЕДИЛ!;
+} else {
+winnerText = ${document.getElementById('p1-name').textContent} ПОБЕДИЛ!;
+// Салют из конфетти, если выиграл текущий игрок
+confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+}
+document.getElementById('res-winner').textContent = winnerText;
+document.getElementById('result-overlay').style.display = 'flex';
+}
+}
+// Отрисовка персонажа
+function drawFighter(f) {
+ctx.save();
+ctx.shadowBlur = 15;
+ctx.shadowColor = f.shadowColor;
+ctx.fillStyle = f.color;
+// Тело бойца
+ctx.beginPath();
+ctx.roundRect(f.x, f.y, f.width, f.height, 8);
+ctx.fill();
+// Отрисовка руки/оружия при атаке
+if (f.isAttacking) {
+ctx.fillStyle = '#ffffff';
+ctx.shadowColor = '#ffffff';
+if (f.facing === 'right') {
+ctx.fillRect(f.x + f.width, f.y + 25, 45, 15);
+} else {
+ctx.fillRect(f.x - 45, f.y + 25, 45, 15);
+}
+} else {
+// Обычное положение рук
+ctx.fillStyle = f.color;
+ctx.globalAlpha = 0.6;
+if (f.facing === 'right') {
+ctx.fillRect(f.x + f.width - 10, f.y + 30, 15, 30);
+} else {
+ctx.fillRect(f.x - 5, f.y + 30, 15, 30);
+}
+}
+ctx.restore();
+}
+// Главный игровой цикл (Без бесконечных циклов while, работает плавно)
+function update() {
+// Очистка экрана
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Линия земли арены
+ctx.strokeStyle = '#1e293b';
+ctx.lineWidth = 4;
+ctx.beginPath();
+ctx.moveTo(0, 390);
+ctx.lineTo(canvas.width, 390);
+ctx.stroke();
+if (!gameOver) {
+// Движение Игрока 1
+if (keys.a) {
+player1.x = Math.max(0, player1.x - player1.speed);
+player1.facing = 'left';
+}
+if (keys.d) {
+player1.x = Math.min(canvas.width - player1.width, player1.x + player1.speed);
+player1.facing = 'right';
+}
+// Движение Игрока 2
+if (keys.ArrowLeft) {
+player2.x = Math.max(0, player2.x - player2.speed);
+player2.facing = 'left';
+}
+if (keys.ArrowRight) {
+player2.x = Math.min(canvas.width - player2.width, player2.x + player2.speed);
+player2.facing = 'right';
+}
+}
+// Отрисовка сущностей
+drawFighter(player1);
+drawFighter(player2);
+// Рекурсивный безопасный вызов следующего кадра анимации
+requestAnimationFrame(update);
+}
+// Точка старта игры
+requestAnimationFrame(update);
