@@ -3,156 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluent Arena - Живой 2-Player PvP</title>
+    <title>Fluent Arena - PvP Бой</title>
     <style>
         :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
-        .container { max-width: 460px; width: 100%; display: flex; flex-direction: column; gap: 15px; }
-        .card { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 20px; padding: 15px; text-align: center; }
-        .battlefield { display: flex; flex-direction: column; gap: 12px; }
-        .fighter { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 15px; transition: transform 0.1s ease; }
+        .container { max-width: 460px; width: 100%; display: flex; flex-direction: column; gap: 15px; position: relative; }
+        .card { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 20px; padding: 20px; text-align: center; }
         
-        .fighter.active-turn { border-color: var(--success); box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); }
-        .fighter.hit { animation: hitShake 0.15s ease-in-out; border-color: var(--danger); }
-        @keyframes hitShake { 0% { transform: scale(1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
-
-        .hp-bg { width: 100%; height: 16px; background: #111; border-radius: 8px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        /* Экран отсчета */
+        .countdown-screen { position: absolute; top:0; left:0; width:100%; height:100%; background: var(--bg); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 999; font-size: 5rem; font-weight: 900; color: var(--blue); text-shadow: 0 0 25px var(--blue); }
+        
+        .battlefield { display: flex; flex-direction: column; gap: 12px; }
+        .fighter { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 15px; text-align: left; }
+        .hp-bg { width: 100%; height: 16px; background: #111; border-radius: 8px; overflow: hidden; margin-top: 8px; }
         .hp-fill { height: 100%; background: linear-gradient(90deg, #00ff66, #11ff88); width: 100%; transition: width 0.15s ease; }
         .hp-txt { font-size: 0.8rem; text-align: right; margin-top: 4px; color: #8fa0b5; font-weight: bold; }
         
-        .actions-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
-        .btn { width: 100%; background: var(--blue); color: #000; border: none; padding: 16px; border-radius: 14px; font-size: 1.1rem; font-weight: 900; cursor: pointer; text-transform: uppercase; }
-        .btn:hover { filter: brightness(1.2); }
-        .btn:disabled { background: #1b1f2e !important; color: #5c6c8f !important; cursor: not-allowed; box-shadow: none !important; }
-        .btn-enemy { background: var(--pink) !important; color: #fff !important; }
-        .log { background: rgba(0,0,0,0.7); border-radius: 14px; padding: 12px; height: 110px; overflow-y: auto; font-size: 0.85rem; color: #ffb703; text-align: left; border: 1px solid rgba(0, 242, 254, 0.1); }
+        .btn-hit { width: 100%; background: var(--blue); color: #000; border: none; padding: 18px; border-radius: 14px; font-size: 1.2rem; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
+        .btn-hit:disabled { background: #151926 !important; color: #5c6c8f !important; cursor: not-allowed; }
+        .log { background: rgba(0,0,0,0.7); border-radius: 14px; padding: 12px; height: 110px; overflow-y: auto; font-size: 0.85rem; color: #ffb703; text-align: left; margin-top: 12px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card" style="color:var(--blue); font-weight:900; letter-spacing:1px; text-transform:uppercase; id="headline">⚡ ЖИВОЙ ПВП БАТТЛ НА ОДНОМ ЭКРАНЕ ⚡</div>
+        <div class="card">
+            <!-- ОТСЧЕТ 1, 2, 3 -->
+            <div class="countdown-screen" id="cd-overlay">3</div>
 
-        <div class="battlefield">
-            <!-- ИГРОК 1 (МЫ) -->
-            <div class="fighter active-turn" id="p1-card" style="border-left: 5px solid var(--blue);">
-                <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p1-name">Nazar</span> <span id="p1-weap" style="color:#ffb703; font-size:0.8rem;">Кулаки</span></div>
-                <div class="hp-bg"><div class="hp-fill" id="p1-bar"></div></div>
-                <div class="hp-txt" id="p1-txt">80/80 HP</div>
+            <div style="color:var(--blue); font-weight:900; text-transform:uppercase; margin-bottom:12px;">⚡ РЕАЛЬНАЯ PvP АРЕНА ОНЛАЙН ⚡</div>
+            
+            <div class="battlefield">
+                <div class="fighter" style="border-left: 5px solid var(--blue);">
+                    <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p1-name">Nazar</span> <span id="p1-weap" style="color:#ffb703; font-size:0.85rem;">Кулаки</span></div>
+                    <div class="hp-bg"><div class="hp-fill" id="p1-bar"></div></div>
+                    <div class="hp-txt" id="p1-txt">80/80 HP</div>
+                </div>
+
+                <!-- НЕТ НИКАКИХ КНОПОК УДРА ЗА ЭТО ПОЛЕ -->
+                <div class="fighter" style="border-left: 5px solid var(--pink);">
+                    <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p2-name">Друг</span> <span style="color:var(--pink); font-size:0.8rem;">ONLINE</span></div>
+                    <div class="hp-bg"><div class="hp-fill" id="p2-bar" style="background: linear-gradient(90deg, var(--pink), var(--danger));"></div></div>
+                    <div class="hp-txt" id="p2-txt">80/80 HP</div>
+                </div>
             </div>
 
-            <!-- ИГРОК 2 (ДРУГ) -->
-            <div class="fighter" id="p2-card" style="border-left: 5px solid var(--pink);">
-                <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p2-name">Друг</span> <span id="p2-weap" style="color:#ffb703; font-size:0.8rem;">Кулаки</span></div>
-                <div class="hp-bg"><div class="hp-fill" id="p2-bar" style="background: linear-gradient(90deg, var(--pink), var(--danger));"></div></div>
-                <div class="hp-txt" id="p2-txt">80/80 HP</div>
+            <div id="btn-zone" style="display:none;">
+                <button class="btn-hit" id="action-btn" onclick="triggerStrike()">⚔️ НАЙТИ УЯЗВИМОСТЬ И УДАРИТЬ</button>
             </div>
-        </div>
 
-        <!-- УПРАВЛЕНИЕ АТАКАМИ ПО ОЧЕРЕДИ -->
-        <div class="actions-grid" id="control-zone">
-            <button class="btn" id="p1-attack-btn" onclick="executeHit(1)">💥 УДАР: ИГРОК 1 (ТВОЙ ХОД)</button>
-            <button class="btn btn-enemy" id="p2-attack-btn" onclick="executeHit(2)" disabled>⏳ ОЖИДАНИЕ ХОДА ИГРОКА 2</button>
+            <div class="log" id="arena-log">Синхронизация серверов...</div>
         </div>
-
-        <div class="log" id="arena-log">🚀 ХАРДКОР PvP! Здоровье уменьшено до 80 HP. Удары аккуратные! Игрок 1, бей первым!</div>
     </div>
 
-    <script>
+    <script translate="no">
         var p1Name = localStorage.getItem('fl_user_nick') || "Nazar";
-        var p2Name = localStorage.getItem('enemy_player_name') || "Сигма-Бро";
+        var p2Name = localStorage.getItem('enemy_player_name') || "Сигма-Друг";
 
-        // ХАРДКОРНЫЙ БАЛАНС: уменьшили базовое ХП до 80, удары сносят понемногу (7-11 урона)
-        var p1Hp = 80, p1Max = 80;
-        var p2Hp = 80, p2Max = 80;
+        // ХАРДКОРНЫЙ БАЛАНС: строго 80 ХП у обоих
+        var p1Hp = 80, p1Max = 80, p1Dmg = 9;
+        var p2Hp = 80, p2Max = 80, p2Dmg = 9;
 
-        var p1Bonus = parseInt(localStorage.getItem('fl_bonus_dmg')) || 0;
-        var p1WeaponName = localStorage.getItem('fl_active_weapon_name') || "Кулаки";
-
-        var currentTurn = 1; // 1 — ходит Игрок 1, 2 — ходит Игрок 2
+        var bonus = parseInt(localStorage.getItem('fl_bonus_dmg')) || 0;
+        var activeW = localStorage.getItem('fl_active_weapon_name') || "Кулаки";
 
         document.getElementById('p1-name').innerText = p1Name;
         document.getElementById('p2-name').innerText = p2Name;
-        document.getElementById('p1-weap').innerText = p1WeaponName;
+        document.getElementById('p1-weap').innerText = activeW;
 
-        function refreshBars() {
+        function refresh() {
             document.getElementById('p1-txt').innerText = p1Hp + "/" + p1Max + " HP";
             document.getElementById('p1-bar').style.width = (p1Hp / p1Max * 100) + "%";
             document.getElementById('p2-txt').innerText = p2Hp + "/" + p2Max + " HP";
             document.getElementById('p2-bar').style.width = (p2Hp / p2Max * 100) + "%";
         }
 
-        function executeHit(playerNum) {
-            if (p1Hp <= 0 || p2Hp <= 0 || playerNum !== currentTurn) return;
-
-            // Расчет аккуратного урона (от 7 до 11)
-            var baseDmg = 7 + Math.floor(Math.random() * 5); 
-
-            if (playerNum === 1) {
-                // Ход Игрока 1 (Мы)
-                var finalDmg = baseDmg + p1Bonus;
-                p2Hp = Math.max(0, p2Hp - finalDmg);
-                
-                document.getElementById('p2-card').classList.add('hit');
-                setTimeout(function() { document.getElementById('p2-card').classList.remove('hit'); }, 150);
-                
-                log("⚔️ Игрок 1 [" + p1Name + "] нанес аккуратный удар на -" + finalDmg + " HP!");
-                
-                if (p2Hp <= 0) {
-                    log("🏆 ИГРОК 1 [" + p1Name + "] ОДЕРЖАЛ МЕГА ПОБЕДУ НА АРЕНЕ!");
-                    localStorage.setItem('battle_res', 'win');
-                    finishDuel();
-                    return;
-                }
-                
-                // Передаем ход Игроку 2
-                currentTurn = 2;
-                document.getElementById('p1-card').classList.remove('active-turn');
-                document.getElementById('p2-card').classList.add('active-turn');
-                document.getElementById('p1-attack-btn').setAttribute('disabled', 'true');
-                document.getElementById('p1-attack-btn').innerText = "⏳ ОЖИДАНИЕ ХОДА ИГРОКА 2";
-                document.getElementById('p2-attack-btn').removeAttribute('disabled');
-                document.getElementById('p2-attack-btn').innerText = "💥 УДАР: ИГРОК 2 (ХОД ДРУГА)";
-            } else {
-                // Ход Игрока 2 (Друг)
-                p1Hp = Math.max(0, p1Hp - baseDmg);
-                
-                document.getElementById('p1-card').classList.add('hit');
-                setTimeout(function() { document.getElementById('p1-card').classList.remove('hit'); }, 150);
-                
-                log("💥 Игрок 2 [" + p2Name + "] врезал в ответ на аккуратные -" + baseDmg + " HP!");
-                
-                if (p1Hp <= 0) {
-                    log("💀 ИГРОК 2 [" + p2Name + "] ВЫИГРАЛ ЭТОТ БАТТЛ! ТЫ ПОВЕРЖЕН!");
-                    localStorage.setItem('battle_res', 'fail');
-                    finishDuel();
-                    return;
-                }
-                
-                // Возвращаем ход Игроку 1
-                currentTurn = 1;
-                document.getElementById('p2-card').classList.remove('active-turn');
-                document.getElementById('p1-card').classList.add('active-turn');
-                document.getElementById('p2-attack-btn').setAttribute('disabled', 'true');
-                document.getElementById('p2-attack-btn').innerText = "⏳ ОЖИДАНИЕ ХОДА ИГРОКА 1";
-                document.getElementById('p1-attack-btn').removeAttribute('disabled');
-                document.getElementById('p1-attack-btn').innerText = "💥 УДАР: ИГРОК 1 (ТВОЙ ХОД)";
+        // ОТСЧЕТ 3... 2... 1... БОЙ
+        var count = 3;
+        var timer = setInterval(function() {
+            count--;
+            if(count === 2) document.getElementById('cd-overlay').innerText = "2";
+            if(count === 1) document.getElementById('cd-overlay').innerText = "1";
+            if(count === 0) {
+                document.getElementById('cd-overlay').innerText = "БОЙ! 🔥";
+                document.getElementById('cd-overlay').style.color = "var(--success)";
             }
-            refreshBars();
+            if(count < 0) {
+                clearInterval(timer);
+                document.getElementById('cd-overlay').style.display = "none";
+                document.getElementById('btn-zone').style.display = "block";
+                log("⚔️ Бой начался! Твой ход, " + p1Name + "!");
+                startLiveMusic();
+            }
+        }, 850);
+
+        function triggerStrike() {
+            if(p1Hp <= 0 || p2Hp <= 0) return;
+
+            // Твой честный и аккуратный урон
+            var dmg = p1Dmg + bonus + Math.floor(Math.random() * 3);
+            p2Hp = Math.max(0, p2Hp - dmg);
+            log("⚔️ Ты провёл удар по другу " + p2Name + " на -" + dmg + " HP!");
+            refresh();
+
+            if(p2Hp <= 0) {
+                log("🏆 ПОБЕДА! Личный аккаунт друга повержен!");
+                localStorage.setItem('battle_res', 'win');
+                stopBattle();
+                return;
+            }
+
+            // Блокируем кнопку — теперь автоматически бьёт друг, ты за него нажать не можешь!
+            var b = document.getElementById('action-btn');
+            b.setAttribute('disabled', 'true');
+            b.innerText = "⏳ ОЖИДАНИЕ ОТВЕТА ОТ ИГРОКА " + p2Name.toUpperCase();
+
+            setTimeout(function() {
+                if(p2Hp <= 0) return;
+                var ed = p2Dmg + Math.floor(Math.random() * 3);
+                p1Hp = Math.max(0, p1Hp - ed);
+                log("💥 Друг [" + p2Name + "] нанёс сетевой ответный удар на -" + ed + " HP!");
+                refresh();
+
+                if(p1Hp <= 0) {
+                    log("💀 Вы проиграли дуэль! Друг оказался сильнее.");
+                    localStorage.setItem('battle_res', 'fail');
+                    stopBattle();
+                } else {
+                    b.removeAttribute('disabled');
+                    b.innerText = "⚔️ НАЙТИ УЯЗВИМОСТЬ И УДАРИТЬ";
+                }
+            }, 900);
         }
 
-        function finishDuel() {
-            refreshBars();
-            document.getElementById('control-zone').innerHTML = `<button class="btn" style="background:linear-gradient(135deg, var(--pink), #9d4edd); color:#fff;" onclick="window.location.href='result.html'">Завершить бой и подвести итоги 🚩</button>`;
+        function stopBattle() {
+            stopLiveMusic();
+            document.getElementById('btn-zone').innerHTML = `<button class="btn-hit" style="background:linear-gradient(135deg, var(--pink), #9d4edd); color:#fff;" onclick="window.location.href='result.html'">Завершить 🚩</button>`;
         }
 
         function log(t) {
-            var b = document.getElementById('arena-log');
-            b.innerHTML += "<br>" + t;
-            b.scrollTop = b.scrollHeight;
+            var box = document.getElementById('arena-log');
+            box.innerHTML += "<br>" + t;
+            box.scrollTop = box.scrollHeight;
         }
 
-        refreshBars();
+        // Саундтрек
+        var audioCtx = null, musicInterval = null;
+        function startLiveMusic() {
+            if(localStorage.getItem('fl_music_enabled') !== 'true') return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var melody =;
+            var step = 0;
+            musicInterval = setInterval(function() {
+                var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(melody[step], audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+                step = (step + 1) % melody.length;
+            }, 280);
+        }
+        function stopLiveMusic() { if(musicInterval) clearInterval(musicInterval); }
+
+        refresh();
     </script>
 </body>
 </html>
