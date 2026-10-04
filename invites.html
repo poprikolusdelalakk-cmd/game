@@ -34,10 +34,28 @@
 
     <script>
         const myId = localStorage.getItem('sigma_id');
-        let activeInvites = JSON.parse(sessionStorage.getItem('active_duels')) || [];
+        let activeInvites = JSON.parse(localStorage.getItem('fluent_active_duels')) || [];
         const box = document.getElementById('invites-box');
 
-        const client = mqtt.connect('wss://test.mosquitto.org:8081');
+        // Эпичный двухтональный сирена-звук для начала PvP
+        function playFightSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth'; // Жесткий игровой звук
+                osc.frequency.setValueAtTime(300, ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.5);
+            } catch(e) {}
+        }
+
+        const client = mqtt.connect('wss://://hivemq.com');
         client.on('connect', () => { client.subscribe(`fluentarena/user/${myId}`); });
 
         client.on('message', (topic, message) => {
@@ -45,7 +63,8 @@
             if(packet.type === 'duel_invite') {
                 if(!activeInvites.some(i => i.room === packet.room)) {
                     activeInvites.push({ name: packet.fromName, room: packet.room });
-                    sessionStorage.setItem('active_duels', JSON.stringify(activeInvites));
+                    localStorage.setItem('fluent_active_duels', JSON.stringify(activeInvites));
+                    playFightSound(); // Играем боевую сирену!
                     renderInvites();
                 }
             }
@@ -53,7 +72,7 @@
 
         function renderInvites() {
             if(activeInvites.length === 0) {
-                box.innerHTML = `<div class="empty">Никто не вызывает вас прямо сейчас.<br>Откройте эту страницу на телефоне и ждите вызов с ПК!</div>`;
+                box.innerHTML = `<div class="empty">Никто не вызывает вас прямо сейчас.<br>Откройте эту страницу на телефоне и ждите вызов!</div>`;
             } else {
                 box.innerHTML = activeInvites.map(i => `
                     <div class="list-item">
@@ -65,9 +84,8 @@
         }
 
         function acceptFight(room) {
-            // Очищаем вызов перед входом
             activeInvites = activeInvites.filter(i => i.room !== room);
-            sessionStorage.setItem('active_duels', JSON.stringify(activeInvites));
+            localStorage.setItem('fluent_active_duels', JSON.stringify(activeInvites));
             window.location.href = `arena.html?mode=online&role=guest&room=${room}`;
         }
 
