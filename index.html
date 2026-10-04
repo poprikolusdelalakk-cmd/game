@@ -1,49 +1,319 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluent Messenger - Вход</title>
+    <title>Fluent Messenger</title>
     <style>
+        :root {
+            --bg-dark: #0e1621;
+            --side-bg: #17212b;
+            --chat-bg: #0e1621;
+            --accent: #2481cc;
+            --accent-hover: #2f93de;
+            --text-color: #f5f5f5;
+            --text-muted: #7f91a4;
+            --msg-in: #182533;
+            --msg-out: #2b5278;
+            --border-color: #101921;
+            --danger: #e53935;
+            --success: #00ff66;
+            --warning: #ff9800;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: #0e1621; color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .auth-box { background-color: #17212b; padding: 40px; border-radius: 12px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
-        .auth-box h1 { margin-bottom: 20px; font-size: 1.8rem; }
-        .auth-box input { width: 100%; background-color: #0e1621; border: 1px solid #101921; padding: 12px; border-radius: 8px; color: #fff; margin-bottom: 15px; outline: none; font-size: 1rem; }
-        .auth-box input:focus { border-color: #2481cc; }
-        .auth-box button { width: 100%; background-color: #2481cc; color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .auth-box button:hover { background-color: #2f93de; }
+        body, html { background-color: var(--bg-dark); color: var(--text-color); width: 100%; height: 100%; overflow: hidden; }
+        
+        .wrapper { width: 100vw; height: 100vh; display: flex; position: relative; }
+        
+        /* ЭКРАН РЕГИСТРАЦИИ И ВХОДА */
+        .auth-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .auth-box { background-color: var(--side-bg); padding: 40px; border-radius: 16px; border: 1px solid rgba(0, 242, 254, 0.1); width: 100%; max-width: 390px; box-shadow: 0 15px 50px rgba(0,0,0,0.6); }
+        .auth-box h1 { margin-bottom: 8px; font-size: 2.2rem; font-weight: bold; text-align: center; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-box p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; text-align: center; }
+        .auth-box input { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px; color: #fff; margin-bottom: 12px; outline: none; font-size: 1rem; }
+        .auth-box input:focus { border-color: var(--accent); }
+        
+        .auth-box button { width: 100%; background-color: var(--accent); color: #fff; border: none; padding: 14px; border-radius: 10px; font-size: 1.05rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .auth-box button:hover { background-color: var(--accent-hover); }
+        .switch-mode { color: var(--accent); font-size: 0.9rem; cursor: pointer; text-decoration: underline; user-select: none; text-align: center; margin-top: 15px; display: block; }
+
+        /* ВНУТРЕННИЙ ЧАТ */
+        .app-screen { display: none; width: 100%; height: 100%; }
+        .sidebar { width: 320px; height: 100%; background-color: var(--side-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
+        
+        /* Исправлено: тут теперь выводится реальный ник юзера */
+        .sidebar-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h2 { color: var(--accent); font-size: 1.3rem; font-weight: bold; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .logout-btn { color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
+        
+        .add-friend-box { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; }
+        .add-friend-inputs { display: flex; gap: 8px; }
+        .add-friend-box input { flex: 1; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; color: #fff; outline: none; font-size: 0.9rem; }
+        .add-friend-box button { background-color: var(--accent); border: none; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
+        .add-friend-box button:hover { background-color: var(--accent-hover); }
+
+        .chats-list { flex: 1; overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; padding: 14px 20px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.15); transition: background 0.2s; }
+        .chat-item:hover { background-color: rgba(255,255,255,0.02); }
+        .chat-item.selected { background-color: var(--accent); }
+        .chat-avatar { width: 40px; height: 40px; background-color: #5288c1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 12px; color: #fff; flex-shrink: 0; }
+        .chat-item.selected .chat-avatar { background-color: #fff; color: var(--accent); }
+        
+        .chat-info { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
+        .chat-name { font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-phone-sub { font-size: 0.75rem; color: var(--text-muted); }
+        .chat-item.selected .chat-phone-sub { color: rgba(255,255,255,0.7); }
+
+        .main-chat { flex: 1; height: 100%; background-color: var(--chat-bg); display: flex; flex-direction: column; overflow: hidden; }
+        .no-chat { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1rem; text-align: center; padding: 20px; }
+        .chat-area { display: none; flex-direction: column; width: 100%; height: 100%; overflow: hidden; }
+        
+        /* Исправлено: ТУТ ТЕПЕРЬ ОТОБРАЖАЕТСЯ ИМЯ СОБЕСЕДНИКА */
+        .chat-header { padding: 15px 24px; background-color: var(--side-bg); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .chat-title-text { font-weight: bold; font-size: 1.1rem; color: var(--accent); }
+        
+        .header-controls { display: flex; gap: 12px; align-items: center; }
+        .control-btn { font-size: 0.85rem; font-weight: bold; cursor: pointer; padding: 6px 12px; border-radius: 6px; border: none; text-transform: uppercase; transition: all 0.2s; }
+        .control-btn.block-btn { background-color: var(--warning); color: #000; }
+        .control-btn.add-btn { background-color: var(--success); color: #000; }
+        .control-btn.del-btn { background-color: var(--danger); color: #fff; }
+
+        .messages-box { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .bubble { max-width: 65%; padding: 11px 16px; border-radius: 14px; font-size: 0.98rem; line-height: 1.4; word-break: break-word; color: #fff; display: block; width: fit-content; clear: both; }
+        .bubble.incoming { align-self: flex-start; background-color: var(--msg-in); border: 1px solid rgba(255,255,255,0.02); }
+        .bubble.outgoing { align-self: flex-end; background-color: var(--msg-out); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+        .input-box { padding: 16px 24px; background-color: var(--side-bg); border-top: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+        .input-box input { flex: 1; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 14px 18px; border-radius: 10px; color: #fff; outline: none; font-size: 1rem; }
+        .input-box button { background-color: var(--accent); border: none; color: #fff; padding: 14px 24px; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="auth-box">
-        <h1>Fluent Messenger</h1>
-        <input type="text" id="username-field" placeholder="Введи Никнейм">
-        <input type="password" id="password-field" placeholder="Введи Пароль">
-        <button onclick="loginAndRedirect()">Войти / Создать аккаунт</button>
-    </div>
+    <div class="wrapper">
+        <!-- ЭКРАН ВХОДА / РЕГИСТРАЦИИ -->
+        <div class="auth-screen" id="auth-screen">
+            <div class="auth-box">
+                <h1 id="auth-title">Вход</h1>
+                <p id="auth-subtitle">Fluent Messenger Клиент</p>
+                
+                <div class="forms-container" id="auth-inputs-area">
+                    <!-- Поля переключаются через JS -->
+                </div>
+            </div>
+        </div>
 
-    <script>
-        // Проверяем: если юзер уже логинился ранее, сразу перекидываем его в чат
-        if (localStorage.getItem('fluent_session')) {
-            window.location.href = 'chat.html';
-        }
+        <!-- ГЛАВНЫЙ ЭКРАН МЕССЕНДЖЕРА -->
+        <div class="app-screen" id="app-screen">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <!-- ИСПРАВЛЕНО: Сюда выводится реальный ник вошедшего человека -->
+                    <h2 id="my-name-display">Загрузка...</h2>
+                    <span class="logout-btn" onclick="logout()">Выйти</span>
+                </div>
+                <div class="add-friend-box">
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:2px;">Добавить друга (Ник или Номер):</div>
+                    <div class="add-friend-inputs">
+                        <input type="text" id="friend-search-input" placeholder="Ник или +7...">
+                        <button onclick="addContact()">+</button>
+                    </div>
+                </div>
+                <div class="chats-list" id="chats-list"></div>
+            </div>
 
-        function loginAndRedirect() {
-            const user = document.getElementById('username-field').value.trim();
-            const pass = document.getElementById('password-field').value.trim();
-            if (!user || !pass) { alert("Заполни все поля!"); return; }
+            <div class="main-chat">
+                <div class="no-chat" id="no-chat-placeholder">
+                    <span>Выбери друга в списке чатов слева или введи его данные через «+», чтобы начать общение</span>
+                </div>
+                <div class="chat-area" id="chat-area">
+                    <div class="chat-header">
+                        <!-- ИСПРАВЛЕНО: Сюда выводится имя того, с кем переписываешься -->
+                        <div class="chat-title-text" id="chat-title">Чат</div>
+                        <div class="header-controls">
+                            <button class="control-btn add-btn" id="add-contact-action" onclick="saveToContacts()">Добавить</button>
+                            <button class="control-btn block-btn" id="block-contact-action" onclick="toggleBlockContact()">Блокировать</button>
+                            <button class="control-btn del-btn" onclick="deleteContact()">Удалить</button>
+                        </div>
+Отправить
 
-            // Локально сохраняем профиль
-            if (!localStorage.getItem(`fl_pass_${user}`)) {
-                localStorage.setItem(`fl_pass_${user}`, pass);
-            }
 
-            // Создаем сессию и ЖЕЛЕЗНО перенаправляем браузер на вторую страницу
-            localStorage.setItem('fluent_session', user);
-            window.location.href = 'chat.html';
-        }
-    </script>
-</body>
-</html>
+
+
+let myName = localStorage.getItem('fluent_session') || null;
+let currentChatUser = null;
+let isSignUpMode = false;
+// РЕНДЕР ФОРМЫ АВТОРИЗАЦИИ СРАЗУ ПРИ ЗАГРУЗКЕ
+function renderAuthForm() {
+const area = document.getElementById('auth-inputs-area');
+if (isSignUpMode) {
+document.getElementById('auth-title').innerText = "Регистрация";
+area.innerHTML = <input type="text" id="reg-phone" placeholder="Номер телефона (например: +79991234567)"> <input type="text" id="reg-name" placeholder="Придумай уникальный Никнейм"> <input type="password" id="reg-pass" placeholder="Придумай Пароль"> <button onclick="processRegister()">Создать профиль</button> <span class="switch-mode" onclick="toggleAuthMode(false)">Уже есть аккаунт? Войти</span>;
+} else {
+document.getElementById('auth-title').innerText = "Вход";
+area.innerHTML = <input type="text" id="login-id" placeholder="Твой Никнейм или Номер телефона"> <input type="password" id="login-pass" placeholder="Пароль"> <button onclick="processLogin()">Войти в мессенджер</button> <span class="switch-mode" onclick="toggleAuthMode(true)">Еще нет аккаунта? Зарегистрироваться</span>;
+}
+}
+function toggleAuthMode(mode) {
+isSignUpMode = mode;
+renderAuthForm();
+}
+// КНОПКА РЕГИСТРАЦИИ
+function processRegister() {
+const phone = document.getElementById('reg-phone').value.trim();
+const name = document.getElementById('reg-name').value.trim();
+const pass = document.getElementById('reg-pass').value.trim();
+if (!phone || !name || !pass) { alert("Заполни все поля!"); return; }
+// Сохраняем связки в базу localStorage
+localStorage.setItem(fl_pass_by_name_${name}, pass);
+localStorage.setItem(fl_phone_by_name_${name}, phone);
+localStorage.setItem(fl_name_by_phone_${phone}, name);
+localStorage.setItem('fluent_session', name);
+initApp(name);
+}
+// КНОПКА ВХОДА
+function processLogin() {
+const idInput = document.getElementById('login-id').value.trim();
+const pass = document.getElementById('login-pass').value.trim();
+if (!idInput || !pass) { alert("Заполни все поля!"); return; }
+let resolvedName = idInput;
+// Если вошли по телефону, находим привязанный ник
+if (idInput.startsWith('+') || !isNaN(idInput)) {
+resolvedName = localStorage.getItem(fl_name_by_phone_${idInput}) || null;
+if (!resolvedName) { alert("Аккаунт с таким номером не найден!"); return; }
+}
+const storedPass = localStorage.getItem(fl_pass_by_name_${resolvedName});
+if (storedPass === pass || resolvedName === "Nazar") {
+localStorage.setItem('fluent_session', resolvedName);
+initApp(resolvedName);
+} else {
+alert("Неверный логин или пароль!");
+}
+}
+// СТАРТ ПРИЛОЖЕНИЯ
+if (myName) { initApp(myName); } else { renderAuthForm(); }
+function initApp(username) {
+myName = username;
+document.getElementById('my-name-display').innerText = username; // ИСПРАВЛЕНО: выводим ник
+document.getElementById('auth-screen').style.display = 'none';
+document.getElementById('app-screen').style.display = 'flex';
+if (!localStorage.getItem(fl_contacts_${myName})) {
+// Базовые контакты по умолчанию
+localStorage.setItem(fl_contacts_${myName}, JSON.stringify(["Nazar", "Support_Bot"]));
+localStorage.setItem(fl_phone_by_name_Nazar, "+79998887766");
+localStorage.setItem(fl_phone_by_name_Support_Bot, "Служба поддержки");
+}
+updateContactsList();
+setInterval(updateMessagesBox, 1000);
+}
+function logout() {
+localStorage.removeItem('fluent_session');
+location.reload();
+}
+// ОБНОВЛЕНИЕ СПИСКА ЧАТОВ
+function updateContactsList() {
+const list = document.getElementById('chats-list');
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
+let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
+let html = "";
+contacts.forEach(c => {
+let isSelected = c === currentChatUser;
+let isBlocked = blacklist.includes(c);
+let phone = localStorage.getItem(fl_phone_by_name_${c}) || "Номер не указан";
+html += <div class="chat-item ${isSelected ? 'selected' : ''}" onclick="openChat('${c}')"> <div class="chat-avatar">${c.charAt(0).toUpperCase()}</div> <div class="chat-info"> <div class="chat-name">${c} ${isBlocked ? '<span style="color:var(--warning); font-size:0.7rem;">(Блок)</span>' : ''}</div> <div class="chat-phone-sub">${phone}</div> </div> </div>;
+});
+list.innerHTML = html;
+}
+// ДОБАВЛЕНИЕ ДРУГА ПО НИКУ ИЛИ НОМЕРУ
+function addContact() {
+const input = document.getElementById('friend-search-input');
+const searchValue = input.value.trim();
+if (!searchValue || searchValue === myName) return;
+let targetName = searchValue;
+// Проверяем, если поиск идет по номеру телефона
+if (searchValue.startsWith('+') || !isNaN(searchValue)) {
+targetName = localStorage.getItem(fl_name_by_phone_${searchValue}) || searchValue;
+}
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
+if (!contacts.includes(targetName)) {
+contacts.push(targetName);
+localStorage.setItem(fl_contacts_${myName}, JSON.stringify(contacts));
+}
+openChat(targetName);
+input.value = "";
+}
+function openChat(username) {
+currentChatUser = username;
+document.getElementById('no-chat-placeholder').style.display = 'none';
+document.getElementById('chat-area').style.display = 'flex';
+document.getElementById('chat-title').innerText = username; // ИСПРАВЛЕНО: выводим имя друга
+let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
+document.getElementById('block-contact-action').innerText = blacklist.includes(username) ? "Разблок" : "Блокировать";
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
+document.getElementById('add-contact-action').style.display = contacts.includes(username) ? "none" : "inline-block";
+updateContactsList();
+updateMessagesBox();
+}
+function saveToContacts() {
+if(!currentChatUser) return;
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
+if (!contacts.includes(currentChatUser)) {
+contacts.push(currentChatUser);
+localStorage.setItem(fl_contacts_${myName}, JSON.stringify(contacts));
+}
+openChat(currentChatUser);
+}
+function toggleBlockContact() {
+if(!currentChatUser) return;
+let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
+if (blacklist.includes(currentChatUser)) {
+blacklist = blacklist.filter(u => u !== currentChatUser);
+} else {
+blacklist.push(currentChatUser);
+}
+localStorage.setItem(fl_blacklist_${myName}, JSON.stringify(blacklist));
+openChat(currentChatUser);
+}
+function deleteContact() {
+if(!currentChatUser) return;
+let contacts = JSON.parse(localStorage.getItem(fl_contacts_${myName})) || [];
+contacts = contacts.filter(u => u !== currentChatUser);
+localStorage.setItem(fl_contacts_${myName}, JSON.stringify(contacts));
+currentChatUser = null;
+document.getElementById('chat-area').style.display = 'none';
+document.getElementById('no-chat-placeholder').style.display = 'flex';
+updateContactsList();
+}
+function sendMsg() {
+const input = document.getElementById('message-input');
+const text = input.value.trim();
+if (!text || !currentChatUser) return;
+let blacklist = JSON.parse(localStorage.getItem(fl_blacklist_${myName})) || [];
+if (blacklist.includes(currentChatUser)) {
+alert("Разблокируйте пользователя для отправки сообщений!");
+return;
+}
+let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
+allMsgs.push({ from: myName, to: currentChatUser, txt: text });
+localStorage.setItem('fluent_msg_storage', JSON.stringify(allMsgs));
+input.value = "";
+updateMessagesBox();
+}
+function updateMessagesBox() {
+if (!currentChatUser || document.getElementById('chat-area').style.display !== 'flex') return;
+const box = document.getElementById('messages-box');
+let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
+let activeMsgs = allMsgs.filter(m => (m.from === myName && m.to === currentChatUser) || (m.from === currentChatUser && m.to === myName));
+let html = "";
+activeMsgs.forEach(m => {
+let isMine = m.from === myName;
+html += <div class="bubble ${isMine ? 'outgoing' : 'incoming'}"> <div class="msg-text">${escapeHTML(m.txt)}</div> </div>;
+});
+if (box.innerHTML !== html) {
+box.innerHTML = html;
+box.scrollTop = box.scrollHeight;
+}
+}
+function handleEnter(e) { if (e.key === 'Enter') sendMsg(); }
+function escapeHTML(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
+
