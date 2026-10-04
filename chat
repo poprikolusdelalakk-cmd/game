@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluent Messenger - Чат</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: #0e1621; color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .wrapper { width: 100vw; height: 100vh; display: flex; }
+        
+        .sidebar { width: 320px; height: 100%; background-color: #17212b; border-right: 1px solid #101921; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 15px 20px; border-bottom: 1px solid #101921; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h3 { color: #2481cc; font-size: 1.2rem; }
+        .logout-btn { color: #e53935; cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: underline; }
+        
+        .add-friend-box { padding: 15px 20px; border-bottom: 1px solid #101921; display: flex; gap: 8px; }
+        .add-friend-box input { flex: 1; background-color: #0e1621; border: 1px solid #101921; padding: 10px; border-radius: 8px; color: #fff; outline: none; }
+        .add-friend-box button { background-color: #2481cc; border: none; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
+
+        .chats-list { flex: 1; overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; padding: 14px 20px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.15); }
+        .chat-item:hover { background-color: rgba(255,255,255,0.02); }
+        .chat-item.selected { background-color: #2481cc; }
+        .chat-avatar { width: 40px; height: 40px; background-color: #5288c1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 12px; color: #fff; }
+        .chat-item.selected .chat-avatar { background-color: #fff; color: #2481cc; }
+        .chat-name { font-weight: bold; font-size: 1rem; }
+
+        .main-chat { flex: 1; height: 100%; background-color: #0e1621; display: flex; flex-direction: column; }
+        .no-chat { flex: 1; display: flex; align-items: center; justify-content: center; color: #7f91a4; font-size: 1rem; }
+        .chat-area { display: none; flex-direction: column; width: 100%; height: 100%; }
+        .chat-header { padding: 18px 24px; background-color: #17212b; border-bottom: 1px solid #101921; font-weight: bold; font-size: 1.1rem; color: #2481cc; }
+        .messages-box { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        
+        .bubble { max-width: 65%; padding: 11px 15px; border-radius: 12px; font-size: 0.98rem; line-height: 1.4; word-break: break-word; color: #fff; }
+        .bubble.incoming { align-self: flex-start; background-color: #182533; }
+        .bubble.outgoing { align-self: flex-end; background-color: #2b5278; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+        .input-box { padding: 16px 24px; background-color: #17212b; border-top: 1px solid #101921; display: flex; gap: 12px; }
+        .input-box input { flex: 1; background-color: #0e1621; border: 1px solid #101921; padding: 14px; border-radius: 8px; color: #fff; outline: none; font-size: 1rem; }
+        .input-box button { background-color: #2481cc; border: none; color: #fff; padding: 0 22px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3 id="my-name-display">Ник</h3>
+                <span class="logout-btn" onclick="goToLogout()">Выйти</span>
+            </div>
+            <div class="add-friend-box">
+                <input type="text" id="friend-name-input" placeholder="Ник друга...">
+                <button onclick="addNewContact()">+</button>
+            </div>
+            <div class="chats-list" id="chats-list"></div>
+        </div>
+
+        <div class="main-chat">
+            <div class="no-chat" id="no-chat-placeholder">
+                <span>Выбери контакт слева, чтобы начать общение</span>
+            </div>
+            <div class="chat-area" id="chat-area">
+                <div class="chat-header" id="chat-title">Чат</div>
+                <div class="messages-box" id="messages-box"></div>
+                <div class="input-box">
+                    <input type="text" id="message-input" placeholder="Напиши сообщение..." onkeypress="checkEnterKey(event)">
+                    <button onclick="pushNewMessage()">Отправить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let myName = localStorage.getItem('fluent_session') || null;
+        let currentChatUser = null;
+
+        // Защита: если юзер не вошел, пинком отправляем его обратно на авторизацию
+        if (!myName) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('my-name-display').innerText = myName;
+            if (!localStorage.getItem(`fl_contacts_${myName}`)) {
+                localStorage.setItem(`fl_contacts_${myName}`, JSON.stringify(["Nazar", "Support_Bot"]));
+            }
+            updateContactsView();
+            setInterval(updateMessagesView, 1000);
+        }
+
+        function goToLogout() {
+            localStorage.removeItem('fluent_session');
+            window.location.href = 'index.html';
+        }
+
+        function updateContactsView() {
+            const list = document.getElementById('chats-list');
+            let contacts = JSON.parse(localStorage.getItem(`fl_contacts_${myName}`)) || [];
+            let html = "";
+
+            contacts.forEach(c => {
+                let isSelected = c === currentChatUser;
+                html += `
+                    <div class="chat-item ${isSelected ? 'selected' : ''}" onclick="startChatWith('${c}')">
+                        <div class="chat-avatar">${c.charAt(0).toUpperCase()}</div>
+                        <div class="chat-name">${c}</div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function addNewContact() {
+            const input = document.getElementById('friend-name-input');
+            const target = input.value.trim();
+            if (!target || target === myName) return;
+
+            let contacts = JSON.parse(localStorage.getItem(`fl_contacts_${myName}`)) || [];
+            if (!contacts.includes(target)) {
+                contacts.push(target);
+                localStorage.setItem(`fl_contacts_${myName}`, JSON.stringify(contacts));
+            }
+            startChatWith(target);
+            input.value = "";
+        }
+
+        function startChatWith(username) {
+            currentChatUser = username;
+            document.getElementById('no-chat-placeholder').style.display = 'none';
+            document.getElementById('chat-area').style.display = 'flex';
+            document.getElementById('chat-title').innerText = username;
+            updateContactsView();
+            updateMessagesView();
+        }
+
+        function pushNewMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            if (!text || !currentChatUser) return;
+
+            let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
+            allMsgs.push({ from: myName, to: currentChatUser, txt: text });
+            localStorage.setItem('fluent_msg_storage', JSON.stringify(allMsgs));
+            
+            input.value = "";
+            updateMessagesView();
+        }
+
+        function updateMessagesView() {
+            if (!currentChatUser || document.getElementById('chat-area').style.display !== 'flex') return;
+            const box = document.getElementById('messages-box');
+            let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
+            let activeMsgs = allMsgs.filter(m => (m.from === myName && m.to === currentChatUser) || (m.from === currentChatUser && m.to === myName));
+
+            let html = "";
+            activeMsgs.forEach(m => {
+                let isMine = m.from === myName;
+                html += `
+                    <div class="bubble ${isMine ? 'outgoing' : 'incoming'}">
+                        <div class="msg-text">${escapeHTML(m.txt)}</div>
+                    </div>
+                `;
+            });
+
+            if (box.innerHTML !== html) {
+                box.innerHTML = html;
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+
+        function checkEnterKey(e) { if (e.key === 'Enter') pushNewMessage(); }
+        function escapeHTML(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c] || c)); }
+    </script>
+</body>
+</html>
