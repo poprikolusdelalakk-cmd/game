@@ -6,413 +6,392 @@
     <title>Fluent Messenger</title>
     <style>
         :root {
-            --bg-color: #05060e;
-            --panel-bg: rgba(13, 15, 30, 0.95);
-            --accent-cyan: #00f2fe;
-            --accent-blue: #007bff;
-            --accent-pink: #ff007f;
-            --text-main: #ffffff;
-            --text-muted: #4e5d7c;
-            --neon-glow: 0 0 25px rgba(0, 242, 254, 0.5);
+            --bg-color: #0e1118;
+            --panel-bg: #17212b;
+            --chat-bg: #0e1621;
+            --accent-cyan: #2481cc;
+            --accent-light: #5288c1;
+            --accent-pink: #e53935;
+            --text-main: #f5f5f5;
+            --text-muted: #7f91a4;
+            --msg-out: #2b5278;
+            --msg-in: #182533;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background: radial-gradient(circle at center, #101435 0%, var(--bg-color) 100%);
+            background-color: var(--bg-color);
             color: var(--text-main);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            overflow: hidden;
         }
 
         .container {
-            width: 100%;
-            max-width: 450px;
-            height: 85vh;
-            background: var(--panel-bg);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            border-radius: 32px;
-            box-shadow: 0 25px 65px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
+            width: 100vw;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
             overflow: hidden;
             position: relative;
         }
 
-        /* ЭКРАН 1: ВХОД И РЕГИСТРАЦИЯ */
-        .screen-view {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-        }
-
+        /* ЭКРАН ВХОДА */
         .auth-screen {
-            padding: 40px 30px;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100%;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .auth-box {
+            width: 100%;
+            max-width: 360px;
+            background-color: var(--panel-bg);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
             gap: 25px;
         }
 
-        .logo-area {
-            text-align: center;
+        .auth-box h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
         }
 
-        .logo-area h1 {
-            font-size: 2.8rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fff 30%, var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-            filter: drop-shadow(0 2px 15px rgba(0, 242, 254, 0.4));
-        }
-
-        .logo-area p {
+        .auth-box p {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-top: 8px;
+            margin-top: -15px;
         }
 
         .input-group {
-            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
         input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 242, 254, 0.25);
-            padding: 16px 20px;
-            border-radius: 16px;
+            background-color: var(--chat-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 14px 16px;
+            border-radius: 10px;
             color: #fff;
             font-size: 1rem;
             outline: none;
-            transition: all 0.2s ease;
         }
 
         input:focus {
             border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
-            background: rgba(255, 255, 255, 0.05);
         }
 
         .btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
-            color: #000000;
+            background-color: var(--accent-cyan);
+            color: #fff;
             border: none;
-            padding: 16px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            border-radius: 16px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-            box-shadow: var(--neon-glow);
+            transition: background 0.2s;
         }
 
         .btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(0, 242, 254, 0.8);
+            background-color: var(--accent-light);
         }
 
-        .switch-mode {
-            color: var(--accent-cyan);
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-decoration: underline;
-            user-select: none;
-        }
-
-        /* ЭКРАН 2: ВНУТРЕННИЙ САЙТ МЕССЕНДЖЕРА */
+        /* ГЛАВНЫЙ ЭКРАН МЕССЕНДЖЕРА */
         .app-screen {
             display: none;
-            flex-direction: column;
-            height: 100%;
             width: 100%;
+            height: 100%;
         }
 
-        .app-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        /* Левая панель чатов */
+        .side-panel {
+            width: 340px;
+            height: 100%;
+            background-color: var(--panel-bg);
+            border-right: 1px solid rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.3);
         }
 
-        .app-header h2 {
-            font-size: 1.4rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff, var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .side-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
         }
 
         .logout-btn {
             color: var(--accent-pink);
             font-size: 0.85rem;
             cursor: pointer;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-decoration: underline;
+            font-weight: 600;
         }
 
-        /* Таббар переключения страниц */
         .tab-bar {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.15);
+            background-color: rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
 
         .tab-btn {
-            padding: 15px 0;
+            padding: 12px 0;
             background: none;
             border: none;
             color: var(--text-muted);
             font-size: 0.85rem;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             text-align: center;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
         }
 
         .tab-btn.active {
             color: var(--accent-cyan);
             border-bottom: 2px solid var(--accent-cyan);
-            background: rgba(255, 255, 255, 0.02);
         }
 
         .tab-content {
             flex: 1;
-            display: none;
-            flex-direction: column;
             overflow-y: auto;
-            padding: 22px;
+            display: none;
         }
 
         .tab-content.active {
-            display: flex;
+            display: block;
         }
 
-        /* КРАСИВЫЕ ЖИВЫЕ СЧЁТЧИКИ */
-        .stats-title {
-            font-size: 1.1rem;
-            color: var(--accent-cyan);
-            margin-bottom: 20px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* Стили вкладки Инфо */
+        .info-padding {
+            padding: 20px;
         }
 
-        .stat-row {
+        .stat-card {
+            background-color: var(--chat-bg);
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 242, 254, 0.1);
-            border-radius: 16px;
-            margin-bottom: 12px;
-        }
-
-        .stat-name-lbl {
-            font-weight: 600;
-            font-size: 1rem;
         }
 
         .stat-num {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            font-weight: 700;
+            font-size: 1.1rem;
         }
 
-        .stat-num.online-indicator {
-            color: #00ff66;
-            text-shadow: 0 0 15px #00ff66;
-        }
-
-        /* СПИСОК ЧАТОВ */
-        .chats-list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
+        /* Список чатов */
         .chat-item {
             display: flex;
             align-items: center;
-            padding: 14px 18px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
+            padding: 14px 20px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.15s;
         }
 
         .chat-item:hover {
-            border-color: var(--accent-cyan);
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateX(3px);
+            background-color: rgba(255,255,255,0.03);
+        }
+
+        .chat-item.active {
+            background-color: var(--accent-cyan);
         }
 
         .chat-avatar {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, #5288c1, #2481cc);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 900;
-            color: #000;
-            margin-right: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-right: 14px;
+            color: #fff;
+        }
+
+        .chat-item.active .chat-avatar {
+            background: #fff;
+            color: var(--accent-cyan);
         }
 
         .chat-name {
-            font-weight: 700;
-            font-size: 1.05rem;
+            font-weight: 600;
+            font-size: 1rem;
         }
 
-        /* ПЛЕЙСХОЛДЕР ВИДЕО */
-        .video-placeholder {
+        /* Правая панель диалога */
+        .main-dialog {
             flex: 1;
+            height: 100%;
+            background-color: var(--chat-bg);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed rgba(0, 242, 254, 0.2);
-            border-radius: 24px;
-            padding: 40px 20px;
-            text-align: center;
+            position: relative;
         }
 
-        /* ОКНО ОТКРЫТОГО ДИАЛОГА ЧАТА */
-        .active-dialog-view {
+        .dialog-placeholder {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .dialog-view {
             display: none;
             flex-direction: column;
-            height: 100%;
             width: 100%;
-            background: #05060e;
-            position: absolute;
-            top: 0; left: 0; z-index: 10;
+            height: 100%;
         }
 
         .dialog-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 15px 24px;
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
-            background: rgba(255,255,255,0.02);
-        }
-
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--accent-cyan);
-            font-size: 1.4rem;
-            cursor: pointer;
-            margin-right: 15px;
+            gap: 15px;
         }
 
         .messages-area {
             flex: 1;
-            padding: 20px;
+            padding: 24px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .msg-box {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            display: flex;
-            flex-direction: column;
+            max-width: 65%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .msg-box.incoming {
+            align-self: flex-start;
+            background-color: var(--msg-in);
             color: #fff;
         }
 
-        .msg-box.incoming { align-self: flex-start; background: rgba(255,255,255,0.06); border-bottom-left-radius: 4px; }
-.msg-box.outgoing { align-self: flex-end; background: var(--accent-blue); border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
-.msg-text { font-size: 0.98rem; word-break: break-word; }
-.input-area {
-padding: 16px 20px;
-border-top: 1px solid rgba(255,255,255,0.06);
-display: flex;
-gap: 12px;
-background: rgba(0,0,0,0.3);
-}
-.input-area input { flex: 1; padding: 15px 18px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(0, 242, 254, 0.2); color: #fff; outline: none; }
-.btn-send { width: auto; padding: 0 22px; background: var(--accent-cyan); color: #000; border-radius: 14px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .msg-box.outgoing {
+            align-self: flex-end;
+            background-color: var(--msg-out);
+            color: #fff;
+        }
 
+        .input-area {
+            padding: 16px 24px;
+            background-color: var(--panel-bg);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
 
-Fluent Messenger
-Безопасное неоновое общение
+        .input-area input {
+            flex: 1;
+        }
 
+        .btn-send {
+            width: auto;
+            padding: 0 20px;
+        }
 
+        .video-box {
+            border: 2px dashed rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
 
+    <div class="container">
+        <!-- ЭКРАН 1: АВТОРИЗАЦИЯ -->
+        <div class="auth-screen" id="auth-screen">
+            <div class="auth-box">
+                <div>
+                    <h1>Fluent Messenger</h1>
+                    <p>Безопасное общение нового поколения</p>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="user-email" placeholder="Никнейм или Email">
+                    <input type="password" id="user-password" placeholder="Пароль">
+                    <button class="btn" onclick="processAuth()">Войти / Создать</button>
+                </div>
+            </div>
+        </div>
 
-Войти / Создать
+        <!-- ЭКРАН 2: ПРИЛОЖЕНИЕ -->
+        <div class="app-screen" id="app-screen">
+            <!-- ЛЕВАЯ КОЛОНКА -->
+            <div class="side-panel">
+                <div class="side-header">
+                    <h2 id="user-display">Nazar</h2>
+                    <span class="logout-btn" onclick="exitChat()">Выйти</span>
+                </div>
 
-Создать новый аккаунт
-
-Fluent Chat
-
-User
-Выйти
-
-Инфо
-Чаты
-Друзья
+                <div class="tab-bar">
+                    <button class="tab-btn active" id="tab0" onclick="switchTab(0)">Инфо</button>
+                    <button class="tab-btn" id="tab1" onclick="switchTab(1)">Чаты</button>
+                    <button class="tab-btn" id="tab2" onclick="switchTab(2)">Поиск</button>
 Видео
-Метрики Системы
-
-Онлайн сейчас
-0
-
-
-Всего заходов
-0
-
-
-Зарегистрировано
-0
-
-Добавить друга в чат
-
+Онлайн сейчас18
+Всего заходов0
+Зарегистрировано0
 
 Найти
 
-Введи ник для мгновенного создания диалога
+Введи ник для создания чата
+
 🎬
 Fluent Shorts
-Раздел зарезервирован под видеоплеер коротких роликов по запросу Nazar!
+Плеер коротких роликов находится в разработке по запросу Nazar
 
-◀
+
+Выберите чат из списка слева, чтобы начать общение
 ?
 
 Чат
+в сети
 
 
 
@@ -422,32 +401,26 @@ Fluent Shorts
 
 
 
+
 let signUpState = false;
 let activeUser = localStorage.getItem('fluent_session') || null;
 let activeTargetChat = null;
-// ЖИВАЯ И РЕАЛЬНАЯ СТАТИСТИКА
 let totalEntries = parseInt(localStorage.getItem('fl_total_entries')) || 412;
 let totalReg = parseInt(localStorage.getItem('fl_total_reg')) || 57;
 totalEntries += 1;
 localStorage.setItem('fl_total_entries', totalEntries);
 function renderLiveStats() {
-let fakeOnline = Math.floor(Math.random() * 5) + 14; // Живой плавающий онлайн
+let fakeOnline = Math.floor(Math.random() * 5) + 14;
 document.getElementById('stat-online').innerText = fakeOnline;
 document.getElementById('stat-entries').innerText = totalEntries.toLocaleString('ru-RU');
 document.getElementById('stat-reg').innerText = totalReg.toLocaleString('ru-RU');
 }
 setInterval(renderLiveStats, 3000);
 if (activeUser) { startMessenger(activeUser); }
-function toggleMode() {
-signUpState = !signUpState;
-document.getElementById('main-btn').innerText = signUpState ? "Создать аккаунт" : "Войти / Создать";
-document.getElementById('mode-toggle').innerText = signUpState ? "Уже есть профиль? Войти" : "Создать новый аккаунт";
-}
 function processAuth() {
 const login = document.getElementById('user-email').value.trim();
 const pass = document.getElementById('user-password').value.trim();
-if (!login || !pass) { alert("Заполните все поля!"); return; }
-// Логика автоматической регистрации без ошибок
+if (!login || !pass) { alert("Заполните поля!"); return; }
 const storedPass = localStorage.getItem(fl_u_${login});
 if (!storedPass) {
 localStorage.setItem(fl_u_${login}, pass);
@@ -466,7 +439,7 @@ if(!localStorage.getItem(fl_friends_${activeUser})) {
 localStorage.setItem(fl_friends_${activeUser}, JSON.stringify(["Nazar", "Support_Bot"]));
 }
 renderLiveStats();
-switchTab(1); // Переносим сразу на вкладку ЧАТЫ
+switchTab(1);
 renderChatsList();
 setInterval(syncMessages, 1000);
 }
@@ -486,13 +459,10 @@ if(idx === 1) renderChatsList();
 function renderChatsList() {
 const listContainer = document.getElementById('chats-list');
 let friends = JSON.parse(localStorage.getItem(fl_friends_${activeUser})) || [];
-if(friends.length === 0) {
-listContainer.innerHTML = <div style="text-align:center; color:var(--text-muted); margin-top:20px;">Список пуст. Добавь друзей в меню "Друзья"</div>;
-return;
-}
 let html = "";
 friends.forEach(f => {
-html += <div class="chat-item" onclick="openDialog('${f}')"> <div class="chat-avatar">${f.charAt(0).toUpperCase()}</div> <div class="chat-info"><div class="chat-name">${f}</div></div> </div>;
+let isCurrent = f === activeTargetChat;
+html += <div class="chat-item ${isCurrent ? 'active' : ''}" onclick="openDialog('${f}')"> <div class="chat-avatar">${f.charAt(0).toUpperCase()}</div> <div><div class="chat-name">${f}</div></div> </div>;
 });
 listContainer.innerHTML = html;
 }
@@ -510,15 +480,12 @@ input.value = "";
 }
 function openDialog(target) {
 activeTargetChat = target;
+document.getElementById('dialog-placeholder').style.display = 'none';
+document.getElementById('dialog-view').style.display = 'flex';
 document.getElementById('dialog-title').innerText = target;
 document.getElementById('dialog-avatar').innerText = target.charAt(0).toUpperCase();
-document.getElementById('active-dialog').style.display = 'flex';
-syncMessages();
-}
-function closeDialog() {
-activeTargetChat = null;
-document.getElementById('active-dialog').style.display = 'none';
 renderChatsList();
+syncMessages();
 }
 function postMessage() {
 const field = document.getElementById('input-message');
@@ -531,7 +498,7 @@ field.value = '';
 syncMessages();
 }
 function syncMessages() {
-if (!activeTargetChat || document.getElementById('active-dialog').style.display !== 'flex') return;
+if (!activeTargetChat || document.getElementById('dialog-view').style.display !== 'flex') return;
 const flow = document.getElementById('msg-flow');
 let store = JSON.parse(localStorage.getItem('fluent_packets')) || [];
 let dialogMsgs = store.filter(m => (m.from === activeUser && m.to === activeTargetChat) || (m.from === activeTargetChat && m.to === activeUser));
