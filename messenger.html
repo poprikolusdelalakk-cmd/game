@@ -137,20 +137,21 @@
 Сбросить всё
 
 
-// БРОНЕБОЙНАЯ ИНИЦИАЛИЗАЦИЯ: Коду пофигу на пустой localstorage
 let myName = localStorage.getItem('fluent_session') || "овнер";
 let currentChatUser = null;
 let defaultContacts = ["Fluent_Bot", "Support_Bot"];
 localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
 localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
-// Жестко зашиваем стартовые сообщения
+if (!localStorage.getItem('fluent_msg_storage')) {
 let welcomePackets = [
 { from: "Fluent_Bot", to: myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
 { from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. 100% Скорость — сообщения летают за миллисекунды.\n2. Полная анонимность — все данные лежат только на твоем девайсе.\n3. Крутой неоновый дизайн в стиле Telegram Web К!" }
 ];
 localStorage.setItem('fluent_msg_storage', JSON.stringify(welcomePackets));
+}
 updateContactsList();
 setInterval(updateMessagesBox, 1000);
+// ИСПРАВЛЕНО: Функции модального окна добавлены напрямую в глобальную область видимости
 function openSettingsModal() {
 document.getElementById('set-username').innerText = myName;
 let phone = localStorage.getItem('fl_phone_by_name_' + myName) || "Не указан";
