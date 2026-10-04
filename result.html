@@ -3,39 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>Fluent Arena - Итоги</title>
     <style>
-        :root { --bg: #030511; --card: rgba(13, 18, 38, 0.85); --blue: #00f2fe; --purple: #9d4edd; --success: #00ff66; --danger: #ff3333; }
+        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --purple: #9d4edd; --success: #00ff66; --danger: #ff3333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .card { background: var(--card); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 24px; padding: 35px 25px; text-align: center; max-width: 440px; width: 100%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
-        h1 { font-size: 1.8rem; font-weight: 900; color: var(--blue); letter-spacing: 2px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,242,254,0.3); }
-        .res-text { font-size: 1.4rem; font-weight: bold; margin-bottom: 25px; }
-        .shop { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 20px; padding-top: 20px; text-align: left; }
-        .shop-title { text-align: center; color: var(--purple); font-weight: bold; margin-bottom: 15px; font-size: 0.95rem; letter-spacing: 1px; }
-        .item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 10px; }
-        .item h4 { font-size: 0.95rem; color: var(--blue); }
-        .item p { font-size: 0.75rem; color: #6f7f9f; }
-        .btn-buy { background: var(--success); color: #000; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .btn-menu { display: block; width: 100%; background: #fff; color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 25px; text-decoration: none; text-align: center; }
+        .card { background: var(--card); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 28px; padding: 40px 30px; text-align: center; max-width: 460px; width: 100%; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); }
+        h1 { font-size: 2rem; font-weight: 900; color: var(--blue); letter-spacing: 2px; margin-bottom: 20px; text-shadow: 0 0 15px rgba(0,242,254,0.4); text-transform: uppercase; }
+        .res-text { font-size: 1.5rem; font-weight: 900; margin-bottom: 25px; letter-spacing: 0.5px; }
+        .shop { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 25px; padding-top: 25px; text-align: left; }
+        .shop-title { text-align: center; color: var(--purple); font-weight: 900; margin-bottom: 20px; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px rgba(157,78,221,0.3); }
+        .item { display: flex; justify-content: space-between; align-items: center; background: rgba(2,4,10,0.5); border: 1px solid rgba(255,255,255,0.06); padding: 14px; border-radius: 16px; margin-bottom: 12px; }
+        .item h4 { font-size: 1rem; color: var(--blue); font-weight: 800; }
+        .item p { font-size: 0.8rem; color: #8fa0b5; margin-top: 2px; }
+        .btn-buy { background: linear-gradient(135deg, #00ff66, #11ff88); color: #02040a; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,255,102,0.2); }
+        .btn-buy:hover { transform: scale(1.03); filter: brightness(1.2); }
+        .btn-menu { display: block; width: 100%; background: #fff; color: #02040a; border: none; padding: 16px; border-radius: 14px; font-size: 1.1rem; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 30px; text-decoration: none; text-align: center; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>БОЙ ЗАВЕРШЕН! 🚩</h1>
+        <h1>Раунд Завершен 🚩</h1>
         <div class="res-text" id="res-display">-</div>
-        <div>Твой баланс: <span id="gold-display" style="color:#ffb703; font-weight:bold;">0</span> 💰</div>
+        <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 5px;">Твой крипто-баланс: <span id="gold-display" style="color:#ffb703; font-weight:800; text-shadow:0 0 8px rgba(255,183,3,0.2);">0</span> 💰</div>
 
-        <!-- МАГАЗИН ВНУТРИ СТРАНИЦЫ ИТОГОВ -->
+        <!-- РАСШИРЕННЫЙ МАГАЗИН КРУТЫХ ОРУЖИЙ -->
         <div class="shop">
-            <div class="shop-title">ДАРКНЕТ-ОРУЖЕЙНАЯ</div>
+            <div class="shop-title">📦 Даркнет Оружейная 📦</div>
             <div class="item">
-                <div><h4>Лопата Мортиса</h4><p>Добавляет +8 к урону навсегда</p></div>
-                <button class="btn-buy" onclick="buy('shovel', 40, 8)">40 💰</button>
+                <div><h4>🗡️ Лопата Мортиса</h4><p>Урон +10 навсегда</p></div>
+                <button class="btn-buy" onclick="buy('Лопата Мортиса 🗡️', 30, 10)">30 💰</button>
             </div>
             <div class="item">
-                <div><h4>Админка ReallyWorld</h4><p>Добавляет +25 к урону навсегда</p></div>
-                <button class="btn-buy" onclick="buy('admin', 100, 25)">100 💰</button>
+                <div><h4>🔥 Меч Мега-Грифера</h4><p>Урон +18 навсегда</p></div>
+                <button class="btn-buy" onclick="buy('Меч Грифера 🔥', 60, 18)">60 💰</button>
+            </div>
+            <div class="item">
+                <div><h4>👑 Админка ReallyWorld</h4><p>Урон +28 навсегда</p></div>
+                <button class="btn-buy" onclick="buy('Админка ReallyWorld 👑', 100, 28)">100 💰</button>
+            </div>
+            <div class="item">
+                <div><h4>🌌 Посох Сигма-Овнера</h4><p>Урон +45 к силе атаки</p></div>
+                <button class="btn-buy" onclick="buy('Посох Овнера 🌌', 160, 45)">160 💰</button>
             </div>
         </div>
 
@@ -49,23 +59,26 @@
         if (res === 'win') {
             document.getElementById('res-display').innerText = "🎉 ПОБЕДА СИГМЫ! 🎉";
             document.getElementById('res-display').style.color = "var(--success)";
-            gold += 30; // Награда за победу
+            document.getElementById('res-display').style.textShadow = "0 0 15px var(--success)";
+            gold += 35; 
         } else {
-            document.getElementById('res-display').innerText = "💀 ТЕБЯ РАЗНЕСЛИ СЛИВОМ! 💀";
+            document.getElementById('res-display').innerText = "💀 КАТКА СЛИТА! 💀";
             document.getElementById('res-display').style.color = "var(--danger)";
-            gold += 5; // Награда за луз
+            document.getElementById('res-display').style.textShadow = "0 0 15px var(--danger)";
+            gold += 8; 
         }
         localStorage.setItem('fl_game_gold', gold);
         document.getElementById('gold-display').innerText = gold;
 
-        function buy(id, cost, dmg) {
-            if (gold < cost) { alert("Недостаточно золота!"); return; }
+        function buy(wName, cost, dmg) {
+            if (gold < cost) { alert("Недостаточно крипто-монет! Иди крушить боссов!"); return; }
             gold -= cost;
             bonusDmg += dmg;
             localStorage.setItem('fl_game_gold', gold);
             localStorage.setItem('fl_bonus_dmg', bonusDmg);
+            localStorage.setItem('fl_active_weapon_name', wName);
             document.getElementById('gold-display').innerText = gold;
-            alert("Оружие успешно куплено и вкачано в твои кулаки!");
+            alert("Оружие '" + wName + "' экипировано! Урон увеличен на +" + dmg);
         }
     </script>
 </body>
