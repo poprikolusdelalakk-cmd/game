@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLUENT ARENA - ЗАПРОСЫ</title>
+    <script src="https://unpkg.com"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #060b13; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
+        .card { background: #0d1625; border: 2px solid #1e293b; border-radius: 20px; padding: 25px; width: 100%; max-width: 420px; }
+        h2 { text-align: center; margin-bottom: 10px; color: #ec4899; text-transform: uppercase; }
+        .nav-menu { display: flex; gap: 5px; margin-bottom: 20px; background: #111827; padding: 5px; border-radius: 10px; }
+        .nav-btn { flex: 1; padding: 8px; background: transparent; border: none; color: #64748b; font-size: 12px; font-weight: bold; cursor: pointer; border-radius: 6px; }
+        .nav-btn.active { color: white; background: #1e293b; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; background: #111827; padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #1e293b; }
+        .item-info { display: flex; flex-direction: column; }
+        .item-name { font-weight: bold; font-size: 14px; }
+        .item-sub { font-size: 11px; color: #64748b; }
+        .btns { display: flex; gap: 5px; }
+        .btn-act { padding: 6px 12px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-ok { background: #10b981; }
+        .btn-no { background: #f43f5e; }
+        .empty { text-align: center; color: #475569; font-size: 13px; padding: 40px 0; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>📩 Запросы в друзья</h2>
+        
+        <div class="nav-menu">
+            <button class="nav-btn" onclick="window.location.href='friends.html'">Друзья</button>
+            <button class="nav-btn active">Запросы (Сообщения)</button>
+            <button class="nav-btn" onclick="window.location.href='invites.html'">Вызовы ⚔️</button>
+        </div>
+
+        <div id="requests-box"></div>
+    </div>
+
+    <script>
+        const myName = localStorage.getItem('nickname') || 'Flerenk';
+        const myId = localStorage.getItem('sigma_id');
+        let activeRequests = JSON.parse(sessionStorage.getItem('pending_reqs')) || [];
+
+        const box = document.getElementById('requests-box');
+        const client = mqtt.connect('wss://test.mosquitto.org:8081');
+
+        client.on('connect', () => { client.subscribe(`fluentarena/user/${myId}`); });
+
+        client.on('message', (topic, message) => {
+            let packet = JSON.parse(message.toString());
+            if(packet.type === 'friend_request') {
+                if(!activeRequests.some(r => r.id === packet.fromId)) {
+                    activeRequests.push({ id: packet.fromId, name: packet.fromName });
+                    sessionStorage.setItem('pending_reqs', JSON.stringify(activeRequests));
+                    renderRequests();
+                }
+            }
+        });
+
+        function renderRequests() {
+            if(activeRequests.length === 0) {
+                box.innerHTML = `<div class="empty">Новых сообщений и запросов нет</div>`;
+            } else {
+                box.innerHTML = activeRequests.map(r => `
+                    <div class="list-item">
+                        <div class="item-info">
+                            <span class="item-name">👤 ${r.name}</span>
+                            <span class="item-sub">ID: ${r.id} хочет в друзья</span>
+                        </div>
+                        <div class="btns">
+                            <button class="btn-act btn-ok" onclick="accept('${r.id}', '${r.name}')">✓</button>
+                            <button class="btn-act btn-no" onclick="decline('${r.id}')">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function accept(id, name) {
+            let localFriends = JSON.parse(localStorage.getItem('fluent_friends')) || [];
+            if(!localFriends.some(f => f.id === id)) {
+                localFriends.push({ id: id, name: name });
+                localStorage.setItem('fluent_friends', JSON.stringify(localFriends));
+            }
+            client.publish(`fluentarena/user/${id}`, JSON.stringify({ type: 'friend_accept', fromId: myId, fromName: myName }));
+            activeRequests = activeRequests.filter(r => r.id !== id);
+            sessionStorage.setItem('pending_reqs', JSON.stringify(activeRequests));
+            alert('Запрос принят! Друг добавлен.');
+            renderRequests();
+        }
+
+        function decline(id) {
+            activeRequests = activeRequests.filter(r => r.id !== id);
+            sessionStorage.setItem('pending_reqs', JSON.stringify(activeRequests));
+            renderRequests();
+        }
+
+        renderRequests();
+    </script>
+</body>
+</html>
