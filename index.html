@@ -1,176 +1,312 @@
 <!DOCTYPE html>
 <html lang="ru" translate="no" class="notranslate">
-<!DOCTYPE html>
-<html lang="ru" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Fluent - Авторизация</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Fluent Game - Магический Джинн</title>
     <style>
         :root {
-            --bg-dark: #0e1621;
-            --side-bg: #17212b;
-            --accent: #2481cc;
-            --accent-hover: #2f93de;
-            --text-color: #f5f5f5;
-            --text-muted: #7f91a4;
-            --border-color: #101921;
-            --success: #00ff66;
+            --bg-space: #060919;
+            --card-bg: rgba(13, 18, 38, 0.75);
+            --neon-blue: #00f2fe;
+            --neon-purple: #9d4edd;
+            --neon-pink: #ff007f;
+            --text-main: #ffffff;
+            --text-muted: #6f7f9f;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-color); height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
         
-        .auth-container { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 20px; }
-        .auth-box { background-color: var(--side-bg); padding: 40px; border-radius: 20px; border: 1px solid rgba(36, 129, 204, 0.2); box-shadow: 0 15px 50px rgba(0,0,0,0.6); }
-        .auth-box h1 { margin-bottom: 8px; font-size: 2.2rem; font-weight: bold; text-align: center; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .auth-box p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; text-align: center; }
-        .auth-box input { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 12px; outline: none; font-size: 1rem; }
-        .auth-box input:focus { border-color: var(--accent); }
-        .auth-box button { width: 100%; background-color: var(--accent); color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 1.05rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .auth-box button:hover { background-color: var(--accent-hover); }
-        .switch-mode { color: var(--accent); font-size: 0.9rem; cursor: pointer; text-decoration: underline; user-select: none; text-align: center; margin-top: 15px; display: block; }
-        
-        /* СТИЛЬ СЧЁТЧИКОВ СТАТИСТИКИ */
-        .stats-panel { background-color: var(--side-bg); padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; gap: 10px; }
-        .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-        .stat-label { color: var(--text-muted); }
-        .stat-val { font-weight: bold; font-size: 1.1rem; }
+        body, html { 
+            background: radial-gradient(circle at center, #12183a 0%, var(--bg-space) 100%); 
+            color: var(--text-main); 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Задний фон со звёздами */
+        .space-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
+            background-size: 550px 550px;
+            opacity: 0.3;
+        }
+
+        .game-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+        }
+
+        /* ИГРОВАЯ КАРТОЧКА */
+        .game-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 24px;
+            padding: 35px 25px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 254, 0.05);
+            transition: all 0.4s ease;
+        }
+
+        /* ЛОГОТИП */
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #fff, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+        .brand-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* МАГИЧЕСКАЯ СФЕРА ДЖИННА */
+        .genie-sphere-box {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 35px auto;
+            position: relative;
+        }
+        .genie-sphere {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--neon-blue) 0%, var(--neon-purple) 70%, var(--bg-space) 100%);
+            box-shadow: 0 0 30px var(--neon-blue), 0 0 60px var(--neon-purple);
+            animation: floatAndGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes floatAndGlow {
+            0% { transform: translateY(0px) scale(1); filter: brightness(1); }
+            50% { transform: translateY(-10px) scale(1.03); filter: brightness(1.2); box-shadow: 0 0 40px var(--neon-blue), 0 0 80px var(--neon-purple); }
+            100% { transform: translateY(0px) scale(1); filter: brightness(1); }
+        }
+
+        /* ТЕКСТ ДЖИННА */
+        .bubble-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.5;
+            min-height: 70px;
+            margin-bottom: 35px;
+            padding: 0 10px;
+            color: #fff;
+        }
+
+        /* КНОПКИ ВАРИАНТОВ ОТВЕТА */
+        .answers-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn-choice {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+            color: #fff;
+        }
+        .btn-choice:hover {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(157, 78, 221, 0.15));
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+            transform: translateY(-1px);
+        }
+        .btn-choice:active { transform: translateY(1px); }
+
+        /* ИНПУТ ДЛЯ ВВОДА ОТВЕТА, ЕСЛИ ДЖИНН ПРОИГРАЛ */
+        .input-fail {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px;
+            border-radius: 12px;
+            color: #fff;
+            margin-bottom: 15px;
+            outline: none;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .input-fail:focus { border-color: var(--neon-blue); }
+
+        .btn-action {
+            background: var(--neon-blue);
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        .btn-action:hover { background: #fff; box-shadow: 0 0 20px #fff; }
     </style>
 </head>
 <body>
 
-    <div class="auth-container">
-        <div class="auth-box">
-            <h1 id="auth-title">Вход</h1>
-            <p id="auth-subtitle">Fluent Messenger</p>
-            <div id="inputs-area"></div>
-        </div>
+    <div class="space-bg"></div>
 
-        <!-- КРАСИВАЯ ПАНЕЛЬ СТАТИСТИКИ ПРИ РЕГИСТРАЦИИ/ВХОДЕ -->
-        <div class="stats-panel">
-            <div class="stat-row">
-                <span class="stat-label">В сети сейчас:</span>
-                <span class="stat-val" id="stat-online" style="color: var(--success);">0</span>
+    <div class="game-wrapper">
+        <div class="game-card">
+            <div class="brand-title">Fluent Game</div>
+            <div class="brand-subtitle">Магический Кибер-Джинн</div>
+
+            <!-- Неоновая сфера джинна -->
+            <div class="genie-sphere-box">
+                <div class="genie-sphere" id="sphere-glow"></div>
             </div>
-            <div class="stat-row">
-                <span class="stat-label">Зарегистрировано:</span>
-                <span class="stat-val" id="stat-reg" style="color: var(--accent);">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Всего визитов:</span>
-                <span class="stat-val" id="stat-visits">-</span>
+
+            <!-- Вопрос джинна -->
+            <div class="bubble-text" id="jin-bubble">Загадай персонажа из игры, мультика или реальной жизни, а я попробую его отгадать!</div>
+
+            <!-- Контейнер для кнопок игры -->
+            <div id="controls-area">
+                <button class="btn-action" onclick="startGame()">Начать игру</button>
             </div>
         </div>
     </div>
 
     <script>
-        let isSignUpMode = false;
-        const area = document.getElementById('inputs-area');
+        // ИГРОВОЙ ДВИЖОК ДЖИННА
+        var currentStep = 0;
+        var answersHistory = {};
 
-        // Инициализация глобальных счётчиков
-        let baseVisits = parseInt(localStorage.getItem('fl_global_visits')) || 1240;
-        baseVisits += 1;
-        localStorage.setItem('fl_global_visits', baseVisits);
+        // База знаний Джинна (Персонажи и их ключевые теги)
+        var charactersDB = [
+            { name: "Фредди Фазбер (ФНАФ)", tags: { real: "нет", game: "да", animatronic: "да" } },
+            { name: "Бонни (ФНАФ)", tags: { real: "нет", game: "да", animatronic: "да" } },
+            { name: "Влад А4", tags: { real: "да", blogger: "да", youtube: "да" } },
+            { name: "Мистер Бист (MrBeast)", tags: { real: "да", blogger: "да", youtube: "да" } },
+            { name: "Человек-Паук", tags: { real: "нет", game: "нет", marvel: "да", hero: "да" } },
+            { name: "Наруто Узумаки", tags: { real: "нет", game: "нет", anime: "да" } },
+            { name: "S1mple (Александр Костылев)", tags: { real: "да", cyber: "да", cs: "да" } },
+            { name: "Стив (Майнкрафт)", tags: { real: "нет", game: "да", blocks: "да" } }
+        ];
 
-        // Считаем реальное количество уникальных аккаунтов в localStorage
-        function getRegisteredCount() {
-            let count = 2; // Базовые боты по умолчанию (Fluent_Bot и Support_Bot)
-            for (let i = 0; i < localStorage.length; i++) {
-                if (localStorage.key(i).startsWith('fl_pass_by_name_')) {
-                    count++;
-                }
-            }
-            return count;
+        // Список вопросов
+        var questionsList = [
+            { id: "real", text: "Ваш персонаж существует в реальной жизни?" },
+            { id: "game", text: "Этот персонаж пришёл к нам из видеоигры?" },
+            { id: "animatronic", text: "Это робот-аниматроник?" },
+            { id: "blogger", text: "Ваш персонаж популярный блогер?" },
+            { id: "youtube", text: "Он снимает видео на YouTube?" },
+            { id: "marvel", text: "Он является супергероем вселенной Marvel?" },
+            { id: "anime", text: "Ваш персонаж из какого-то аниме?" },
+            { id: "cyber", text: "Это профессиональный киберспортсмен?" }
+        ];
+
+        function startGame() {
+            currentStep = 0;
+            answersHistory = {};
+            // Перекрашиваем сферу в фиолетовый неон при старте
+            document.getElementById('sphere-glow').style.background = "radial-gradient(circle at 30% 30%, var(--neon-blue) 0%, var(--neon-purple) 70%, #000 100%)";
+            askNextQuestion();
         }
 
-        function updateLiveStats() {
-            let fakeOnline = Math.floor(Math.random() * 4) + 18; // Живой плавающий онлайн
-            document.getElementById('stat-online').innerText = fakeOnline;
-            document.getElementById('stat-reg').innerText = getRegisteredCount();
-            document.getElementById('stat-visits').innerText = localStorage.getItem('fl_global_visits');
-        }
-        setInterval(updateLiveStats, 2500);
-        
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-}
-
-        function renderFields() {
-            if (isSignUpMode) {
-                document.getElementById('auth-title').innerText = "Регистрация";
-                area.innerHTML = `
-                    <input type="text" id="reg-phone" placeholder="Номер телефона (+7...)">
-                    <input type="text" id="reg-name" placeholder="Твой Никнейм">
-                    <input type="password" id="reg-pass" placeholder="Пароль">
-                    <button onclick="processRegister()">Создать профиль</button>
-                    <span class="switch-mode" onclick="toggleMode(false)">Уже есть аккаунт? Войти</span>
+        function askNextQuestion() {
+            if (currentStep < questionsList.length) {
+                var q = questionsList[currentStep];
+                document.getElementById('jin-bubble').innerText = q.text;
+                
+                // Рендерим кнопки выбора
+                document.getElementById('controls-area').innerHTML = `
+                    <div class="answers-grid">
+                        <button class="btn-choice" onclick="handleAnswer('${q.id}', 'да')">Да</button>
+                        <button class="btn-choice" onclick="handleAnswer('${q.id}', 'нет')">Нет</button>
+                        <button class="btn-choice" onclick="handleAnswer('${q.id}', 'не знаю')">Не знаю</button>
+                    </div>
                 `;
             } else {
-                document.getElementById('auth-title').innerText = "Вход";
-                area.innerHTML = `
-                    <input type="text" id="login-id" placeholder="Никнейм или Номер">
-                    <input type="password" id="login-pass" placeholder="Пароль">
-                    <button onclick="processLogin()">Войти в мессенджер</button>
-                    <span class="switch-mode" onclick="toggleMode(true)">Еще нет аккаунта? Зарегистрироваться</span>
-                `;
+                makePrediction();
             }
-            updateLiveStats();
         }
 
-        function toggleMode(mode) {
-            isSignUpMode = mode;
-            renderFields();
-        }
-
-        function processRegister() {
-            const phone = document.getElementById('reg-phone').value.trim();
-            const name = document.getElementById('reg-name').value.trim();
-            const pass = document.getElementById('reg-pass').value.trim();
-            if (!phone || !name || !pass) { alert("Заполни все поля!"); return; }
-
-            // Глобальная синхронизация данных пользователя
-            localStorage.setItem('fl_pass_by_name_' + name, pass);
-            localStorage.setItem('fl_phone_by_name_' + name, phone);
-            localStorage.setItem('fl_name_by_phone_' + phone, name);
+        function handleAnswer(questionId, answerValue) {
+            answersHistory[questionId] = answerValue;
+            currentStep++;
             
-            // Сохраняем имя текущей сессии
-            localStorage.setItem('fluent_session', name);
-            window.location.href = 'messenger.html';
-        }
-
-        function processLogin() {
-            const idInput = document.getElementById('login-id').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            if (!idInput || !pass) { alert("Заполни все поля!"); return; }
-
-            let resolvedName = idInput;
-            // Проверка, если юзер входит по номеру телефона
-            if (idInput.startsWith('+') || !isNaN(idInput)) {
-                resolvedName = localStorage.getItem('fl_name_by_phone_' + idInput) || idInput;
-            }
-
-            const storedPass = localStorage.getItem('fl_pass_by_name_' + resolvedName);
-            if (storedPass && storedPass !== pass) {
-                alert("Неверный пароль!");
+            // Быстрая проверка: если мы уже можем точно угадать, не ждем конца вопросов
+            var matches = filterCharacters();
+            if (matches.length === 1) {
+                showGuess(matches[0].name);
                 return;
             }
-
-            // Если пароля нет в БД (первый вход) — создаём его на лету
-            if (!storedPass) {
-                localStorage.setItem('fl_pass_by_name_' + resolvedName, pass);
-            }
-
-            localStorage.setItem('fluent_session', resolvedName);
-            window.location.href = 'messenger.html';
+            
+            askNextQuestion();
         }
 
-        if (localStorage.getItem('fluent_session')) {
-            window.location.href = 'messenger.html';
-        } else {
-            renderFields();
-        }
-    </script>
-</body>
-</html>
+        function filterCharacters() {
+            return charactersDB.filter(function(char) {
+                for (var key in answersHistory) {
+if (answersHistory[key] !== "не знаю" && char.tags[key] && char.tags[key] !== answersHistory[key]) {
+return false;
+}
+}
+return true;
+});
+}
+function makePrediction() {
+var matches = filterCharacters();
+if (matches.length > 0) {
+showGuess(matches[0].name);
+} else {
+showFailPage();
+}
+}
+function showGuess(characterName) {
+// Сфера светится розовым неоном победы
+document.getElementById('sphere-glow').style.boxShadow = "0 0 30px var(--neon-pink), 0 0 60px var(--neon-purple)";
+document.getElementById('jin-bubble').innerText = "Я думаю, что это...\n✨ " + characterName + " ✨";
+document.getElementById('controls-area').innerHTML = <div class="answers-grid"> <button class="btn-choice" style="border-color:var(--neon-blue);" onclick="gameWin()">Ты угадал! 👍</button> <button class="btn-choice" onclick="showFailPage()">Не угадал 👎</button> </div>;
+}
+function gameWin() {
+document.getElementById('jin-bubble').innerText = "Ха! Джинн Fluent Game никогда не ошибается! Хочешь сыграть ещё раз?";
+document.getElementById('controls-area').innerHTML = <button class="btn-action" onclick="startGame()">Играть снова</button>;
+}
+function showFailPage() {
+document.getElementById('jin-bubble').innerText = "Эх, ты меня переиграл... Кто это был? Напиши имя, и я внесу его в свой магический свиток!";
+document.getElementById('controls-area').innerHTML = <input type="text" id="failed-char-name" class="input-fail" placeholder="Имя персонажа..."> <button class="btn-action" onclick="saveNewCharacter()">Запомнить</button>;
+}
+function saveNewCharacter() {
+var nameInput = document.getElementById('failed-char-name').value.trim();
+if (nameInput) {
+// Создаем новые теги на основе истории ответов
+var newTags = {};
+for (var k in answersHistory) {
+if (answersHistory[k] !== "не знаю") newTags[k] = answersHistory[k];
+}
+charactersDB.push({ name: nameInput, tags: newTags });
+document.getElementById('jin-bubble').innerText = "Отлично! Персонаж '" + nameInput + "' добавлен в мою кибер-память. Попробуем ещё раз?";
+document.getElementById('controls-area').innerHTML = <button class="btn-action" onclick="startGame()">Играть снова</button>;
+}
+}
