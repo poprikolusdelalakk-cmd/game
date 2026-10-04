@@ -4,309 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Fluent Game - Магический Джинн</title>
+    <title>Fluent Game - Главное Меню</title>
     <style>
         :root {
             --bg-space: #060919;
             --card-bg: rgba(13, 18, 38, 0.75);
             --neon-blue: #00f2fe;
             --neon-purple: #9d4edd;
-            --neon-pink: #ff007f;
             --text-main: #ffffff;
             --text-muted: #6f7f9f;
+            --success: #00ff66;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body, html { 
             background: radial-gradient(circle at center, #12183a 0%, var(--bg-space) 100%); 
             color: var(--text-main); 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%; height: 100%; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center;
         }
-
-        /* Задний фон со звёздами */
         .space-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1;
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1;
             background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
-            background-size: 550px 550px;
-            opacity: 0.3;
+            background-size: 550px 550px; opacity: 0.2;
         }
-
-        .game-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 480px;
-            padding: 20px;
+        .wrapper { position: relative; z-index: 10; width: 100%; max-width: 400px; padding: 20px; }
+        .menu-card {
+            background: var(--card-bg); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 24px;
+            padding: 40px 30px; text-align: center; backdrop-filter: blur(15px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
-
-        /* ИГРОВАЯ КАРТОЧКА */
-        .game-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            border-radius: 24px;
-            padding: 35px 25px;
-            text-align: center;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 254, 0.05);
-            transition: all 0.4s ease;
-        }
-
-        /* ЛОГОТИП */
         .brand-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
             background: linear-gradient(135deg, #fff, var(--neon-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-            text-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px;
         }
-        .brand-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .brand-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 35px; letter-spacing: 1px; }
+        
+        /* КНОПКА ИГРАТЬ ДЛЯ ПЕРЕХОДА НА ДРУГУЮ ВКЛАДКУ */
+        .btn-play {
+            display: block; width: 100%; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            color: #000; border: none; padding: 18px; border-radius: 14px; font-size: 1.3rem;
+            font-weight: 900; cursor: pointer; text-transform: uppercase; text-decoration: none;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); transition: all 0.3s ease; margin-bottom: 30px;
         }
-
-        /* МАГИЧЕСКАЯ СФЕРА ДЖИННА */
-        .genie-sphere-box {
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 35px auto;
-            position: relative;
-        }
-        .genie-sphere {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, var(--neon-blue) 0%, var(--neon-purple) 70%, var(--bg-space) 100%);
-            box-shadow: 0 0 30px var(--neon-blue), 0 0 60px var(--neon-purple);
-            animation: floatAndGlow 4s ease-in-out infinite;
-        }
-
-        @keyframes floatAndGlow {
-            0% { transform: translateY(0px) scale(1); filter: brightness(1); }
-            50% { transform: translateY(-10px) scale(1.03); filter: brightness(1.2); box-shadow: 0 0 40px var(--neon-blue), 0 0 80px var(--neon-purple); }
-            100% { transform: translateY(0px) scale(1); filter: brightness(1); }
-        }
-
-        /* ТЕКСТ ДЖИННА */
-        .bubble-text {
-            font-size: 1.15rem;
-            font-weight: 600;
-            line-height: 1.5;
-            min-height: 70px;
-            margin-bottom: 35px;
-            padding: 0 10px;
-            color: #fff;
-        }
-
-        /* КНОПКИ ВАРИАНТОВ ОТВЕТА */
-        .answers-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .btn-choice {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-color);
-            padding: 15px;
-            border-radius: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            outline: none;
-            color: #fff;
-        }
-        .btn-choice:hover {
-            background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(157, 78, 221, 0.15));
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
-            transform: translateY(-1px);
-        }
-        .btn-choice:active { transform: translateY(1px); }
-
-        /* ИНПУТ ДЛЯ ВВОДА ОТВЕТА, ЕСЛИ ДЖИНН ПРОИГРАЛ */
-        .input-fail {
-            width: 100%;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 14px;
-            border-radius: 12px;
-            color: #fff;
-            margin-bottom: 15px;
-            outline: none;
-            font-size: 1rem;
-            text-align: center;
-        }
-        .input-fail:focus { border-color: var(--neon-blue); }
-
-        .btn-action {
-            background: var(--neon-blue);
-            color: #000;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            width: 100%;
-        }
-        .btn-action:hover { background: #fff; box-shadow: 0 0 20px #fff; }
+        .btn-play:hover { transform: scale(1.03); box-shadow: 0 0 30px var(--neon-blue); filter: brightness(1.2); }
+        
+        .stats-panel { background-color: rgba(0,0,0,0.4); padding: 18px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; gap: 8px; text-align: left; }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+        .stat-label { color: var(--text-muted); }
+        .stat-val { font-weight: bold; }
     </style>
 </head>
 <body>
-
     <div class="space-bg"></div>
-
-    <div class="game-wrapper">
-        <div class="game-card">
+    <div class="wrapper">
+        <div class="menu-card">
             <div class="brand-title">Fluent Game</div>
-            <div class="brand-subtitle">Магический Кибер-Джинн</div>
+            <div class="brand-subtitle">Игровая Платформа</div>
 
-            <!-- Неоновая сфера джинна -->
-            <div class="genie-sphere-box">
-                <div class="genie-sphere" id="sphere-glow"></div>
-            </div>
+            <!-- Кнопка перехода на вкладку игры -->
+            <a href="game.html" class="btn-play">ИГРАТЬ</a>
 
-            <!-- Вопрос джинна -->
-            <div class="bubble-text" id="jin-bubble">Загадай персонажа из игры, мультика или реальной жизни, а я попробую его отгадать!</div>
-
-            <!-- Контейнер для кнопок игры -->
-            <div id="controls-area">
-                <button class="btn-action" onclick="startGame()">Начать игру</button>
+            <div class="stats-panel">
+                <div class="stat-row"><span class="stat-label">Игроков в сети:</span><span class="stat-val" style="color: var(--success);">24</span></div>
+                <div class="stat-row"><span class="stat-label">Персонажей в БД:</span><span class="stat-val" style="color: var(--neon-blue);">350+</span></div>
+                <div class="stat-row"><span class="stat-label">Сыграно матчей:</span><span class="stat-val" id="total-games">4329</span></div>
             </div>
         </div>
     </div>
-
     <script>
-        // ИГРОВОЙ ДВИЖОК ДЖИННА
-        var currentStep = 0;
-        var answersHistory = {};
-
-        // База знаний Джинна (Персонажи и их ключевые теги)
-        var charactersDB = [
-            { name: "Фредди Фазбер (ФНАФ)", tags: { real: "нет", game: "да", animatronic: "да" } },
-            { name: "Бонни (ФНАФ)", tags: { real: "нет", game: "да", animatronic: "да" } },
-            { name: "Влад А4", tags: { real: "да", blogger: "да", youtube: "да" } },
-            { name: "Мистер Бист (MrBeast)", tags: { real: "да", blogger: "да", youtube: "да" } },
-            { name: "Человек-Паук", tags: { real: "нет", game: "нет", marvel: "да", hero: "да" } },
-            { name: "Наруто Узумаки", tags: { real: "нет", game: "нет", anime: "да" } },
-            { name: "S1mple (Александр Костылев)", tags: { real: "да", cyber: "да", cs: "да" } },
-            { name: "Стив (Майнкрафт)", tags: { real: "нет", game: "да", blocks: "да" } }
-        ];
-
-        // Список вопросов
-        var questionsList = [
-            { id: "real", text: "Ваш персонаж существует в реальной жизни?" },
-            { id: "game", text: "Этот персонаж пришёл к нам из видеоигры?" },
-            { id: "animatronic", text: "Это робот-аниматроник?" },
-            { id: "blogger", text: "Ваш персонаж популярный блогер?" },
-            { id: "youtube", text: "Он снимает видео на YouTube?" },
-            { id: "marvel", text: "Он является супергероем вселенной Marvel?" },
-            { id: "anime", text: "Ваш персонаж из какого-то аниме?" },
-            { id: "cyber", text: "Это профессиональный киберспортсмен?" }
-        ];
-
-        function startGame() {
-            currentStep = 0;
-            answersHistory = {};
-            // Перекрашиваем сферу в фиолетовый неон при старте
-            document.getElementById('sphere-glow').style.background = "radial-gradient(circle at 30% 30%, var(--neon-blue) 0%, var(--neon-purple) 70%, #000 100%)";
-            askNextQuestion();
-        }
-
-        function askNextQuestion() {
-            if (currentStep < questionsList.length) {
-                var q = questionsList[currentStep];
-                document.getElementById('jin-bubble').innerText = q.text;
-                
-                // Рендерим кнопки выбора
-                document.getElementById('controls-area').innerHTML = `
-                    <div class="answers-grid">
-                        <button class="btn-choice" onclick="handleAnswer('${q.id}', 'да')">Да</button>
-                        <button class="btn-choice" onclick="handleAnswer('${q.id}', 'нет')">Нет</button>
-                        <button class="btn-choice" onclick="handleAnswer('${q.id}', 'не знаю')">Не знаю</button>
-                    </div>
-                `;
-            } else {
-                makePrediction();
-            }
-        }
-
-        function handleAnswer(questionId, answerValue) {
-            answersHistory[questionId] = answerValue;
-            currentStep++;
-            
-            // Быстрая проверка: если мы уже можем точно угадать, не ждем конца вопросов
-            var matches = filterCharacters();
-            if (matches.length === 1) {
-                showGuess(matches[0].name);
-                return;
-            }
-            
-            askNextQuestion();
-        }
-
-        function filterCharacters() {
-            return charactersDB.filter(function(char) {
-                for (var key in answersHistory) {
-if (answersHistory[key] !== "не знаю" && char.tags[key] && char.tags[key] !== answersHistory[key]) {
-return false;
-}
-}
-return true;
-});
-}
-function makePrediction() {
-var matches = filterCharacters();
-if (matches.length > 0) {
-showGuess(matches[0].name);
-} else {
-showFailPage();
-}
-}
-function showGuess(characterName) {
-// Сфера светится розовым неоном победы
-document.getElementById('sphere-glow').style.boxShadow = "0 0 30px var(--neon-pink), 0 0 60px var(--neon-purple)";
-document.getElementById('jin-bubble').innerText = "Я думаю, что это...\n✨ " + characterName + " ✨";
-document.getElementById('controls-area').innerHTML = <div class="answers-grid"> <button class="btn-choice" style="border-color:var(--neon-blue);" onclick="gameWin()">Ты угадал! 👍</button> <button class="btn-choice" onclick="showFailPage()">Не угадал 👎</button> </div>;
-}
-function gameWin() {
-document.getElementById('jin-bubble').innerText = "Ха! Джинн Fluent Game никогда не ошибается! Хочешь сыграть ещё раз?";
-document.getElementById('controls-area').innerHTML = <button class="btn-action" onclick="startGame()">Играть снова</button>;
-}
-function showFailPage() {
-document.getElementById('jin-bubble').innerText = "Эх, ты меня переиграл... Кто это был? Напиши имя, и я внесу его в свой магический свиток!";
-document.getElementById('controls-area').innerHTML = <input type="text" id="failed-char-name" class="input-fail" placeholder="Имя персонажа..."> <button class="btn-action" onclick="saveNewCharacter()">Запомнить</button>;
-}
-function saveNewCharacter() {
-var nameInput = document.getElementById('failed-char-name').value.trim();
-if (nameInput) {
-// Создаем новые теги на основе истории ответов
-var newTags = {};
-for (var k in answersHistory) {
-if (answersHistory[k] !== "не знаю") newTags[k] = answersHistory[k];
-}
-charactersDB.push({ name: nameInput, tags: newTags });
-document.getElementById('jin-bubble').innerText = "Отлично! Персонаж '" + nameInput + "' добавлен в мою кибер-память. Попробуем ещё раз?";
-document.getElementById('controls-area').innerHTML = <button class="btn-action" onclick="startGame()">Играть снова</button>;
-}
-}
+        var matches = parseInt(localStorage.getItem('fl_total_matches')) || 4329;
+        document.getElementById('total-games').innerText = matches;
+    </script>
+</body>
+</html>
