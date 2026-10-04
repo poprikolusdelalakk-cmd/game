@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate">
-    <title>Fluent Arena - PvP Бой</title>
+    <title>Fluent Arena - Дуэль</title>
     <style>
         :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
@@ -12,15 +11,12 @@
         .container { max-width: 460px; width: 100%; display: flex; flex-direction: column; gap: 15px; position: relative; }
         .card { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 20px; padding: 20px; text-align: center; position: relative; }
         
-        /* Экран отсчета */
         .countdown-screen { position: absolute; top:0; left:0; width:100%; height:100%; background: var(--bg); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 999; font-size: 5rem; font-weight: 900; color: var(--blue); text-shadow: 0 0 25px var(--blue); }
-        
         .battlefield { display: flex; flex-direction: column; gap: 12px; }
         .fighter { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 15px; text-align: left; }
         .hp-bg { width: 100%; height: 16px; background: #111; border-radius: 8px; overflow: hidden; margin-top: 8px; }
         .hp-fill { height: 100%; background: linear-gradient(90deg, #00ff66, #11ff88); width: 100%; transition: width 0.15s ease; }
         .hp-txt { font-size: 0.8rem; text-align: right; margin-top: 4px; color: #8fa0b5; font-weight: bold; }
-        
         .btn-hit { width: 100%; background: var(--blue); color: #000; border: none; padding: 18px; border-radius: 14px; font-size: 1.2rem; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
         .btn-hit:disabled { background: #151926 !important; color: #5c6c8f !important; cursor: not-allowed; }
         .log { background: rgba(0,0,0,0.7); border-radius: 14px; padding: 12px; height: 110px; overflow-y: auto; font-size: 0.85rem; color: #ffb703; text-align: left; margin-top: 12px; }
@@ -29,9 +25,8 @@
 <body>
     <div class="container">
         <div class="card">
-            <!-- ОТСЧЕТ БЕЗ ЗАВИСАНИЙ -->
+            <!-- ОТСЧЕТ 3... 2... 1 -->
             <div class="countdown-screen" id="cd-overlay">3</div>
-
             <div style="color:var(--blue); font-weight:900; text-transform:uppercase; margin-bottom:12px;">⚡ РЕАЛЬНАЯ PvP АРЕНА ОНЛАЙН ⚡</div>
             
             <div class="battlefield">
@@ -40,7 +35,6 @@
                     <div class="hp-bg"><div class="hp-fill" id="p1-bar"></div></div>
                     <div class="hp-txt"><span id="p1-txt">80/80 HP</span></div>
                 </div>
-
                 <div class="fighter" style="border-left: 5px solid var(--pink);">
                     <div style="font-weight:bold; display:flex; justify-content:space-between;"><span id="p2-name">Друг</span> <span style="color:var(--pink); font-size:0.8rem;">ONLINE</span></div>
                     <div class="hp-bg"><div class="hp-fill" id="p2-bar" style="background: linear-gradient(90deg, var(--pink), var(--danger));"></div></div>
@@ -49,16 +43,15 @@
             </div>
 
             <div id="btn-zone" style="display:none;">
-                <button class="btn-hit" id="action-btn" onclick="triggerStrike()">⚔️ НАЙТИ УЯЗВИМОСТЬ И УДАРИТЬ</button>
+                <button class="btn-hit" id="action-btn" onclick="triggerStrike()">⚔️ НАНЕСТИ УДАР (ТВОЙ ХОД)</button>
             </div>
-
-            <div class="log" id="arena-log">Синхронизация серверов...</div>
+            <div class="log" id="arena-log">Подключение к арене...</div>
         </div>
     </div>
 
     <script translate="no">
         var p1Name = localStorage.getItem('fl_user_nick') || "Nazar";
-        var p2Name = localStorage.getItem('enemy_player_name') || "Сигма-Друг";
+        var p2Name = localStorage.getItem('enemy_player_name') || "Друг";
 
         var p1Hp = 80, p1Max = 80, p1Dmg = 9;
         var p2Hp = 80, p2Max = 80, p2Dmg = 9;
@@ -77,35 +70,34 @@
             document.getElementById('p2-bar').style.width = (p2Hp / p2Max * 100) + "%";
         }
 
-        // ИСПРАВЛЕННЫЙ ТАЙМЕР ОТСЧЕТА
-        var count = 3;
-        var timer = setInterval(function() {
-            count--;
-            if(count === 2) document.getElementById('cd-overlay').innerText = "2";
-            if(count === 1) document.getElementById('cd-overlay').innerText = "1";
-            if(count === 0) {
+        // БРОНЕБОЙНЫЙ ИСПРАВЛЕННЫЙ ТАЙМЕР ОТСЧЕТА
+        var num = 3;
+        var arenaTimer = setInterval(function() {
+            num--;
+            if(num === 2) document.getElementById('cd-overlay').innerText = "2";
+            if(num === 1) document.getElementById('cd-overlay').innerText = "1";
+            if(num === 0) {
                 document.getElementById('cd-overlay').innerText = "БОЙ! 🔥";
                 document.getElementById('cd-overlay').style.color = "var(--success)";
             }
-            if(count < 0) {
-                clearInterval(timer);
+            if(num < 0) {
+                clearInterval(arenaTimer);
                 document.getElementById('cd-overlay').style.display = "none";
                 document.getElementById('btn-zone').style.display = "block";
-                log("⚔️ Бой начался! Твой ход, " + p1Name + "!");
+                log("⚔️ Раунд начался! Твой ход, " + p1Name + "!");
                 startLiveMusic();
             }
         }, 850);
 
         function triggerStrike() {
             if(p1Hp <= 0 || p2Hp <= 0) return;
-
             var dmg = p1Dmg + bonus + Math.floor(Math.random() * 3);
             p2Hp = Math.max(0, p2Hp - dmg);
             log("⚔️ Ты провёл удар по другу " + p2Name + " на -" + dmg + " HP!");
             refresh();
 
             if(p2Hp <= 0) {
-                log("🏆 ПОБЕДА! Ты полностью обнулил соперника!");
+                log("🏆 ПОБЕДА! Катка выиграна!");
                 localStorage.setItem('battle_res', 'win');
                 stopBattle();
                 return;
@@ -113,28 +105,28 @@
 
             var b = document.getElementById('action-btn');
             b.setAttribute('disabled', 'true');
-            b.innerText = "⏳ ОЖИДАНИЕ ОТВЕТА ОТ ИГРОКА " + p2Name.toUpperCase();
+            b.innerText = "⏳ ОЖИДАНИЕ ХОДА СОПЕРНИКА...";
 
             setTimeout(function() {
                 if(p2Hp <= 0) return;
                 var ed = p2Dmg + Math.floor(Math.random() * 3);
                 p1Hp = Math.max(0, p1Hp - ed);
-                log("💥 Друг [" + p2Name + "] нанёс сетевой ответный удар на -" + ed + " HP!");
+                log("💥 Игрок [" + p2Name + "] нанёс ответный удар на -" + ed + " HP!");
                 refresh();
 
                 if(p1Hp <= 0) {
-                    log("💀 Вы проиграли дуэль! Друг оказался сильнее.");
+                    log("💀 Ты проиграл дуэль!");
                     localStorage.setItem('battle_res', 'fail');
                     stopBattle();
                 } else {
                     b.removeAttribute('disabled');
-                    b.innerText = "⚔️ НАЙТИ УЯЗВИМОСТЬ И УДАРИТЬ";
+                    b.innerText = "⚔️ НАНЕСТИ УДАР (ТВОЙ ХОД)";
                 }
             }, 900);
         }
 
         function stopBattle() {
-            stopLiveMusic();
+            if(window.gameMusicInterval) clearInterval(window.gameMusicInterval);
             document.getElementById('btn-zone').innerHTML = `<button class="btn-hit" style="background:linear-gradient(135deg, var(--pink), #9d4edd); color:#fff;" onclick="window.location.href='result.html'">Завершить 🚩</button>`;
         }
 
@@ -144,25 +136,21 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // ИСПРАВЛЕННЫЙ САУНДТРЕК БЕЗ ОШИБОК СИНТАКСИСА
-        var audioCtx = null, musicInterval = null;
         function startLiveMusic() {
             if(localStorage.getItem('fl_music_enabled') !== 'true') return;
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var melody = [110.00, 110.00, 130.81, 146.83, 98.00, 98.00, 110.00, 164.81]; // Чёткие рабочие частоты
+            window.gameAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var melody = [110.00, 110.00, 130.81, 146.83, 98.00, 98.00, 110.00, 164.81];
             var step = 0;
-            musicInterval = setInterval(function() {
-                var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(melody[step], audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+            window.gameMusicInterval = setInterval(function() {
+                var osc = window.gameAudioCtx.createOscillator(); var gain = window.gameAudioCtx.createGain();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(melody[step], window.gameAudioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, window.gameAudioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, window.gameAudioCtx.currentTime + 0.3);
+                osc.connect(gain); gain.connect(window.gameAudioCtx.destination);
+                osc.start(); osc.stop(window.gameAudioCtx.currentTime + 0.35);
                 step = (step + 1) % melody.length;
             }, 280);
         }
-        function stopLiveMusic() { if(musicInterval) clearInterval(musicInterval); }
-
         refresh();
     </script>
 </body>
