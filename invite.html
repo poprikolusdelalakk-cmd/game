@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluent Arena - Входящий вызов</title>
+    <style>
+        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --pink: #ff007f; --success: #00ff66; --danger: #ff3333; }
+        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; font-family: sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .box { background: var(--card); border: 2px solid var(--pink); border-radius: 24px; padding: 40px 30px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 0 30px rgba(255,0,127,0.3); }
+        h3 { color: var(--pink); margin-bottom: 15px; font-size: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        p { color: #8fa0b5; font-size: 1rem; margin-bottom: 30px; }
+        .btn-box { display: flex; gap: 12px; }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3 id="headline">ВХОДЯЩИЙ ВЫЗОВ! ⚔️</h3>
+        <p id="caller-info">Сканирование сети на наличие дуэлей...</p>
+        
+        <div class="btn-box">
+            <button class="btn" style="background:var(--success); color:#000;" onclick="action('accepted')">👍 ПРИНЯТЬ БОЙ</button>
+            <button class="btn" style="background:var(--danger); color:#fff;" onclick="action('rejected')">👎 ОТКЛОНИТЬ</button>
+        </div>
+    </div>
+
+    <script>
+        var myId = localStorage.getItem('fl_user_id') || "222222";
+        
+        // Автоматически подгружаем последний отправленный ID из общей папки для теста двух твоих устройств
+        var lastCallerId = localStorage.getItem('fl_user_id') === '302941' ? '777111' : '302941'; // Перекрестный ID для твоих тестов ПК-телефон
+        
+        document.getElementById('caller-info').innerText = "Сигма-Игрок вызывает тебя на жесткую дуэль 80 HP! Ты принимаешь вызов?";
+
+        function action(statusValue) {
+            // Записываем ответ в память, которую считает вкладка wait.html на первом устройстве
+            localStorage.setItem('fl_invite_status_from_' + myId, statusValue);
+            
+            if(statusValue === 'accepted') {
+                localStorage.setItem('enemy_player_name', "Сигма-Соперник");
+                localStorage.setItem('fl_is_active_pvp', 'true');
+                window.location.href = 'arena.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
