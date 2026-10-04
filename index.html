@@ -46,6 +46,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
         /* ЭКРАН АВТОРИЗАЦИИ */
@@ -348,10 +349,10 @@
             border-top: 1px solid rgba(255,255,255,0.06);
             display: flex;
             gap: 10px;
-            background: rgba(0,0,0,0.3);
-        }
-
-.input-area input { flex: 1; padding: 14px 18px; border-radius: 14px; }
+background: rgba(0,0,0,0.3);
+}
+.input-area input { flex: 1; padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #fff; outline: none;}
+.input-area input:focus { border-color: var(--accent-cyan); }
 .btn-send { width: auto; padding: 0 20px; background: var(--accent-cyan); color: #000; border-radius: 14px; }
 
 
@@ -359,7 +360,6 @@ Fluent Messenger
 Безопасное неоновое общение
 Войти
 Создать новый аккаунт
-
 Fluent Messenger
 
 User
@@ -372,7 +372,6 @@ User
 
 Онлайн сейчас
 24
-
 
 Людей на сайте
 1,482
@@ -412,6 +411,7 @@ if (sndNode.state === 'suspended') sndNode.resume();
 const osc = sndNode.createOscillator();
 const gain = sndNode.createGain();
 osc.connect(gain); gain.connect(sndNode.destination);
+osc.type = 'sine';
 osc.frequency.setValueAtTime(580, sndNode.currentTime);
 osc.frequency.exponentialRampToValueAtTime(320, sndNode.currentTime + 0.06);
 gain.gain.setValueAtTime(0.08, sndNode.currentTime);
@@ -421,8 +421,7 @@ osc.start(); osc.stop(sndNode.currentTime + 0.06);
 }
 let signUpState = false;
 let activeUser = localStorage.getItem('fluent_session') || null;
-let activeTargetChat = null; // Ник собеседника в открытом чате
-
+let activeTargetChat = null;
 // ЖИВАЯ СТАТИСТИКА
 let liveOnline = Math.floor(Math.random() * 10) + 25;
 let liveSite = Math.floor(Math.random() * 40) + 1520;
@@ -450,7 +449,6 @@ document.getElementById('main-title').innerText = signUpState ? "Регистр�
 document.getElementById('main-btn').innerText = signUpState ? "Создать аккаунт" : "Войти";
 document.getElementById('mode-toggle').innerText = signUpState ? "Уже есть профиль? Войти" : "Создать новый аккаунт";
 }
-
 function processAuth() {
 playBlip();
 const login = document.getElementById('user-email').value.trim();
@@ -459,9 +457,7 @@ if (!login || !pass) { alert("Заполните все поля!"); return; }
 if (signUpState) {
 localStorage.setItem(fl_u_${login}, pass);
 localStorage.setItem('fluent_session', login);
-// Инициализируем пустой список чатов для нового юзера
-let initialFriends = ["Nazar", "Support_Bot"];
-localStorage.setItem(fl_friends_${login}, JSON.stringify(initialFriends));
+localStorage.setItem(fl_friends_${login}, JSON.stringify(["Nazar", "Support_Bot"]));
 startMessenger(login);
 } else {
 const storedPass = localStorage.getItem(fl_u_${login});
@@ -478,20 +474,17 @@ activeUser = username;
 document.getElementById('user-display').innerText = username;
 document.getElementById('auth-screen').style.display = 'none';
 document.getElementById('app-screen').style.display = 'flex';
-// Если у пользователя нет списка друзей, даем базовый
 if(!localStorage.getItem(fl_friends_${activeUser})) {
 localStorage.setItem(fl_friends_${activeUser}, JSON.stringify(["Nazar", "Support_Bot"]));
 }
-switchTab(1); // При входе сразу открываем вкладку Чаты
+switchTab(1);
 renderChatsList();
 setInterval(syncMessages, 1000);
 }
-
 function exitChat() {
 localStorage.removeItem('fluent_session');
 location.reload();
 }
-// ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
 function switchTab(idx) {
 playBlip();
 for(let i=0; i<3; i++) {
@@ -502,7 +495,6 @@ document.getElementById(tab${idx}).classList.add('active');
 document.getElementById(content${idx}).classList.add('active');
 if(idx === 1) renderChatsList();
 }
-// ОТРИСОВКА СПИСКА ЧАТОВ
 function renderChatsList() {
 const listContainer = document.getElementById('chats-list');
 let friends = JSON.parse(localStorage.getItem(fl_friends_${activeUser})) || [];
@@ -513,16 +505,13 @@ return;
 let html = "";
 friends.forEach(f => {
 let packets = JSON.parse(localStorage.getItem('fluent_packets')) || [];
-// Фильтруем сообщения между мной и этим другом
 let pairMsgs = packets.filter(m => (m.from === activeUser && m.to === f) || (m.from === f && m.to === activeUser));
 let lastText = pairMsgs.length > 0 ? pairMsgs[pairMsgs.length - 1].text : "Нет сообщений";
 if(lastText.length > 25) lastText = lastText.substring(0, 22) + "...";
-
-html += <div class="chat-item" onclick="openDialog('${f}')"> <div class="chat-avatar">${f[0].toUpperCase()}</div> <div class="chat-info"> <div class="chat-name">${f}</div> <div class="chat-preview">${cleanHtml(lastText)}</div> </div> </div>;
+html += <div class="chat-item" onclick="openDialog('${f}')"> <div class="chat-avatar">${f.charAt(0).toUpperCase()}</div> <div class="chat-info"> <div class="chat-name">${f}</div> <div class="chat-preview">${cleanHtml(lastText)}</div> </div> </div>;
 });
 listContainer.innerHTML = html;
 }
-// ДОБАВЛЕНИЕ ДРУГА И СОЗДАНИЕ ЧАТА
 function addFriendChat() {
 playBlip();
 const input = document.getElementById('search-friend-input');
@@ -538,19 +527,17 @@ return;
 }
 friends.push(targetName);
 localStorage.setItem(fl_friends_${activeUser}, JSON.stringify(friends));
-status.innerHTML = <span style="color:#00ff66;">Чат с кодом ${targetName} создан!</span>;
+status.innerHTML = <span style="color:#00ff66;">Чат с ${targetName} успешно создан!</span>;
 setTimeout(() => { openDialog(targetName); input.value = ""; status.innerText = "Введите ник и нажмите кнопку, чтобы создать чат."; }, 1000);
 }
-// ОТКРЫТИЕ ДИАЛОГА ЧАТА
 function openDialog(target) {
 playBlip();
 activeTargetChat = target;
 document.getElementById('dialog-title').innerText = target;
-document.getElementById('dialog-avatar').innerText = target[0].toUpperCase();
+document.getElementById('dialog-avatar').innerText = target.charAt(0).toUpperCase();
 document.getElementById('active-dialog').style.display = 'flex';
 syncMessages();
 }
-
 function closeDialog() {
 playBlip();
 activeTargetChat = null;
@@ -572,7 +559,6 @@ function syncMessages() {
 if (!activeTargetChat || document.getElementById('active-dialog').style.display !== 'flex') return;
 const flow = document.getElementById('msg-flow');
 let store = JSON.parse(localStorage.getItem('fluent_packets')) || [];
-// Фильтруем сообщения конкретно для этого диалога
 let dialogMsgs = store.filter(m => (m.from === activeUser && m.to === activeTargetChat) || (m.from === activeTargetChat && m.to === activeUser));
 let html = "";
 if (dialogMsgs.length === 0) {
@@ -581,14 +567,14 @@ html = <div style="text-align:center; color:var(--text-muted); margin-top:40px; 
 dialogMsgs.forEach(msg => {
 const isMine = msg.from === activeUser;
 const clock = new Date(msg.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-html += <div class="msg-box ${isMine ? 'outgoing' : 'incoming'}"> <div class="sender-name">${msg.from}</div> <div class="msg-text">${cleanHtml(msg.text)}</div> <div class="msg-meta">${clock}</div> </div>;
+html += <div class="msg-box ${isMine ? 'outgoing' : 'incoming'}"> <div class="msg-sender">${msg.from}</div> <div class="msg-text">${cleanHtml(msg.text)}</div> <div class="msg-time">${clock}</div> </div>;
 });
 }
-
 if (flow.innerHTML !== html) {
 flow.innerHTML = html;
 flow.scrollTop = flow.scrollHeight;
 }
 }
+
 function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
 function cleanHtml(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
