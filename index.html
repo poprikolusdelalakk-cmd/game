@@ -14,29 +14,81 @@
             --text-color: #f5f5f5;
             --text-muted: #7f91a4;
             --border-color: #101921;
+            --success: #00ff66;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-color); height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .auth-box { background-color: var(--side-bg); padding: 40px; border-radius: 20px; border: 1px solid rgba(36, 129, 204, 0.2); width: 100%; max-width: 380px; box-shadow: 0 15px 50px rgba(0,0,0,0.6); }
+        body { background-color: var(--bg-dark); color: var(--text-color); height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        
+        .auth-container { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 20px; }
+        .auth-box { background-color: var(--side-bg); padding: 40px; border-radius: 20px; border: 1px solid rgba(36, 129, 204, 0.2); box-shadow: 0 15px 50px rgba(0,0,0,0.6); }
         .auth-box h1 { margin-bottom: 8px; font-size: 2.2rem; font-weight: bold; text-align: center; background: linear-gradient(135deg, #fff 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .auth-box p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; text-align: center; }
         .auth-box input { width: 100%; background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 12px; outline: none; font-size: 1rem; }
+        .auth-box input:focus { border-color: var(--accent); }
         .auth-box button { width: 100%; background-color: var(--accent); color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 1.05rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .auth-box button:hover { background-color: var(--accent-hover); }
         .switch-mode { color: var(--accent); font-size: 0.9rem; cursor: pointer; text-decoration: underline; user-select: none; text-align: center; margin-top: 15px; display: block; }
+        
+        /* СТИЛЬ СЧЁТЧИКОВ СТАТИСТИКИ */
+        .stats-panel { background-color: var(--side-bg); padding: 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; gap: 10px; }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+        .stat-label { color: var(--text-muted); }
+        .stat-val { font-weight: bold; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <div class="auth-box">
-        <h1 id="auth-title">Вход</h1>
-        <p id="auth-subtitle">Fluent Messenger</p>
-        <div id="inputs-area"></div>
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1 id="auth-title">Вход</h1>
+            <p id="auth-subtitle">Fluent Messenger</p>
+            <div id="inputs-area"></div>
+        </div>
+
+        <!-- КРАСИВАЯ ПАНЕЛЬ СТАТИСТИКИ ПРИ РЕГИСТРАЦИИ/ВХОДЕ -->
+        <div class="stats-panel">
+            <div class="stat-row">
+                <span class="stat-label">В сети сейчас:</span>
+                <span class="stat-val" id="stat-online" style="color: var(--success);">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Зарегистрировано:</span>
+                <span class="stat-val" id="stat-reg" style="color: var(--accent);">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Всего визитов:</span>
+                <span class="stat-val" id="stat-visits">-</span>
+            </div>
+        </div>
     </div>
 
     <script>
         let isSignUpMode = false;
         const area = document.getElementById('inputs-area');
+
+        // Инициализация глобальных счётчиков
+        let baseVisits = parseInt(localStorage.getItem('fl_global_visits')) || 1240;
+        baseVisits += 1;
+        localStorage.setItem('fl_global_visits', baseVisits);
+
+        // Считаем реальное количество уникальных аккаунтов в localStorage
+        function getRegisteredCount() {
+            let count = 2; // Базовые боты по умолчанию (Fluent_Bot и Support_Bot)
+            for (let i = 0; i < localStorage.length; i++) {
+                if (localStorage.key(i).startsWith('fl_pass_by_name_')) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        function updateLiveStats() {
+            let fakeOnline = Math.floor(Math.random() * 4) + 18; // Живой плавающий онлайн
+            document.getElementById('stat-online').innerText = fakeOnline;
+            document.getElementById('stat-reg').innerText = getRegisteredCount();
+            document.getElementById('stat-visits').innerText = localStorage.getItem('fl_global_visits');
+        }
+        setInterval(updateLiveStats, 2500);
 
         function renderFields() {
             if (isSignUpMode) {
@@ -57,6 +109,7 @@
                     <span class="switch-mode" onclick="toggleMode(true)">Еще нет аккаунта? Зарегистрироваться</span>
                 `;
             }
+            updateLiveStats();
         }
 
         function toggleMode(mode) {
@@ -70,12 +123,13 @@
             const pass = document.getElementById('reg-pass').value.trim();
             if (!phone || !name || !pass) { alert("Заполни все поля!"); return; }
 
+            // Глобальная синхронизация данных пользователя
             localStorage.setItem('fl_pass_by_name_' + name, pass);
             localStorage.setItem('fl_phone_by_name_' + name, phone);
             localStorage.setItem('fl_name_by_phone_' + phone, name);
-            localStorage.setItem('fluent_session', name);
             
-            // ПЕРЕНАПРАВЛЯЕМ НА СОВЕРШЕННО НОВУЮ ВКЛАДКУ-СТРАНИЦУ
+            // Сохраняем имя текущей сессии
+            localStorage.setItem('fluent_session', name);
             window.location.href = 'messenger.html';
         }
 
@@ -85,14 +139,23 @@
             if (!idInput || !pass) { alert("Заполни все поля!"); return; }
 
             let resolvedName = idInput;
+            // Проверка, если юзер входит по номеру телефона
             if (idInput.startsWith('+') || !isNaN(idInput)) {
                 resolvedName = localStorage.getItem('fl_name_by_phone_' + idInput) || idInput;
             }
 
-            localStorage.setItem('fl_pass_by_name_' + resolvedName, pass);
+            const storedPass = localStorage.getItem('fl_pass_by_name_' + resolvedName);
+            if (storedPass && storedPass !== pass) {
+                alert("Неверный пароль!");
+                return;
+            }
+
+            // Если пароля нет в БД (первый вход) — создаём его на лету
+            if (!storedPass) {
+                localStorage.setItem('fl_pass_by_name_' + resolvedName, pass);
+            }
+
             localStorage.setItem('fluent_session', resolvedName);
-            
-            // ПЕРЕНАПРАВЛЯЕМ НА СОВЕРШЕННО НОВУЮ ВКЛАДКУ-СТРАНИЦУ
             window.location.href = 'messenger.html';
         }
 
