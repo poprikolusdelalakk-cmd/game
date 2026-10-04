@@ -1,63 +1,111 @@
 <!DOCTYPE html>
-<html lang="ru" translate="no" class="notranslate">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluent Arena - Сетевой вызов</title>
+    <title>FLUENT ARENA - СЕТЕВОЙ ВЫЗОВ</title>
+    <script src="https://unpkg.com"></script>
     <style>
-        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.85); --blue: #00f2fe; --purple: #9d4edd; --pink: #ff007f; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .box { background: var(--card); border: 1px solid rgba(0,242,254,0.2); border-radius: 24px; padding: 30px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-        input { width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 12px; color: #fff; margin-bottom: 12px; outline: none; text-align: center; font-size: 1rem; }
-        button { width: 100%; background: linear-gradient(135deg, var(--blue), var(--purple)); color: #000; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; }
-        .f-row { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-duel { background: var(--pink); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-menu { display: block; width: 100%; background: #fff; color: #000; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; text-align: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #060b13; color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .menu-card {
+            background: #0d1625; border: 2px solid #1e293b; border-radius: 20px;
+            padding: 30px; width: 90%; max-width: 420px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        h2 { font-size: 24px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; }
+        input {
+            width: 100%; padding: 14px; background: #111827; border: 2px solid #1e293b;
+            border-radius: 12px; color: white; font-size: 16px; text-align: center; margin-bottom: 15px; outline: none;
+        }
+        input:focus { border-color: #a855f7; }
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 16px;
+            font-weight: 700; cursor: pointer; color: white; margin-bottom: 12px; transition: 0.2s;
+        }
+        .btn-primary { background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); }
+        .btn-bot { background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); }
+        .btn-secondary { background: #1e293b; }
+        .status { font-size: 13px; color: #94a3b8; margin-top: 5px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2 style="margin-bottom:20px; font-weight: 900; text-transform: uppercase;">⚔️ Сетевой Вызов</h2>
-        <input type="text" id="friend-nick" placeholder="Введи никнейм друга...">
-        <input type="text" id="friend-id" placeholder="Введи Сигма-ID друга (6 цифр)...">
-        <button onclick="addAndChallenge()">Добавить и Отправить инвайт</button>
+
+    <div class="menu-card">
+        <h2>⚔️ Сетевой Вызов</h2>
         
-        <div style="text-align: left; margin-bottom: 10px; font-size: 0.85rem; color: #5c6c8f; font-weight: bold;">ТВОЙ СПИСОК ДРУЗЕЙ (ДО 10):</div>
-        <div id="friends-box"></div>
-        <a href="index.html" class="btn-menu" style="margin-top:10px;">В меню</a>
+        <!-- Отображение личного Сигма-ID игрока -->
+        <div style="background: rgba(56,189,248,0.1); padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed #38bdf8;">
+            Ваш Сигма-ID: <b id="my-id-display" style="color: #38bdf8; font-size: 18px;">------</b>
+        </div>
+
+        <input type="text" id="friend-id-input" placeholder="Введите Сигма-ID друга...">
+        
+        <button class="btn btn-primary" onclick="sendInvite()">ДОБАВИТЬ И ОТПРАВИТЬ ИНВАЙТ</button>
+        <button class="btn btn-bot" onclick="playWithBot()">ОДИНОЧНАЯ ИГРА С БОТОМ</button>
+        <button class="btn btn-secondary" onclick="window.location.href='index.html'">В МЕНЮ</button>
+
+        <div class="status" id="status-text">Готов к передаче инвайтов в сеть</div>
     </div>
 
     <script>
-        function render() {
-            var list = JSON.parse(localStorage.getItem('fl_friends_list_complex')) || [];
-            var html = "";
-            list.forEach(function(f) {
-                html += '<div class="f-row"><div>🟢 <strong>' + f.nick + '</strong> <span style="color:var(--blue);">#' + f.id + '</span></div><button class="btn-duel" onclick="challenge(\''+f.nick+'\',\''+f.id+'\')">Вызов</button></div>';
-            });
-            document.getElementById('friends-box').innerHTML = html || '<p style="color:#5c6c8f; font-size:0.9rem;">Список пуст. Добавь друга по ID!</p>';
+        // Генерируем или берем постоянный ID игрока
+        let myId = localStorage.getItem('sigma_id');
+        if(!myId) {
+            myId = Math.floor(100000 + Math.random() * 900000).toString();
+            localStorage.setItem('sigma_id', myId);
         }
+        document.getElementById('my-id-display').textContent = myId;
 
-        function addAndChallenge() {
-            var nick = document.getElementById('friend-nick').value.trim();
-            var id = document.getElementById('friend-id').value.trim();
-            if(!nick || id.length !== 6 || isNaN(id)) { alert("Заполните ник и 6-значный ID!"); return; }
+        // Подключаемся к общему брокеру для отслеживания входящих инвайтов
+        const client = mqtt.connect('wss://test.mosquitto.org:8081');
+        
+        client.on('connect', () => {
+            // Слушаем личный канал инвайтов по своему ID
+            client.subscribe(`fluentarena/invite/${myId}`);
+        });
 
-            var list = JSON.parse(localStorage.getItem('fl_friends_list_complex')) || [];
-            if(!list.some(function(f){ return f.id === id; })) {
-                list.push({ nick: nick, id: id });
-                localStorage.setItem('fl_friends_list_complex', JSON.stringify(list));
+        client.on('message', (topic, message) => {
+            let data = JSON.parse(message.toString());
+            document.getElementById('status-text').textContent = `Получен инвайт от ${data.from}! Входим в бой...`;
+            
+            // Если пришел инвайт, гость переходит по ссылке создателя (host)
+            setTimeout(() => {
+                window.location.href = `arena.html?mode=online&role=guest&room=${data.room}`;
+            }, 1000);
+        });
+
+        // Отправка вызова другу
+        function sendInvite() {
+            let friendId = document.getElementById('friend-id-input').value.trim();
+            if(!friendId || friendId.length < 5) {
+                alert('Пожалуйста, введите корректный ID друга!');
+                return;
             }
-            challenge(nick, id);
+
+            let roomName = `room_${myId}_${friendId}`;
+            document.getElementById('status-text').textContent = 'Ожидание ответа от игрока...';
+
+            // Публикуем инвайт в топик друга
+            client.publish(`fluentarena/invite/${friendId}`, JSON.stringify({
+                from: localStorage.getItem('nickname') || 'Flerenk',
+                room: roomName
+            }));
+
+            // Сами переходим в режим ожидания (как хост)
+            setTimeout(() => {
+                window.location.href = `arena.html?mode=online&role=host&room=${roomName}`;
+            }, 1500);
         }
 
-        function challenge(friendNick, friendId) {
-            localStorage.setItem('enemy_player_name', friendNick);
-            localStorage.setItem('enemy_player_id', friendId);
-            // ЖЕСТКИЙ ПЕРЕХОД НА НОВУЮ ВКЛАДКУ ОЖИДАНИЯ ОТВЕТА
-            window.location.href = 'wait.html';
+        // Кнопка быстрого запуска игры с ботом
+        function playWithBot() {
+            window.location.href = `arena.html?mode=bot`;
         }
-        render();
     </script>
 </body>
 </html>
