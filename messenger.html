@@ -137,25 +137,23 @@
 Сбросить всё
 
 
-// Имя пользователя и контакты по умолчанию
-let myName = localStorage.getItem('fluent_session') || "Nazar";
+// БРОНЕБОЙНАЯ ИНИЦИАЛИЗАЦИЯ: Коду пофигу на пустой localstorage
+let myName = localStorage.getItem('fluent_session') || "овнер";
 let currentChatUser = null;
 let defaultContacts = ["Fluent_Bot", "Support_Bot"];
 localStorage.setItem('fl_phone_by_name_Fluent_Bot', "Официальный Бот");
 localStorage.setItem('fl_phone_by_name_Support_Bot', "Служба техподдержки");
-// Если истории нет — создаем приветствие бота
-if (!localStorage.getItem('fluent_msg_storage')) {
+// Жестко зашиваем стартовые сообщения
 let welcomePackets = [
 { from: "Fluent_Bot", to: myName, txt: "Привет! Тебя приветствует Fluent Messenger!" },
 { from: "Fluent_Bot", to: myName, txt: "Наш мессенджер топ по 3 главным причинам:\n\n1. 100% Скорость — сообщения летают за миллисекунды.\n2. Полная анонимность — все данные лежат только на твоем девайсе.\n3. Крутой неоновый дизайн в стиле Telegram Web К!" }
 ];
 localStorage.setItem('fluent_msg_storage', JSON.stringify(welcomePackets));
-}
 updateContactsList();
 setInterval(updateMessagesBox, 1000);
 function openSettingsModal() {
 document.getElementById('set-username').innerText = myName;
-let phone = localStorage.getItem('fl_phone_by_name_' + myName) || "+7 (999) 777-77-77";
+let phone = localStorage.getItem('fl_phone_by_name_' + myName) || "Не указан";
 document.getElementById('set-phone').innerText = phone;
 document.getElementById('settings-overlay').style.display = 'flex';
 }
@@ -171,16 +169,8 @@ window.location.href = 'index.html';
 function updateContactsList() {
 const list = document.getElementById('chats-list');
 if(!list) return;
-let userContacts = [];
-try {
-userContacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
-} catch(e) { userContacts = []; }
-let finalContacts = [...defaultContacts];
-userContacts.forEach(c => {
-if(!finalContacts.includes(c)) finalContacts.push(c);
-});
 let html = "";
-finalContacts.forEach(c => {
+defaultContacts.forEach(c => {
 let isSelected = c === currentChatUser;
 html += <div class="chat-item ${isSelected ? 'selected' : ''}" onclick="openChat('${c}')"> <div class="chat-avatar">${c.charAt(0).toUpperCase()}</div> <div class="chat-info"><div class="chat-name">${c}</div></div> </div>;
 });
@@ -190,20 +180,10 @@ function addContact() {
 const input = document.getElementById('friend-search-input');
 const searchValue = input.value.trim();
 if (!searchValue || searchValue === myName) return;
-let targetName = searchValue;
-if (searchValue.startsWith('+') || !isNaN(searchValue)) {
-let foundName = localStorage.getItem('fl_name_by_phone_' + searchValue);
-if (foundName) targetName = foundName;
+if (!defaultContacts.includes(searchValue)) {
+defaultContacts.push(searchValue);
 }
-let userContacts = [];
-try {
-userContacts = JSON.parse(localStorage.getItem('fl_contacts_' + myName)) || [];
-} catch(e) { userContacts = []; }
-if (!userContacts.includes(targetName)) {
-userContacts.push(targetName);
-localStorage.setItem('fl_contacts_' + myName, JSON.stringify(userContacts));
-}
-openChat(targetName);
+openChat(searchValue);
 input.value = "";
 }
 function openChat(username) {
@@ -218,10 +198,7 @@ function postMessage() {
 const input = document.getElementById('message-input');
 const text = input.value.trim();
 if (!text || !currentChatUser) return;
-let allMsgs = [];
-try {
-allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
-} catch(e) { allMsgs = []; }
+let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
 allMsgs.push({ from: myName, to: currentChatUser, txt: text });
 localStorage.setItem('fluent_msg_storage', JSON.stringify(allMsgs));
 input.value = '';
@@ -230,17 +207,14 @@ updateMessagesBox();
 function updateMessagesBox() {
 if (!currentChatUser || document.getElementById('chat-area').style.display !== 'flex') return;
 const box = document.getElementById('messages-box');
-let allMsgs = [];
-try {
-allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
-} catch(e) { allMsgs = []; }
+let allMsgs = JSON.parse(localStorage.getItem('fluent_msg_storage')) || [];
 let activeMsgs = allMsgs.filter(m => (m.from === myName && m.to === currentChatUser) || (m.from === currentChatUser && m.to === myName));
 let html = "";
 activeMsgs.forEach(m => {
 let isMine = m.from === myName;
 html += <div class="bubble ${isMine ? 'outgoing' : 'incoming'}"><div>${escapeHTML(m.txt)}</div></div>;
 });
-if (box.innerHTML !== html) { box.innerHTML = html; box.scrollTop = box.scrollHeight; }
+box.innerHTML = html;
 }
 function handleEnter(e) { if (e.key === 'Enter') postMessage(); }
 function escapeHTML(str) { return str.replace(/[&<>'"]/g, c => ({ '&': '&', '<': '<', '>': '>', "'": ''', '"': '"' }[c] || c)); }
