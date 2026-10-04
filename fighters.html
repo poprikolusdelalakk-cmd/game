@@ -3,37 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluent Arena - Выбор Сигмы</title>
+    <title>Выбор Сигмы</title>
     <style>
-        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.75); --blue: #00f2fe; --purple: #9d4edd; }
+        :root { --bg: #02040a; --card: rgba(14, 22, 47, 0.75); --blue: #00f2fe; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { max-width: 550px; width: 100%; text-align: center; }
-        h2 { font-size: 2rem; color: #fff; margin-bottom: 35px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0,242,254,0.3); font-weight: 900; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .char-btn { background: var(--card); border: 2px solid rgba(0, 242, 254, 0.15); border-radius: 20px; padding: 25px 20px; color: #fff; cursor: pointer; text-align: left; transition: all 0.3s ease; backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        .char-btn:hover { border-color: var(--blue); background: rgba(0, 242, 254, 0.08); transform: translateY(-4px); box-shadow: 0 20px 45px rgba(0, 242, 254, 0.25); }
-        .char-btn h3 { font-size: 1.3rem; color: var(--blue); margin-bottom: 8px; font-weight: 800; text-shadow: 0 0 10px rgba(0,242,254,0.2); }
-        .char-btn p { font-size: 0.85rem; color: #8fa0b5; line-height: 1.5; }
+        .container { max-width: 480px; width: 100%; text-align: center; }
+        h2 { font-size: 1.6rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .char-btn { background: var(--card); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 16px; padding: 18px; color: #fff; cursor: pointer; text-align: left; transition: 0.2s; }
+        .char-btn:hover { border-color: var(--blue); background: rgba(0, 242, 254, 0.05); transform: translateY(-2px); }
+        .char-btn h3 { font-size: 1.1rem; color: var(--blue); margin-bottom: 4px; }
+        .char-btn p { font-size: 0.75rem; color: #8fa0b5; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Выбери своего Сигму-Бойца</h2>
+        <h2>Выбери своего Сигму:</h2>
         <div class="grid">
-            <button class="char-btn" onclick="select('Nazar', 150, 20, 'Крит 30%')"><h3>Nazar (Овнер)</h3><p>⚡ HP: 150 | Атака: 20<br>🔥 Пассивка: Шанс крита 30% и урон х2</p></button>
-            <button class="char-btn" onclick="select('Leon', 110, 26, 'Стелс-хил')"><h3>Леон (Бравл)</h3><p>⚡ HP: 110 | Атака: 26<br>🔥 Пассивка: Реген +35 HP за победу</p></button>
-            <button class="char-btn" onclick="select('Domer', 130, 22, 'Админка')"><h3>Домер (Грифер)</h3><p>⚡ HP: 130 | Атака: 22<br>🔥 Пассивка: Пробитие 20% брони босса</p></button>
-            <button class="char-btn" onclick="select('Mellstroy', 120, 18, 'Щит')"><h3>Меллстрой</h3><p>⚡ HP: 120 | Атака: 18<br>🔥 Пассивка: Щит блочит 75% урона</p></button>
+            <button class="char-btn" onclick="select('Nazar', 150, 20)"><h3>Nazar (Овнер)</h3><p>HP: 150 | Атак: 20<br>Пассивка: Крит 30%</p></button>
+            <button class="char-btn" onclick="select('Leon', 110, 26)"><h3>Леон (Бравл)</h3><p>HP: 110 | Атак: 26<br>Пассивка: Стелс-реген</p></button>
+            <button class="char-btn" onclick="select('Domer', 130, 22)"><h3>Домер (Грифер)</h3><p>HP: 130 | Атак: 22<br>Пассивка: Пробой брони</p></button>
+            <button class="char-btn" onclick="select('Mellstroy', 120, 18)"><h3>Меллстрой</h3><p>HP: 120 | Атак: 18<br>Пассивка: Имба щит</p></button>
         </div>
     </div>
     <script>
-        function select(name, hp, dmg, pass) {
+        function select(name, hp, dmg) {
             localStorage.setItem('p_name', name);
             localStorage.setItem('p_hp', hp);
             localStorage.setItem('p_max_hp', hp);
             localStorage.setItem('p_dmg', dmg);
-            localStorage.setItem('p_pass', pass);
             window.location.href = 'search.html';
         }
     </script>
