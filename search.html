@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluent Arena - Поиск соперника</title>
+    <style>
+        :root { --bg: #030511; --blue: #00f2fe; --purple: #9d4edd; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: radial-gradient(circle at center, #0c112b 0%, var(--bg) 100%); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .box { text-align: center; padding: 20px; }
+        .radar { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--blue); margin: 0 auto 30px auto; position: relative; box-shadow: 0 0 20px rgba(0,242,254,0.2); animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 30px var(--blue); } 100% { transform: scale(1); opacity: 0.8; } }
+        h3 { font-size: 1.4rem; font-weight: bold; letter-spacing: 1px; margin-bottom: 10px; }
+        p { color: #7f91a4; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="radar"></div>
+        <h3 id="status-text">Ищем достойного Сигму...</h3>
+        <p id="timer">Время поиска: 0с</p>
+    </div>
+    <script>
+        var sec = 0;
+        var t = setInterval(function() {
+            sec++;
+            document.getElementById('timer').innerText = "Время поиска: " + sec + "с";
+            if (sec === 2) {
+                document.getElementById('status-text').innerText = "ПРОТИВНИК НАЙДЕН! ⚔️";
+                document.getElementById('status-text').style.color = "var(--blue)";
+            }
+            if (sec >= 3) {
+                clearInterval(t);
+                window.location.href = 'arena.html';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
